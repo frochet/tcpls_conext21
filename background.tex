@@ -1,0 +1,188 @@
+\label{sec:background-design}
+% Background and motivation
+
+%TODO
+%Gives an overview of \tls / \tcp and how they interact. We also need a comparison
+%of QUIC and \tls/\tcp on several points that would serve as a base to explain why
+%\tls 1.3's extensibility cannot compete with QUIC.
+%Gives an overview of \tls / \tcp and how they interact. 
+
+\tcpls offers a cross-layer interface to \tls and \tcp
+with the motivation to do more than securing the transport layer. Merging the
+stacks benefits both
+protocols
+and the application using this new approach. First, \tcp suffers from a lack of
+extensibility due to size restrictions in its header and due to
+potential middlebox interferences~\cite{honda2011still}. \tcpls aims to solve
+\tcp's extensibility issue in the long run by offering a secure control channel
+to exchange \tcp options without suffering from middlebox interferences and size restrictions in \tcp headers.
+Second, \tls does not have a clear view of the transport protocol, and offering
+one with \tcpls brings opportunity for performance improvement (e.g., avoiding
+records fragmentation by matching the record size to the congestion window), and
+for connection reliability (e.g., failover).  Third, applications are becoming
+more complex, which appeals to exposing transport-level
+functionalities and letting them tune the underlying transport to their use case.
+Essentially, this last motivation discusses a novel manner to expose
+transport-level functionalities that are encrypted, authenticated, reliable,
+extensible and adapted to complex application-level requirements.
+%The lack of
+%extensibility impacts the design and deployability of new protocols, 
+%such as \texttt{MP\tcp}~\cite{raiciu2012hard,rfc6824} or 
+%\texttt{SCTP}~\cite{rfc4960}, and
+%has motivated the design of QUIC~\cite{langley2017quic}.% and PQUIC~\cite{de2019pluginizing}.
+%Therefore, designing a new extensibility mechanism could empower new
+%application-level products and technologies. For these reasons, we design \tcpLS
+%as an application-level configurable cross-layer wrapper for \texttt{\tls/\tcp} using
+%\tls 1.3's extensibility mechanism to address \tcp's extensibility
+%issues.
+% High level vision
+%To
+%structure the discussion, we first focus on the establishment of a \tcpls
+%connection. Then we discuss the exchange of data and the end of a connection. 
+
+
+%\tcp uses a three-way handshake to establish a connection. Many server stacks
+%generate the \synack directly from the \syn and only create state
+%upon reception of the third \ack \cite{rfc4987}. \tcp extensions are 
+%usually negotiated using \tcp options in the \syn and
+%\synack packets. 
+\subsection{Overview}
+
+\tcp separates control information and data by placing the control information in
+the packet header and the data in the payload. This separation worked well until
+middleboxes started to interfere with \tcp~\cite{10.1145/1064413.1064418,
+honda2011still, DHBVD13}.  On a fraction of Internet paths, including e.g., 
+some enterprise and cellular networks, some middleboxes interfere by adding,
+removing, or changing \tcp options \cite{wang2011untold, honda2011still, xu2015investigating} and, in some cases, also
+transparently terminating \tcp connections. These middleboxes have slowed down
+the evolution of \tcp in recent years. \tcpls also uses the packet header to
+exchange \tcp control information, but it leverages \tls to create a second and
+secure control channel. In a nutshell, \tcpls leverages the extensibility of \tls
+1.3 to place control information such as \tcp options inside the \tls handshake
+messages and new \tls records. Since this information is encrypted and
+authenticated, the communicating hosts can exchange new control information
+without encountering middlebox interference. We describe several examples of these new
+types of control information in Section~\ref{sec:extending} and
+Section~\ref{sec:connmigr}.
+
+
+%A key benefit of \tcpls is that it leverages the encrypted parts of the \tls 1.3
+%messages and records to create a new secure and independent channel between the
+%communicating hosts. 
+
+%interference that enables it to fallback to regular \tcp in the (expected rare)
+%case of middlebox interference. This is similar to what Multipath \tcp does by
+%sending its \syn with the \texttt{MP\_CAPABLE} initially and then removing this
+%option after the third retransmission of the SYN \cite{raiciu2012hard}.
+
+In our current prototype, a \tcpls session starts with a classic \tcp
+handshake. Immediately after, the client sends the ClientHello \tls message. The
+server replies with a ServerHello message which can contain encrypted data but
+also encrypted control information. For example, a dual-stack server may
+advertise its IPv6 address in the encrypted ServerHello message when contacted
+over its IPv4 address. 
+%Essentially, the \tcpLS handshake can become a control
+%channel for goth \tcp and \tls. 
+We highlight one of our roadmap features in
+Section~\ref{sec:research} to enable a 0-RTT \tcpls which would enable \tcp to catchup
+the QUIC design regarding fast connection establishment. We also describe in
+Section~\ref{sec:content} how our current prototype uses this
+information to support connection migration, failover, and other features.
+
+
+%The \tcpls handshake can start with a \syn packet that contains a \tls
+%ClientHello message inside its payload. This differs from the original \tcp
+%handshake that does not usually include data in \syn packets.  We leverage the
+%fact that the \tcp specification \cite{rfc793} allows a \syn to carry a payload
+%and use it like the \tcp Fast Open extension (TFO) \cite{rfc7413}. As TFO,
+%\tcpls uses cookies to counter attacks with spoofed packets, but these cookies
+%are included in the ClientHello and can be much larger than those used by TFO.
+%The server returns a \synack packet that contains the ServerHello message whose
+%content is encrypted and authenticated. Since the ServerHello message is
+%included in the payload, its length is not limited by a space requirement as in
+%the \tcp header, but rather by a server choice of functionalities versus
+%potential amplication attacks. It can contain additional information such as an
+%identifier of the connection, the other addresses of the server or lightweight
+%\tcp options such as a TCP User Timeout~\cite{rfc5482}.
+
+%FR: this can be removed; it is almost a copycat at the end already
+%In \tcpls, some \tcp options are sent in clear in the TCP headers
+%while others can be encrypted. This brings two benefits.
+%First, this hides those \tcp options from
+%on-path middleboxes, including experimental ones \cite{rfc6994},
+%that could be blocked. Second, \tcpls hosts can exchange over \tls
+%records a summary of their state (initial sequence numbers, negotiated \tcp
+%options, \ldots) to verify that their \tcp headers have not been tampered by
+%middleboxes. Otherwise, they can fall back to regular \tls over regular \tcp
+%to preserve connectivity as Multipath \tcp does it the MP\_CAPABLE
+%option is stripped during the handshake \cite{rfc6824}.
+%This could help to
+%cope with some specific middleboxes that have affected the deployment
+%of \tcp Fast Open \cite{paasch2016network}.
+
+Once the \tcpls session has been established, \tcpls sends TLS records. Most of
+these records contain application data transmitted by the client or
+the server. The control channel between the client and the 
+server enables \tcpls to support new features, such as streams. Indeed, applications such as HTTP/2 support multiple streams mapped to a single
+\tcp connection. However, there are situations, e.g., to prevent head-of-line
+blocking, where different streams should be mapped over other underlying \tcp
+connections. With \tcpls, the client and the server can establish different
+datastreams over a single \tcpls session. The data from all these streams is
+encrypted using \tls. Furthermore, thanks to the \tcpls API, the client and the
+server can map each data stream to an underlying \tcp connection.
+Thus, a \tcpls session can be composed of one or more \tcp connections
+similarly as a Multipath \tcp connection gathers subflows. Note that, if
+the multipath mode is enabled, then a lost packet over one \tcp connection may
+create HOL blocking since packets received on other streams may have to wait for
+the lost packet to be properly reordered and delivered to the application. In
+the case of the multipath mode not enabled, this problem would not happen, but
+the application has to be careful to map application objects per stream, and not to
+mix these objects among several streams since the ordering would not be
+guaranteed.
+
+%This channel is used to exchange \tcp options and other TCPLS control messages.
+%\tcpls uses it also to exchange information about the client and server
+%addresses. Indeed, it is also
+%possible to attach another \tcp connection to complement the TCPLS session, and
+%attach QUIC-like streams to those \tcp connections. This can
+%be used by multihomed devices such as smartphones to establish one \tcp
+%connection over each network interface to support the same \tcpls
+%connection. 
+To support data from a given datastream to be exchanged over several \tcp
+connections, \tcpls includes its sequence numbers. A client and server can also
+enable acknowledgments. Thanks to these \tcpls
+acknowledgments, a \tcpls session can react to the failure of the underlying
+\tcp connection by reestablishing a new \tcp connection to continue the transfer
+of data and replay the records that have been lost.
+%This is similar to the handover capability of Multipath \tcp.
+
+A \tcp connection ends with the exchange of \fin or \rst packets. However,
+some middleboxes force the termination of \tcp connections
+by sending \rst packets~\cite{rfc3360,weaver2009detecting}. \tcpls
+can preserve established connections by automatically restarting
+the underlying \tcp connection upon reception of a spurious reset. \tcpls
+defines the connection termination at the stream level: closing the last stream
+attached to a \tcp connection allows clients and servers to securely
+terminate the \tcpls session.
+
+
+%Todo explain that the transport abstraction level failed to offera versatile
+%usage
+%of the transport layer, and explain how a session layer can repair the
+%abstraction
+%Besides, with our design of \tcp extensibility
+%within \texttt{\tcpLS}, applications would be able to tune \tcp on a connection basis,
+%using existing options or any future option without middlebox interferences. As
+%a matter of example, our \texttt{\tcpLS} implementation supports several
+%\tcp options that can difficulty live at the \tcp layer
+%(e.g., Joining a Multipath connection, injecting eBPF bytecode to the kernel's
+%peer to tune \tcp). With \texttt{TCPLS}, we show how to solve several of these
+%existing problem.
+
+%Finally, \texttt{\tcpLS}'s control channel is expected to offer extensibility
+%without middlebox interference and with protocol message indistinguishability
+%from the network to avoid fingerprinting of the client stack. Our objective is
+%to design a versatile \tcp extensibility mechanism that would allow to set
+%options, exchange eBPF bytecode~\cite{de2019pluginizing} to tune the peer's kernel and implement new
+%session behaviours.
+

@@ -1,0 +1,136 @@
+
+The Transmission Control Protocol (\tcp) \cite{rfc793}
+is one of the most critical protocols in today's Internet.
+A wide range of applications that require reliable delivery use it. During the
+last four decades, \tcp
+evolved under the pressure of competing protocols. During the 1980s,
+software-based \tcp implementations were considered too slow. Researchers
+proposed new transport protocols such as XTP~\cite{sanders1990xpress}
+which could be implemented in hardware. \tcp implementations got
+a considerable speed boost \cite{clark1989analysis}, and XTP did not succeed.  However,
+the \tcp speed boost and usage triggered the development of various important \tcp
+extensions, including,
+timestamps and large windows \cite{rfc1323} to scale to the gigabit link speed
+or Selective Acknowledgments \cite{rfc2018}.
+
+During the late nineties, early 2000s, transport protocol researchers
+explored other alternatives to \tcp. Two of these approaches were adopted
+and standardized within the IETF: DCCP \cite{kohler2006designing} and
+SCTP \cite{rfc4960}. We rarely use DCCP today. Despite its benefits
+(support for multihoming, better design, and extensibility), only a few niche
+applications use SCTP \cite{budzisz2012taxonomy}.
+This limited deployment is probably due
+to two different factors. First, SCTP required changes to the applications to
+replace \tcp. Second, operators have deployed middleboxes (NAT, firewalls) that
+often block packets that do not carry \tcp or UDP \cite{honda2011still}. 
+
+SCTP initially supported multihoming by switching from one path to another. It
+was later extended to be able to use different paths
+continuously~\cite{iyengar2006concurrent}.  Multipath \tcp \cite{rfc6824,raiciu2012hard}
+brought similar multihoming capabilitiy to \tcp, and included a coupled congestion control
+scheme \cite{wischik2011design}, later brought to SCTP as well. This particular
+succession of events shows how
+different designs can collobarate to advance each others.  Multipath \tcp is now deployed, notably on
+smartphones \cite{bonaventure2016multipath}. Other recent \tcp extensions include
+\tcp Fast Open \cite{rfc7413} or TCPCrypt \cite{rfc8548}.
+ 
+
+%However, there are several limits to \tcp's extensibility. First, the
+%entire \tcp header, including options, cannot be longer than
+%64 bytes, which leaves a limited space to carry new options, in particular
+%inside SYN packets. The IETF tried to circumvent this limitation
+%\cite{draft-ietf-tcpm-tcp-edo-10}, but no \tcp stack has adopted it. 
+%Second, and more importantly, various
+%deployed middleboxes make assumptions about the semantics of the \tcp
+%packets that they process. Some of these middlebox, e.g. in mobile or
+%satellite networks, transparently terminate \tcp connections initiated by
+%client devices to optimise their performance. Others, like firewalls, analyse
+%the packets exchanged to detect varioustypes of attacks.
+%Unfortunately, many of these middleboxes block the \tcp options that they
+%do not understand. This is affected the design of recent \tcp extensions like
+%Multipath \tcp or Fast Open that has even been disabled by some vendors
+%due to operational issues with middleboxes. This problem also
+%affects other standardised transport protocols like DCCP \cite{} or
+%SCTP \cite{} that already have difficulties to traverse simple middleboxes
+%such as NATs.
+
+In the mid-nineties, the Secure Socket Layer protocol was proposed to secure
+emerging e-commerce websites \cite{draft-hickman-netscape-ssl}. This protocol
+evolved in different versions of the Transport Layer Security (\tls)
+protocol, the most recent one being version 1.3 \cite{rfc8446}. Many details
+of the \tls protocol have changed since the first version of SSL
+\cite{kotzias2018coming}. Nowadays, \tls is almost ubiquitous on web servers~\cite{holz2019era}
+thanks to the availability of various \tls implementations and
+automated certificate authorities \cite{aas2019let}. Furthermore,
+many non-web applications also rely on \tls \cite{anderson2019tls}.
+
+%In parallel, we also observe a growing deployment of \tls. A large fraction of
+%the Internet traffic is currently composed of application data secured by \tls
+%that is transported by \tcp. \tls brings several benefits from privacy and
+%security viewpoints, but does not currently help with the middlebox problem.
+
+Transport protocols continued to evolve in parallel. QUIC started as
+a proprietary protocol used by Google to speed up web
+transfers~\cite{roskind2013quic,langley2017quic}. During
+the last years, it evolved into a complete transport protocol whose
+standardization is being finalized within the IETF \cite{draft-ietf-quic-transport}.
+QUIC combines the
+functions that are usually found in \tcp, \tls, and HTTP/2. A key characteristic
+of QUIC is that it encrypts almost all the packets, including
+most of their headers.
+Although QUIC is essentially a new transport protocol, it does not run
+directly above IP in contrast with SCTP, \tcp, or DCCP. QUIC runs above UDP. This
+choice is mainly motivated by the desire to avoid as much as possible
+middlebox interference. QUIC's clean architecture has attracted researchers
+who have already proposed various extensions to the protocol
+\cite{de2019pluginizing,viernickel2018multipath,polese2019survey,michel2019quic,draft-huitema-quic-ts,draft-shi-quic-dtp,draft-swett-nwcrg-coding-for-quic}.
+
+Does the finalization of version 1 of the QUIC specification mark the
+end of the \tcp era and move all transport research on this new protocol?
+We do not think so. History tells us that \tcp has evolved with competing
+transport protocols. QUIC is today's competitor, but there is still plenty of
+room to improve \tcp.
+
+In this paper, we take a step back. As QUIC benefits from a closer
+integration between the reliability and the security mechanisms, we
+reconsider the separation between \tcp and \tls. 
+%By considering \tcp and
+%\tls as independent protocols,  a very important opportunity. 
+\tls brings security features, but \texttt{TLS 1.3} can do much more. 
+Thanks to the \texttt{TLS 1.3} messages and records' extensibility,
+\tls can provide a secondary channel that enables hosts to exchange 
+more control information and structured data. 
+Furthermore, since \tls records are encrypted, middleboxes
+cannot easily interfere with the data exchanged over this new
+channel. 
+
+We combine \tcp and \tls in a protocol that we call \textbf{\tcpls}. We describe
+in Section~\ref{sec:design} a first design for \tcpls with the goals of
+\textit{(i)}
+solving extensibility issues in \tcp. \textit{(ii)} Exporting complex transport features to
+the application and \textit{(iii)} drawing a path to make \tcp/\tls a good challenger to QUIC
+with modern appications. Then, we discuss how \tls' flexible record layer can be
+used to provide a new channel to exchange information between \tcpls
+implementations. The design presentation concludes with an overview of the API
+to interact with the application.  Our second contribution is the ongoing
+implementation of a \tcpls prototype on Linux by extending \texttt{picotls}, a
+\texttt{TLS 1.3}
+implementation.  We use it in Section~\ref{sec:prototype} to illustrate the
+benefits of \tcpls with a multihoming connection migration use case. Finally, we
+analyze in Section~\ref{sec:research} some of the research questions that \tcpls
+opens. 
+
+% Extending \tls's philosophy of protecting the transport layer (only Integrity,
+% confidentiality and Authentication); now would also improve other issues of
+% the transport layer.
+
+%middlebox interferences
+
+%The beneﬁt of upgrading an individual endpoint depends on the number of other
+%endpoints that have already been upgraded,since the new protocol is not
+%effective unless both have it
+
+% Talk about the backward-compatible nightmare when the security is at stake
+
+% \tls offers an opportunity to fix part of \tcp's issues, offering a right
+% abstraction of what a transport layer means for a given application.

@@ -1,0 +1,176 @@
+\label{sec:research}
+By closely integrating \tcp and \tls, \tcpls opens new research questions
+in the transport layer and above. We highlight some of these in this section.
+
+\subsection{A More Secure Multipath TCP}
+
+Multipath TCP \cite{rfc6824, rfc8684} is a recent TCP extension that allows a connection
+to send data over different paths. It defines several \tcp options, including
+\texttt{ADD\_ADDR} to advertise addresses and \texttt{RM\_ADDR} to remove addresses. Thanks to the \texttt{ADD\_ADDR} option, a dual-stack server can advertise
+its IPv6 address over an IPv4 connection initiated by the client. The client can
+then use this address to create an IPv6 subflow that is part of the same
+connection.
+
+One of the major deployments of Multipath TCP is on Apple's iPhones
+\cite{bonaventure2016multipath}. This implementation has decided not to
+support the \texttt{ADD\_ADDR} option for security reasons. Since the
+Multipath TCP options are sent in clear, an attacker or
+a malicious middlebox could try to hijack connections. 
+%The latest version
+%of Multipath \tcp \cite{rfc8684} addresses this problem by including a
+%HMAC in the new \texttt{ADD\_ADDR} option. However, this HMAC uses the key
+%that is exchanged in clear during the connection handshake. 
+With \tcpls, this
+security concern can be addressed elegantly. First, Multipath \tcpls
+would not need to exchange a key in clear. It uses cookies (random 128-bits
+bitstrings) sent as Encrypted Extensions in the ServerHello during the
+handshake, and utilized in \tcpls \texttt{JOIN} handshakes.
+Second, in the case of Multipath TCP, the \texttt{ADD\_ADDR} and
+\texttt{RM\_ADDR} option could be sent inside \tls records that are encrypted and
+authenticated. The information would then reach MP\tcp using a new
+\texttt{setsockopt}. Furthermore, since the \tls records are part of the bytestream,
+they are reliably delivered in contrast with the new \texttt{ADD\_ADDR} option
+that is transmitted unreliably, like all \tcp options, and thus needs to be
+echoed.
+
+\subsection{A More Secure \tcp Fast Open}
+
+\tcp Fast Open (TFO) \cite{rfc7413,radhakrishnan2011tcp} is another recent
+\tcp extension that allows sending data inside the SYN. TFO defines a
+\tcp option that encodes a cookie. This cookie is used to prevent attacks
+from spoofed IP addresses. When a client connects first to a server, it sends
+an empty cookie but no data in the SYN packet. The server computes a cookie
+bound (e.g. using a hash) to the client's IP address and returns it
+in the SYN+ACK. For subsequent connections, the client sends its cookie in the SYN
+and places data in the payload. The server validates the cookie and processes
+the data since it comes from a legitimate IP address. However, the \tcp header
+length limits the size of the TFO cookie. \tcpls could easily include
+a longer cookie inside the \tls ClientHello within the SYN
+payload. This solution would reduce the number of options in the \tcp header
+and provide stronger protections against attackers. With this change, \tcpls
+would support a 0-RTT connection establishment similar to QUIC. In datacenters and controlled environments, this would work well. However, measurements
+are required before deploying that approach in enterprise and
+wireless networks as some of them contain middleboxes that block \tcp Fast Open
+\cite{paasch2016network}. This middlebox interference has also affected QUIC \cite{langley2017quic} and is thus not specific to \tcp.
+
+
+\subsection{Pluginizing \tcpls}
+
+PQUIC~\cite{de2019pluginizing} proposed an elegant approach to deploy
+QUIC extensions. Instead of waiting for new client and server implementations,
+PQUIC includes an eBPF virtual machine to implement new features as bytecode
+that can be exchanged over the QUIC connection.
+%\tcpls could also be ``pluginized'' like Pluginized QUIC~\cite{de2019pluginizing}. In a nutshell, Plugizined QUIC is a QUIC implementation that includes an eBPF virtual machine and is structured to accept extensions in eBPF bytecode.
+%This bytecode that implemnents new protocol features can be loaded from
+%disk or exchanged using one the streams of an existing QUIC connection. This
+%enables a QUIC server to dynamically push protocol extensions to its clients.
+
+A \tcpls implementation could also be pluginized. The Linux kernel
+already includes an eBPF virtual machine~\cite{ebpf:2014}.
+It has already been used to develop several types of
+\tcp extensions \cite{brakmo2017tcp, tran2019beyond, tran2020beyond}
+and recent versions of the mainline kernel allow loading congestion control schemes implemented in eBPF bytecode. \tcpls can transport eBPF bytecode using
+\tls records as a second non-data stream.
+An interesting research question would be to evaluate the
+limits of such a dynamic extensibility? A first intuition to make \tcp's
+extensibility mechanism independent from the \tcpls version would be to let \tcpls
+communicating plugins to handle new \tcp options and control behaviours, such that the
+supported \tcp extensibility capability is not frozen by a given \tcpls
+version, but rather dependent on the set of plugins exchanged.
+
+\subsection{Limits to Cross-Layer Integration}
+
+QUIC and \tcpls show that there are benefits in integrating protocols at
+adjacent layers. QUIC already integrates HTTP/3~\cite{draft-ietf-quic-http},
+but will likely be used by other
+applications~\cite{draft-ietf-dprive-dnsoquic,ssh-quic}
+in the future. \tcp and \tls are already used by a wide range of
+applications~\cite{anderson2019tls}. Should \tcpls also be tuned
+for specific applications such as HTTP/3? What are the critical differences
+between QUIC and \tcpls from a functionality viewpoint?
+
+%Finally, we would expect to critisize QUIC in light of our \texttt{\tcpls}
+%design. We will compare both QUIC and \tcpls, discuss the differences, and analyze
+%and answer questions regarding the requirements in transport protocol for today's
+%Internet applications.
+
+
+
+%\subsection{Plugizing \tcpls}
+
+
+%Tran shown that the Linux \tcp implementation
+%could also be extended using eBPF~\cite{tran2019beyond}. In addition to the
+%socketA recent paper 
+
+
+%This could be added to our prototype, but a more interesting
+%research question would be to define a generic API that any \tcpls
+%implementation would implement and expose to eBPF
+
+\subsection{Middlebox Interference}
+
+As explained earlier, the deployment of recent \tcp extensions has been
+hindered by various types of
+middleboxes~\cite{detal2013revealing,medina2004measuring,hesmans2013tcp,edeline2017first}. 
+QUIC already suffered from such problems~\cite{langley2017quic}
+and many implementations fall back to \tls over \tcp when blocked by a firewall.
+Researchers and application developers could include middlebox detection
+techniques inside \tcpls. Consider a \tcpls client that copies its \syn header
+within a \tcpls message alongside the early data, or makes it part of the
+zero-rtt resumption ticket message. By comparing the received \tcp header with
+the original one, the server would immediately and reliably detect the presence
+of NAT, transparent proxies or other types of middleboxes.  It could then inform
+the client and adjust the configuration of their stacks accordingly or fall back
+to regular \tcp to preserve connectivity. If deployed, such a protocol would
+enable researchers to understand the impact of middleboxes more accurately.
+
+\subsection{Efficient \tcpls Implementations}
+
+During the last years, researchers have proposed
+to move transport protocol implementations to user-space
+\cite{jeong2014mtcp,marinos2014network} to
+kernel bypass techniques such as netmap \cite{rizzo2012revisiting} or
+DPDK. In parallel, parts of \tls moved to the Linux kernel
+\cite{borkmanncombining} for performance reasons. 
+With new results on SmartNICs \cite{firestone2018azure}, it would be
+interesting to analyze the best architecture for new \tcpls implementations.
+Given the enormous efforts on implementing QUIC\cite{quicimplem},
+it would be exciting
+to compare QUIC and \tcpls from a performance viewpoint. From a protocol
+standpoint, performance advantages of combining those two layers may be
+achieved from, for example, adjusting the size of \tls records based on the
+current \tcp congestion
+window to avoid fragmented records (non-fragmented records makes \tcpls'
+design having a zero-copy code path). More generally, we expect many performance
+benefits from a more intertwined \tls/\tcp transport protocol at the
+cost of design complexity.
+
+
+
+%\subsection{What are the Limits of Cross-Layers Integration ?}
+
+%QUIC is a recent example of an integrated protocol since it combines
+%transport functions with \tls and application layer functions (HTTP/3). This
+%integration can improve performance, but what are its drawbacks ? 
+
+
+%\newpage
+
+%We expect to investigate several research questions with \tcpls. First, we are
+%interested in analyzing how far we can go into supporting \tcp's extensibility
+%through our mechanism. Several of new \tcp features may require to inject eBPF
+%bytecode to the kernel. It is still unclear how much of \tcp could be extended,
+%and if \texttt{\tcpls} may play a role in incentivizing the linux kernel's maintainer
+%to support more eBPF in \tcp's implementation, since we now offer a technique to
+%propagate eBPF bytecode within authenticated and confidential session with a
+%trusted server.
+
+%Second, we expect to analyze several features of \tcpls, such as our
+%connection migration, our multipath implementation and our failover mechanism.
+%Answering the question about how much \tcpls can or and how fast it performs in
+%case of a migration or a network outage.
+
+
+
+

@@ -1,0 +1,42 @@
+
+A \texttt{TCPLS} reference implementation is under active development. The
+current implementation is forked from a fast and full
+TLS 1.3 implementation written in \texttt{C}. It currently adds about 5k lines
+of code (including unit tests and inline code comments) compared to the upstream branch.
+
+The current implementation offers: 
+\begin{inparaenum}
+  \item An experimental API that wraps TLS and TCP
+  \item Our design of TCP's extensibility mechanism throught TCP option sent
+within TLS records and processed by TCPLS. We currently support TCP User
+Timeout and the injection of eBPF bytecode for TCP's congestion control
+algorithm. Supporting another TCP option is only a matter of extending the sender's
+API and processing the option
+on the receiver side. TCPLS's internal machinery is already implemented for any
+type of TCP option to send during the handshake or when the handshake completed.
+  \item The support of parallel streams and multiplexing over TCP connections.
+    Each stream has its own cryptographic context.
+  \item Connection migration and multipathing.
+\end{inparaenum}
+
+We expect to investigate several research questions with TCPLS. First, we are
+interested in analyzing how far we can go into supporting TCP's extensibility
+through our mechanism. Several of new TCP features may require to inject eBPF
+bytecode to the kernel. It is still unclear how much of TCP could be extended,
+and if \texttt{TCPLS} may play a role in incentivizing the linux kernel's maintainer
+to support more eBPF in TCP's implementation, since we now offer a technique to
+propagate eBPF bytecode within authenticated and confidential session with a
+trusted server.
+
+Second, we expect to analyze several features of TCPLS, such as our
+connection migration, our multipath implementation and our failover mechanism.
+Answering the question about how much TCPLS can or and how fast it performs in
+case of a migration or a network outage.
+
+Finally, we would expect to critisize QUIC in light of our \texttt{TCPLS}
+design. We will compare both QUIC and TCPLS, discuss the differences, and analyze
+and answer questions regarding the requirements in transport protocol for today's
+Internet applications.
+
+
+
