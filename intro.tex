@@ -1,4 +1,4 @@
-
+% !TEX root = ./paper.tex
 The Transmission Control Protocol (\tcp) \cite{rfc793}
 is one of the most critical protocols in today's Internet.
 A wide range of applications that require reliable delivery use it. During the
@@ -22,7 +22,7 @@ applications use SCTP \cite{budzisz2012taxonomy}.
 This limited deployment is probably due
 to two different factors. First, SCTP required changes to the applications to
 replace \tcp. Second, operators have deployed middleboxes (NAT, firewalls) that
-often block packets that do not carry \tcp or UDP \cite{honda2011still}. 
+often block packets that do not carry \tcp or UDP \cite{honda2011still}.
 
 SCTP initially supported multihoming by switching from one path to another. It
 was later extended to be able to use different paths
@@ -33,13 +33,13 @@ succession of events shows how
 different designs can collobarate to advance each others.  Multipath \tcp is now deployed, notably on
 smartphones \cite{bonaventure2016multipath}. Other recent \tcp extensions include
 \tcp Fast Open \cite{rfc7413} or TCPCrypt \cite{rfc8548}.
- 
+
 
 %However, there are several limits to \tcp's extensibility. First, the
 %entire \tcp header, including options, cannot be longer than
 %64 bytes, which leaves a limited space to carry new options, in particular
 %inside SYN packets. The IETF tried to circumvent this limitation
-%\cite{draft-ietf-tcpm-tcp-edo-10}, but no \tcp stack has adopted it. 
+%\cite{draft-ietf-tcpm-tcp-edo-10}, but no \tcp stack has adopted it.
 %Second, and more importantly, various
 %deployed middleboxes make assumptions about the semantics of the \tcp
 %packets that they process. Some of these middlebox, e.g. in mobile or
@@ -93,16 +93,16 @@ room to improve \tcp.
 
 In this paper, we take a step back. As QUIC benefits from a closer
 integration between the reliability and the security mechanisms, we
-reconsider the separation between \tcp and \tls. 
+reconsider the separation between \tcp and \tls.
 %By considering \tcp and
-%\tls as independent protocols,  a very important opportunity. 
-\tls brings security features, but \texttt{TLS 1.3} can do much more. 
+%\tls as independent protocols,  a very important opportunity.
+\tls brings security features, but \texttt{TLS 1.3} can do much more.
 Thanks to the \texttt{TLS 1.3} messages and records' extensibility,
-\tls can provide a secondary channel that enables hosts to exchange 
-more control information and structured data. 
+\tls can provide a secondary channel that enables hosts to exchange
+more control information and structured data.
 Furthermore, since \tls records are encrypted, middleboxes
 cannot easily interfere with the data exchanged over this new
-channel. 
+channel.
 
 We combine \tcp and \tls in a protocol that we call \textbf{\tcpls}. We describe
 in Section~\ref{sec:design} a first design for \tcpls with the goals of
@@ -118,7 +118,7 @@ implementation of a \tcpls prototype on Linux by extending \texttt{picotls}, a
 implementation.  We use it in Section~\ref{sec:prototype} to illustrate the
 benefits of \tcpls with a multihoming connection migration use case. Finally, we
 analyze in Section~\ref{sec:research} some of the research questions that \tcpls
-opens. 
+opens.
 
 % Extending \tls's philosophy of protecting the transport layer (only Integrity,
 % confidentiality and Authentication); now would also improve other issues of

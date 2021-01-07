@@ -1,0 +1,132 @@
+This is BibTeX, Version 0.99d (TeX Live 2020)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: paper.aux
+The style file: ACM-Reference-Format.bst
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Database file #1: reference.bib
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated glb_str_ptr (elt_size=4) to 20 items from 10.
+Reallocated global_strs (elt_size=200001) to 20 items from 10.
+Reallocated glb_str_end (elt_size=4) to 20 items from 10.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Warning--empty publisher in aas2019let
+Warning--empty address in aas2019let
+Warning--empty publisher in anderson2019tls
+Warning--empty address in anderson2019tls
+Warning--empty year in rfc6181
+Warning--empty year in ssh-quic
+Warning--empty publisher in borkmanncombining
+Warning--empty address in borkmanncombining
+Warning--page numbers missing in both pages and numpages fields in borkmanncombining
+Warning--no number and no volume in brakmo2017tcp
+Warning--page numbers missing in both pages and numpages fields in brakmo2017tcp
+Warning--empty address in Chai2019a
+Warning--page numbers missing in both pages and numpages fields in Chai2019a
+Warning--empty publisher in chatterjee2011another
+Warning--empty address in chatterjee2011another
+Warning--empty publisher in de2019pluginizing
+Warning--empty address in de2019pluginizing
+Warning--empty address in DHBVD13
+Warning--page numbers missing in both pages and numpages fields in DHBVD13
+Warning--empty publisher in detal2013revealing
+Warning--empty address in detal2013revealing
+Warning--empty publisher in edeline2017first
+Warning--empty address in edeline2017first
+Warning--empty publisher in firestone2018azure
+Warning--empty address in firestone2018azure
+Warning--empty address in Gosain2017a
+Warning--page numbers missing in both pages and numpages fields in Gosain2017a
+Warning--empty year in quicimplem
+Warning--empty year in aeadlimits
+Warning--empty publisher in hesmans2016enhanced
+Warning--empty address in hesmans2016enhanced
+Warning--empty publisher in hesmans2013tcp
+Warning--empty address in hesmans2013tcp
+Warning--no number and no volume in holz2019era
+Warning--page numbers missing in both pages and numpages fields in holz2019era
+Warning--empty publisher in honda2011still
+Warning--empty address in honda2011still
+Warning--empty publisher in hruby2014sockets
+Warning--empty address in hruby2014sockets
+Warning--page numbers missing in both pages and numpages fields in hruby2014sockets
+Warning--empty publisher in jadin2020educational
+Warning--empty address in jadin2020educational
+Warning--page numbers missing in both pages and numpages fields in jadin2020educational
+Warning--empty publisher in jeong2014mtcp
+Warning--empty address in jeong2014mtcp
+Warning--empty publisher in kotzias2018coming
+Warning--empty address in kotzias2018coming
+Warning--empty publisher in langley2017quic
+Warning--empty address in langley2017quic
+Warning--no number and no volume in luykx2015limits
+Warning--page numbers missing in both pages and numpages fields in luykx2015limits
+Warning--empty publisher in medina2004measuring
+Warning--empty address in medina2004measuring
+Warning--no number and no volume in 10.1145/1064413.1064418
+Warning--empty publisher in michel2019quic
+Warning--empty address in michel2019quic
+Warning--empty address in Morshed2017a
+Warning--page numbers missing in both pages and numpages fields in Morshed2017a
+Warning--page numbers missing in both pages and numpages fields in paasch2016network
+Warning--empty publisher in radhakrishnan2011tcp
+Warning--empty address in radhakrishnan2011tcp
+Warning--empty publisher in raiciu2012hard
+Warning--empty address in raiciu2012hard
+Warning--empty publisher in schmidt2013socket
+Warning--empty address in schmidt2013socket
+Warning--empty year in ipmininet
+Warning--empty publisher in tran2019beyond
+Warning--empty address in tran2019beyond
+Warning--empty publisher in viernickel2018multipath
+Warning--empty address in viernickel2018multipath
+Warning--empty publisher in weaver2009detecting
+Warning--empty address in weaver2009detecting
+Warning--page numbers missing in both pages and numpages fields in weaver2009detecting
+Warning--empty publisher in wischik2011design
+Warning--empty address in wischik2011design
+Warning--empty publisher in xu2015investigating
+Warning--empty address in xu2015investigating
+You've used 76 entries,
+            5901 wiz_defined-function locations,
+            1751 strings with 29444 characters,
+and the built_in function-call counts, 85997 in all, are:
+= -- 9911
+> -- 3763
+< -- 9
++ -- 1255
+- -- 1280
+* -- 6492
+:= -- 9358
+add.period$ -- 403
+call.type$ -- 76
+change.case$ -- 575
+chr.to.int$ -- 75
+cite$ -- 153
+duplicate$ -- 7312
+empty$ -- 5132
+format.name$ -- 1527
+if$ -- 19873
+int.to.chr$ -- 3
+int.to.str$ -- 1
+missing$ -- 214
+newline$ -- 746
+num.names$ -- 607
+pop$ -- 2868
+preamble$ -- 1
+purify$ -- 1227
+quote$ -- 0
+skip$ -- 2666
+stack$ -- 0
+substring$ -- 5719
+swap$ -- 672
+text.length$ -- 9
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 2036
+warning$ -- 77
+while$ -- 528
+width$ -- 0
+write$ -- 1429
+(There were 77 warnings)

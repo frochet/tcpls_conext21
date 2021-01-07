@@ -1,3 +1,4 @@
+% !TEX root = ./paper.tex
 \label{sec:content}
 
 This section describes several of the possible benefits of \tcpls
@@ -8,10 +9,10 @@ cases described in Section~\ref{sec:research} are flagged to the roadmap and we
 expect them to further demonstrate the
 strength of a more intertwined \tls/\tcp transport protocol.
 
-Our current implementation offers: 
+Our current implementation offers:
 %\begin{enumerate}[label=(\roman*)]
 \textit{(i)} An experimental API that wraps \tls and \tcp and enables
-    applications to 
+    applications to
     handle multihoming, multipathing, and various transport layer mechanisms.
   \textit{(ii)} An improved \tcp extensibility mechanism that sends \tcp options
     through the secure \tcpls channel. We currently support the \tcp
@@ -54,7 +55,7 @@ this feature to implement the \tcp User Time Out option \cite{rfc5482}. A client
 can use this option to set the maximum value of the retransmission
 timer on a server. Linux \tcp has a socket option that allows setting
 this timer locally, but it does not implement the option. With \tcpls, the client sends the option inside a \tls record, the server extracts it
-and performs the required \texttt{setsockopt}. 
+and performs the required \texttt{setsockopt}.
 
 
 \subsection{Application-level Connection Migration}
@@ -71,7 +72,7 @@ It is left for the application to decide and program
 through the API calls whether it wants to move all the traffic from one path to
 another or split the traffic among the available paths according. The second
 inquiry focuses on simply configuring \tcpls to automatically move the traffic to
-another available IP-level path if a network outage is detected. 
+another available IP-level path if a network outage is detected.
 %The current implementation supports surviving abrupt reset of the connection,
 %yet we may also want to
 %monitor the connection and switch to another one if the path quality is low.

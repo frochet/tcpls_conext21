@@ -1,13 +1,13 @@
- 
+% !TEX root = ./paper.tex 
 
-% testbed description 
+% testbed description
  We deploy a testbed composed of three machines with Intel Xeon CPU E5-2630
 2.40GHz, 16 Threads, at least 16GB RAM, running Debian 9.0 with 4.9 and
 4.12 kernels. Two of these machines play the role of Client and Server,
 while one is the Network Simulator (NS). Each machine is equipped with an
 Intel XL710 2x40GB NIC, directly connected as shown in Fig.~\fig{testbed}.
 Traffic exchanged by client and server has to go through the NS first.
- 
+
 % More details on the NS
 The NS relies on \dfn{Vector Packet Processing} (VPP)~\cite{vpp}, a
 kernel-bypass packet processing framework, and on \mmb and \texttt{nsim}
@@ -19,5 +19,3 @@ traffic impairments without introducing additional processing overhead.
 \texttt{nsim} is a network delay simulator that adds delay and shapes traffic
 by processing packet vectors. The NS device is configured to maximize
 its performances, to make sure that it is not the measurements bottleneck.
-
-

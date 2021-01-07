@@ -1,3 +1,4 @@
+% !TEX root = ./paper.tex
 \label{sec:research}
 By closely integrating \tcp and \tls, \tcpls opens new research questions
 in the transport layer and above. We highlight some of these in this section.
@@ -15,11 +16,11 @@ One of the major deployments of Multipath TCP is on Apple's iPhones
 \cite{bonaventure2016multipath}. This implementation has decided not to
 support the \texttt{ADD\_ADDR} option for security reasons. Since the
 Multipath TCP options are sent in clear, an attacker or
-a malicious middlebox could try to hijack connections. 
+a malicious middlebox could try to hijack connections.
 %The latest version
 %of Multipath \tcp \cite{rfc8684} addresses this problem by including a
 %HMAC in the new \texttt{ADD\_ADDR} option. However, this HMAC uses the key
-%that is exchanged in clear during the connection handshake. 
+%that is exchanged in clear during the connection handshake.
 With \tcpls, this
 security concern can be addressed elegantly. First, Multipath \tcpls
 would not need to exchange a key in clear. It uses cookies (random 128-bits
@@ -101,7 +102,7 @@ between QUIC and \tcpls from a functionality viewpoint?
 
 %Tran shown that the Linux \tcp implementation
 %could also be extended using eBPF~\cite{tran2019beyond}. In addition to the
-%socketA recent paper 
+%socketA recent paper
 
 
 %This could be added to our prototype, but a more interesting
@@ -112,7 +113,7 @@ between QUIC and \tcpls from a functionality viewpoint?
 
 As explained earlier, the deployment of recent \tcp extensions has been
 hindered by various types of
-middleboxes~\cite{detal2013revealing,medina2004measuring,hesmans2013tcp,edeline2017first}. 
+middleboxes~\cite{detal2013revealing,medina2004measuring,hesmans2013tcp,edeline2017first}.
 QUIC already suffered from such problems~\cite{langley2017quic}
 and many implementations fall back to \tls over \tcp when blocked by a firewall.
 Researchers and application developers could include middlebox detection
@@ -132,7 +133,7 @@ to move transport protocol implementations to user-space
 \cite{jeong2014mtcp,marinos2014network} to
 kernel bypass techniques such as netmap \cite{rizzo2012revisiting} or
 DPDK. In parallel, parts of \tls moved to the Linux kernel
-\cite{borkmanncombining} for performance reasons. 
+\cite{borkmanncombining} for performance reasons.
 With new results on SmartNICs \cite{firestone2018azure}, it would be
 interesting to analyze the best architecture for new \tcpls implementations.
 Given the enormous efforts on implementing QUIC\cite{quicimplem},
@@ -152,7 +153,7 @@ cost of design complexity.
 
 %QUIC is a recent example of an integrated protocol since it combines
 %transport functions with \tls and application layer functions (HTTP/3). This
-%integration can improve performance, but what are its drawbacks ? 
+%integration can improve performance, but what are its drawbacks ?
 
 
 %\newpage
@@ -170,7 +171,3 @@ cost of design complexity.
 %connection migration, our multipath implementation and our failover mechanism.
 %Answering the question about how much \tcpls can or and how fast it performs in
 %case of a migration or a network outage.
-
-
-
-
