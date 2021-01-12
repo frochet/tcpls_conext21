@@ -1,0 +1,27 @@
+\section{Evaluation}
+
+\subsection{General Methodology}
+
+\subsection{Application-level migration}
+
+Detailler pourquoi on a besoin du controle applicatif pour la migration, et à
+quels cas du monde réels ils s'appliquent
+
+\subsection{Failover}
+
+1) analyse du temps de recovery pour different type de cassure, et comparaison avec mptcp
+2) discuter une propriété de "connection reliability" => ca casse, on restabilise le plus vite possible
+3) montrer que le path manager est important pour cette propriété, et que ce n'est pas encore au point pour mptcp, mpquic, etc
+
+\subsection{Middlebox Interferences}
+
+Montrer que TCPLS handshake et JOIN handshake passent/passent pas les middlebox,
+discuter les implications
+
+\subsection{Congestion Control Injection}
+
+Injecter un control de congestion, montrer que les perf s'améliore
+
+\subsection{Performance}
+
+TCPLS vs QUIC
