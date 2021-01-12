@@ -1,12 +1,12 @@
 # Fdb version 3
-["bibtex paper"] 1610027481 "paper.aux" "paper.bbl" "paper" 1610027529
-  "/usr/local/texlive/2020/texmf-dist/bibtex/bst/acmart/ACM-Reference-Format.bst" 1582593582 84856 cdf46f74ac483d72585084276eb3e09d ""
-  "paper.aux" 1610027526 16010 0775b160705270cbf8731e45f4bf4115 "latex"
-  "reference.bib" 1610027368 53246 60413be19a58dd39973c42ac76b31403 ""
+["bibtex paper"] 1610288401 "paper.aux" "paper.bbl" "paper" 1610288401
+  "/usr/local/texlive/2020/texmf-dist/bibtex/bst/acmart/ACM-Reference-Format.bst" 0 -1 0 ""
+  "paper.aux" 1610288377 4096 334fe33bdaa259061fbe1088d08fe1e6 "latex"
+  "reference.bib" 1610029575 53246 60413be19a58dd39973c42ac76b31403 ""
   (generated)
   "paper.bbl"
   "paper.blg"
-["latex"] 1610027524 "paper.tex" "paper.pdf" "paper" 1610027529
+["latex"] 1610027524 "paper.tex" "paper.dvi" "paper" 1610027529
   "/usr/local/texlive/2020/texmf-dist/fonts/enc/dvips/inconsolata/i4-t1-4.enc" 1558214095 7693 0f2dce6d313c82989ec3a67fc24df2a0 ""
   "/usr/local/texlive/2020/texmf-dist/fonts/enc/dvips/libertine/lbtn_25tcsq.enc" 1490131464 2921 8ca0eb0831f9bc5da080d3697cfe67bf ""
   "/usr/local/texlive/2020/texmf-dist/fonts/enc/dvips/libertine/lbtn_76gpa5.enc" 1490131464 2933 9ad527ce78d7c5fa0a642dead095f172 ""
@@ -273,7 +273,7 @@
   "benefits.tex" 1610027510 6172 560af008741ce113555f27f74e334a4e ""
   "body.tex" 1610027501 1523 9210e1c46242d0787ebf105d768680e0 ""
   "design.tex" 1610027517 21922 576cbaad750f69301f87283a9bd89edd ""
-  "figures/migration.png" 0 -1 0 ""
+  "figures/migration.png" 1610285682 38250 866409e667f50ada09535f7a9564aebc ""
   "intro.tex" 1610027524 7979 748efa9c8c375c39ffa56779d4b6525c ""
   "paper.aux" 1610027526 16010 0775b160705270cbf8731e45f4bf4115 "latex"
   "paper.bbl" 1610027481 43850 4b02952aa42aa8314f8e3e2ac4566629 "bibtex paper"
@@ -281,7 +281,8 @@
   "paper.tex" 1610027492 2088 d523c4b15d0c95f68c7405bf7a20f9cd ""
   "research.tex" 1610027488 9651 ea6dd33c442ae4d56ec7bf8445320d48 ""
   (generated)
-  "paper.log"
   "paper.pdf"
   "paper.out"
+  "paper.log"
+  "paper.dvi"
   "paper.aux"
