@@ -1,3 +1,4 @@
+from __future__ import division
 import os
 import argparse
 import pdb
@@ -91,12 +92,11 @@ if __name__ == "__main__":
     ax.set_ylabel(latex_label('Bandwidth (Mbits)'), fontsize=20)
 
     breakage = parse_time(args.breakage_at)
-    plt.axvline(x=(breakage-minimum)/1000000, color="k", ls='--', lw=2)
-    plt.text((breakage-minimum)/1000000, 57, legend_label('Breakage'), rotation=45,
-             fontsize=16)
+    plt.axvline(x=(breakage-minimum)/1000000, ymin=0, ymax=0.93, color="k", ls='--', lw=2)
+    plt.text(((breakage-minimum)/1000000)-0.5, 65, legend_label('Breakage'), fontsize=16)
+    #, rotation=45, fontsize=16)
 
     plt.legend(bbox_to_anchor=(-0.05,0.95,1,0.2), ncol=2, columnspacing=0.2, fontsize=12)
     grid(True, color='gray', linestyle='dashed', which='major')
 
-    savefig('breakage_analysis.pdf', bbox_inches='tight')
-    #plt.show()
+    savefig('breakage_analysis.png', bbox_inches='tight')

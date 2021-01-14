@@ -1,7 +1,9 @@
+from __future__ import division
 import os
 import argparse
 import pdb
 import matplotlib.pyplot as plt
+from utils import *
 
 parser = argparse.ArgumentParser(description="")
 parser.add_argument("-ttcpls", type=str, help="The tcpdump simplified trace output\
@@ -178,5 +180,3 @@ if __name__ == "__main__":
     # ax2.legend()
     ax3.legend()
     plt.show()
-
-
