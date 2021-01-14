@@ -173,55 +173,9 @@ possible with Multipath TCP.
   \label{fig:join-example}
 \end{figure}
 
+\subsection{Secure Connection Closing}
 
 
-\subsection{Comparison to QUIC, \tcp and \tls/\tcp}
-
-Table~\ref{table:tcplsvsquic} compares the features supported by
-\tcp, \tls/\tcp, QUIC and \tcpls. QUIC and \tcpls are very similar in their
-capabilities. They mainly differ in their semantic. \tcpls's semantic is to let
-the applications make the decision, and we design its API to fulfill this goal.
-That is, the meaning of \tcpls is to offer advanced, extensible and secure
-transport-layer functionalities on top of \tcp, while exposing a simple but
-powerful API to let the application composes the properties its transport should
-have. One example is further demonstrated in Section~\ref{sec:connmigr}, in
-which \tcpls's simple API allows the application to take advantage of path
-aggregation (in multipath mode) and connection migration to obtain
-a smooth handover between networks.
-
-Note that several of the features suggested by \tcpls are also suggested on \tcp or
-QUIC via research works such as a new socket API for explicit multipath for
-\tcp\cite{hesmans2016enhanced}, or eBPF plugins in
-QUIC~\cite{de2019pluginizing}.
-
-\begin{table}
-  \small
-  \begin{tabular}{lcccc}
-    \toprule
-    & \tcp & \tls/\tcp & QUIC & \tcpls \\
-    \midrule
-    Transport reliability & \checkmark & \checkmark &
-    \checkmark & \checkmark \\
-    Message conf. and auth.&  \xmark & \checkmark & \checkmark & \checkmark \\
-    Connection reliability &  \xmark & \xmark & \checkmark & (\checkmark) \\
-    0-RTT & \checkmark & (\xmark) & \checkmark  & \checkmark \\
-    Session Resumption & \xmark & \checkmark & \checkmark & \checkmark \\
-    Connection Migration & \xmark & \xmark & \checkmark & \checkmark \\
-    \multicolumn{5}{l}{Application-exposed features} \\
-    \hspace{2em} Streams & \xmark & \xmark & \checkmark & \checkmark \\
-    \hspace{2em} Happy eyeballs & \xmark & \xmark & \xmark & \checkmark \\
-    \hspace{2em} Explicit Multipath & \xmark & \xmark & \xmark & \checkmark \\
-    \hspace{2em} App-level Con. migration & \xmark & \xmark & \xmark & \checkmark \\
-    \hspace{2em} Pluginization & \xmark & \xmark & \xmark & (\checkmark) \\
-    Resilience to HOL blocking & \xmark & \xmark & \checkmark  & (\checkmark) \\
-    Secure Connection Closing & \xmark &  \xmark & \checkmark & (\checkmark) \\
-    \bottomrule
-  \end{tabular}
-  \caption{Protocol features comparison. (\xmark) means that the feature is
-    available, but not straightforward to use. (\checkmark) means that the
-  feature is partially available and under development.}
-  \label{table:tcplsvsquic}
-\end{table}
 
 %\fr{JOIN is explained here =)}
 %Figure~\ref{fig:connmigr} shows a closer look to the \tcpls handshake, and to a

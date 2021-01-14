@@ -1,10 +1,91 @@
 
 \subsection{General Methodology}
 
+
+\subsection{Capability Comparison Between QUIC, \tcp and \tls/\tcp}
+
+Table~\ref{table:tcplsvsquic} compares the features supported by
+\tcp, \tls/\tcp, QUIC and \tcpls. QUIC and \tcpls are very similar in their
+capabilities. They mainly differ in their semantic. \tcpls's semantic is to let
+the applications make the decision, and we design its API to fulfill this goal.
+That is, the meaning of \tcpls is to offer advanced, extensible and secure
+transport-layer functionalities on top of \tcp, while exposing a simple but
+powerful API to let the application composes the properties its transport should
+have. One example is further demonstrated in Section~\ref{sec:connmigr}, in
+which \tcpls's simple API allows the application to take advantage of path
+aggregation (in multipath mode) and connection migration to obtain
+a smooth handover between networks.
+
+Note that several of the features suggested by \tcpls are also suggested on \tcp or
+QUIC via research works such as a new socket API for explicit multipath for
+\tcp\cite{hesmans2016enhanced}, or eBPF plugins in
+QUIC~\cite{de2019pluginizing}.
+
+\begin{table}
+  \small
+  \begin{tabular}{lcccc}
+    \toprule
+    & \tcp & \tls/\tcp & QUIC & \tcpls \\
+    \midrule
+    Transport reliability & \checkmark & \checkmark &
+    \checkmark & \checkmark \\
+    Message conf. and auth.&  \xmark & \checkmark & \checkmark & \checkmark \\
+    Connection reliability &  \xmark & \xmark & \checkmark & (\checkmark) \\
+    0-RTT & \checkmark & (\xmark) & \checkmark  & \checkmark \\
+    Session Resumption & \xmark & \checkmark & \checkmark & \checkmark \\
+    Connection Migration & \xmark & \xmark & \checkmark & \checkmark \\
+    \multicolumn{5}{l}{Application-exposed features} \\
+    \hspace{2em} Streams & \xmark & \xmark & \checkmark & \checkmark \\
+    \hspace{2em} Happy eyeballs & \xmark & \xmark & \xmark & \checkmark \\
+    \hspace{2em} Explicit Multipath & \xmark & \xmark & \xmark & \checkmark \\
+    \hspace{2em} App-level Con. migration & \xmark & \xmark & \xmark & \checkmark \\
+    \hspace{2em} Pluginization & \xmark & \xmark & \xmark & (\checkmark) \\
+    Resilience to HOL blocking & \xmark & \xmark & \checkmark  & (\checkmark) \\
+    Secure Connection Closing & \xmark &  \xmark & \checkmark & (\checkmark) \\
+    \bottomrule
+  \end{tabular}
+  \caption{Protocol features comparison. (\xmark) means that the feature is
+    available, but not straightforward to use. (\checkmark) means that the
+  feature is partially available and under development.}
+  \label{table:tcplsvsquic}
+\end{table}
+
 \subsection{Application-level migration}
 
 Detailler pourquoi on a besoin du controle applicatif pour la migration, et à
 quels cas du monde réels ils s'appliquent
+
+
+Figure~\ref{fig:conn_migration} shows the result of an Application-level
+connection migration demo using the API (i.e., it is left to the
+application to decide when to migrate, and we expose a simplistic code flow to
+perform it). In this experiment, we use an IPMininet network~\cite{ipmininet, jadin2020educational}
+composed of a client and a server with a dual-stack of IPs. One path within the
+network is composed of OSPF routers with IPv4 only, and one path is composed of
+OSPF6 routers IPv6 only. We configure the bandwidth to 30Mbps, the lowest delay
+to the v4 link. Our application
+downloads a 60 MB file from a server and migrates to the v6 connection in
+the middle of the download.
+
+Triggering the connection migration involves chaining 5 API calls:
+first, \texttt{tcpls\_handshake()} configured with handshake properties announcing a
+JOIN over the v6 connection id. Then, the creation of a new stream
+\texttt{tcpls\_stream\_new()} for the v6 connection id, finally followed by the attachment of this new
+stream \texttt{tcpls\_streams\_attach()} and the secure closing of the v4 \tcp
+connection using \texttt{tcpls\_stream\_close()}. Following these events, the
+server seamlessly switches the path while looping over \texttt{tcpls\_send} to
+send the file content. Note that all the events trigger callbacks on the server side, to
+let the server react appropriately if other requirements need to be fulfilled.
+
+\tcpls's application connection migration takes advantage of multipath to offer
+a smooth handover to applications, which QUIC cannot do at the moment.
+
+\begin{figure}
+  \centering
+  \includegraphics[scale=0.5]{figures/migration.png}
+  \caption{Application-level connection migration during a 60MB file download}
+  \label{fig:conn_migration}
+\end{figure}
 
 \subsection{Failover}
 
