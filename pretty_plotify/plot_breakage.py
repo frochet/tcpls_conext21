@@ -2,6 +2,7 @@ import os
 import argparse
 import pdb
 import matplotlib.pyplot as plt
+from utils import *
 
 parser = argparse.ArgumentParser(description="")
 
@@ -15,10 +16,6 @@ parser.add_argument("-i", type=float, default=0.1, help="Time interval on which 
 
 
 def parse_time(timestr):
-    """
-        timestr: HH:MM:SS.µS
-        returns the line timestr in µs
-    """
     tab = timestr.split(":")
     h, m = int(tab[0]), int(tab[1])
     tab2 = tab[2].split(".")
@@ -81,15 +78,25 @@ if __name__ == "__main__":
         filter_x = [(fx-min_timing)/1000000 for fx in x[:-1] if fx-min_timing < (7.5*1000000)]
         filter_y = [(yfil*8/1000000)/args.i for yfil in y[0:len(filter_x)]]
         if (filter_x[0] < 7.5):
-            ax.plot(filter_x, filter_y, label=args.legend[i],
-                    linestyle=linemodify[i%len(linemodify)], marker = markers[i])
+            ax.plot(filter_x, filter_y, label=legend_label(args.legend[i]),
+                    linestyle=linemodify[i%len(linemodify)], marker = markers[i], lw=2)
         i+=1
-    ax.set_xlim(2, 7.5)
-    ax.set(xlabel="time (s)", ylabel="Bandwidth (Mbits)")
-    breakage = parse_time(args.breakage_at)
-    plt.axvline(x=(breakage-minimum)/1000000, color="k")
-    plt.text((breakage-minimum)/1000000, 57, 'Breakage', rotation=45,
-             fontsize=14)
-    plt.legend()
-    plt.show()
 
+    ax.set_xlim(2, 7.5)
+    ax.set_ylim(-1, 70)
+
+    axis_aesthetic(ax)
+
+    ax.set_xlabel(latex_label('time (s)'), fontsize=20)
+    ax.set_ylabel(latex_label('Bandwidth (Mbits)'), fontsize=20)
+
+    breakage = parse_time(args.breakage_at)
+    plt.axvline(x=(breakage-minimum)/1000000, color="k", ls='--', lw=2)
+    plt.text((breakage-minimum)/1000000, 57, legend_label('Breakage'), rotation=45,
+             fontsize=16)
+
+    plt.legend(bbox_to_anchor=(-0.05,0.95,1,0.2), ncol=2, columnspacing=0.2, fontsize=12)
+    grid(True, color='gray', linestyle='dashed', which='major')
+
+    savefig('breakage_analysis.pdf', bbox_inches='tight')
+    #plt.show()
