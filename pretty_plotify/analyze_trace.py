@@ -101,7 +101,8 @@ if __name__ == "__main__":
     tot_tcpls_throughput = 0
     tot_tcpls_goodput = 0
     if args.tmptcp:
-        paths_mptcp, x_mptcp, y_mptcp, min_mptcp = parse_file(args.tmptcp, args.i*1000000)
+        paths_mptcp, x_mptcp, y_mptcp, min_mptcp = parse_file(args.tmptcp,
+                                                              args.i*1000000/2)
         for path in set(paths_mptcp.values()):
             ax1.plot([(x-min_mptcp)/1000000 for x in x_mptcp[path][:-1]],
                      [(y*8/1000000)/args.i for y in y_mptcp[path][:-1]],
@@ -111,7 +112,8 @@ if __name__ == "__main__":
             if x_max_mptcp-min_mptcp > x_max:
                 x_max = x_max_mptcp-min_mptcp
         if args.gmptcp:
-            paths_mptcp, x_mptcp, y_mptcp, min_mptcp = parse_file(args.gmptcp, args.i*1000000)
+            paths_mptcp, x_mptcp, y_mptcp, min_mptcp = parse_file(args.gmptcp,
+                                                                  args.i*1000000/2)
             for path in set(paths_mptcp.values()):
                 ax1.plot([(x-min_mptcp)/1000000 for x in x_mptcp[path][:-1]],
                          [(y*8/1000000)/args.i for y in y_mptcp[path][:-1]],
@@ -120,20 +122,21 @@ if __name__ == "__main__":
     if args.tpquic:
         if args.gpquic:
             paths_pquic, x_pquic, y_pquic, min_pquic = parse_file(args.gpquic,
-                                                                   args.i*1000000)
+                                                                   args.i*1000000/2)
             for path in set(paths_pquic.values()):
                 ax2.plot([(x-min_pquic)/1000000 for x in x_pquic[path][:-1]],
                          [(y*8/1000000)/args.i for y in y_pquic[path][:-1]],
                          color='orange', label="Goodput")
         paths_pquic, x_pquic, y_pquic, min_pquic = parse_file(args.tpquic,
-                                                               args.i*1000000)
+                                                               args.i*1000000/2)
         for path in set(paths_pquic.values()):
             ax2.plot([(x-min_pquic)/1000000 for x in x_pquic[path][:-1]],
                      [(y*8/1000000)/args.i for y in y_pquic[path][:-1]],
                      label="Throughput Path {0}".format(path))
     if args.ttcpls:
         if args.gtcpls:
-            paths_tcpls, x_tcpls, y_tcpls, min_tcpls = parse_file(args.gtcpls, args.i*1000000)
+            paths_tcpls, x_tcpls, y_tcpls, min_tcpls = parse_file(args.gtcpls,
+                                                                  args.i*1000000/2)
             linemodif = [":", "--"]
             for path in set(paths_tcpls.values()):
                 ## Hardcode path number to match the tcpdump trace:
@@ -148,7 +151,8 @@ if __name__ == "__main__":
                          color="orange", linestyle="-",
                          label=labeline)
                 tot_tcpls_goodput += sum(y_tcpls[path][:-1])
-        paths_tcpls, x_tcpls, y_tcpls, min_tcpls = parse_file(args.ttcpls, args.i*1000000)
+        paths_tcpls, x_tcpls, y_tcpls, min_tcpls = parse_file(args.ttcpls,
+                                                              args.i*1000000/2)
         for path in set(paths_tcpls.values()):
             ax3.plot([(x-min_tcpls)/1000000 for x in x_tcpls[path][:-1]],
                      [(y*8/1000000)/args.i for y in y_tcpls[path][:-1]],

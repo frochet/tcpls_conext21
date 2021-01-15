@@ -74,7 +74,7 @@ if __name__ == "__main__":
     linemodify = ["-"]
     markers = ["o", "^", "v", "<", ">", "*", "+", "x"]
     for trace in args.trace:
-        x, y, min_timing = parse_file(trace, args.i*1000000)
+        x, y, min_timing = parse_file(trace, args.i*1000000/2)
         minimum = min(min_timing, minimum)
         filter_x = [(fx-min_timing)/1000000 for fx in x[:-1] if fx-min_timing < (7.5*1000000)]
         filter_y = [(yfil*8/1000000)/args.i for yfil in y[0:len(filter_x)]]
@@ -84,7 +84,7 @@ if __name__ == "__main__":
         i+=1
 
     ax.set_xlim(2, 7.5)
-    ax.set_ylim(-1, 70)
+    ax.set_ylim(-1, 35)
 
     axis_aesthetic(ax)
 
