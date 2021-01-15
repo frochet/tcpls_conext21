@@ -3,6 +3,7 @@ import os
 import argparse
 import pdb
 import matplotlib.pyplot as plt
+from utils import *
 
 parser = argparse.ArgumentParser(description="Parse and plot trace experiments\
                                  produced within IP mininet")
@@ -21,8 +22,8 @@ parser.add_argument("--event_pos", type=int, nargs="+", help="Event text positio
 
 def parse_time(timestr):
     """
-        timestr: HH:MM:SS.µS
-        returns the line timestr in µs
+        timestr: HH:MM:SS.microS
+        returns the line timestr in microsec
     """
     tab = timestr.split(":")
     h, m = int(tab[0]), int(tab[1])
@@ -127,34 +128,48 @@ def parse_goodput(goodput_file, interval):
 
 
 if __name__ == "__main__":
-    
+
     args = parser.parse_args()
     fix, ax = plt.subplots()
-    ax.set(xlabel="time (s)", ylabel="Bandwidth (Mbits)")
 
     min_timing = 100000000000000000
     x_g, y_g, min_timing_g = parse_goodput(args.goodput, args.i*1000000)
     min_timing = min(min_timing, min_timing_g)
     print("goodput tot : {0} bytes".format(sum(y_g)))
+
     ax.plot([(x-min_timing)/1000000 for x in x_g[:-1]],
-            [(y*8/1000000)/(2*args.i) for y in y_g[:-1]], label="Goodput")
+            [(y*8/1000000)/(2*args.i) for y in y_g[:-1]], label=legend_label("Goodput"), lw=2)
+
     paths, x_t, y_t, min_timing_t = parse_tcpdump(args.tcpdump, args.i*1000000)
     counter = 0
+
     for path in set(paths.values()):
         ax.plot([(x-min_timing_t)/1000000 for x in x_t[path][:-1]],
                 [(y*8/1000000)/(2*args.i) for y in y_t[path][:-1]],
-                label="Throughput TCP Conn {}".format(counter))
+                label=legend_label("Throughput TCP Conn {}".format(counter)), lw=2)
         counter+=1
     min_timing = min(min_timing, min_timing_t)
     counter = 0
+
     for event in args.event_at:
         event = parse_time(event)
-        plt.axvline(x=(event-min_timing)/1000000, color="k")
-        plt.text((event-min_timing)/1000000, args.event_pos[counter], args.event_text[counter],
-                 color="k")
+        plt.axvline(x=(event-min_timing)/1000000, color="k", lw=2)
+        #plt.text((event-min_timing)/1000000, args.event_pos[counter], args.event_text[counter],
+        #         color="k")
+        ax.annotate(legend_label('New stream attached'),
+                    xy=((event-min_timing)/1000000, args.event_pos[counter]),
+                    xytext=(0, args.event_pos[counter]-0.5),
+                    arrowprops=dict(arrowstyle="<-"))
         counter+=1
-    plt.legend()
-    #plt.savefig(args.oname)
-    plt.show()
 
+    axis_aesthetic(ax=ax)
 
+    ax.set_xlabel(latex_label('time (s)'), fontsize=20)
+    ax.set_ylabel(latex_label('Bandwidth (Mbits)'), fontsize=20)
+
+    ax.set_ylim(-1, 70)
+
+    plt.legend(loc='upper left', fontsize=12)
+    grid(True, color='gray', linestyle='dashed', which='major')
+
+    savefig('multipath_aggregate.png', bbox_inches='tight')
