@@ -96,6 +96,17 @@
   year={2019}
 }
 
+@article{holz2020tracking,
+  title={Tracking the deployment of TLS 1.3 on the Web: A story of experimentation and centralization},
+  author={Holz, Ralph and Hiller, Jens and Amann, Johanna and Razaghpanah, Abbas and Jost, Thomas and Vallina-Rodriguez, Narseo and Hohlfeld, Oliver},
+  journal={ACM SIGCOMM Computer Communication Review},
+  volume={50},
+  number={3},
+  pages={3--15},
+  year={2020},
+  publisher={ACM New York, NY, USA}
+}
+
 @techreport{draft-ietf-dprive-dnsoquic,
 	number =	{draft-ietf-dprive-dnsoquic-00},
 	type =		{Internet-Draft},
@@ -420,7 +431,7 @@
 }
 
 @article{brakmo2017tcp,
-  title={Tcp-bpf: Programmatically tuning tcp behavior through bpf},
+  title={{TCP-BPF: Programmatically tuning TCP behavior through BPF}},
   author={Brakmo, Lawrence},
   journal={NetDev 2.2},
   year={2017}
@@ -631,7 +642,7 @@ series = {SIGCOMM ’94}
   publisher={ACM New York, NY, USA}
 }
 @inproceedings{chan2013improving,
-  title={Improving Server Application Performance via Pure $TCP$ $ACK$$ Receive Optimization},
+  title={Improving Server Application Performance via Pure $TCP$ $ACK$ Receive Optimization},
   author={Chan, Michael and Cheriton, David R and Caesar, Matthew and Van der Merwe, Jacobus and Won, Youjip and Chun, Byung-Gon and Huang, Ling and Maniatis, Petros and Naik, Mayur and Paek, Yunheung and others},
   booktitle={Presented as part of the 2013 $USENIX$ Annual Technical Conference
     ($USENIX ATC$ 13)},
@@ -639,7 +650,7 @@ series = {SIGCOMM ’94}
   year={2013}
 }
 @inproceedings{hesmans2015smapp,
-  title={Smapp: Towards smart multipath tcp-enabled applications},
+  title={{SMAPP: Towards smart Multipath TCP-enabled applications}},
   author={Hesmans, Benjamin and Detal, Gregory and Barre, Sebastien and Bauduin, Raphael and Bonaventure, Olivier},
   booktitle={Proceedings of the 11th ACM Conference on Emerging Networking Experiments and Technologies},
   pages={1--7},
@@ -726,7 +737,7 @@ series = {SIGCOMM ’94}
 }
 
 @techreport{draft-ietf-quic-transport,
-	number =	{draft-ietf-quic-transport-28},
+	number =	{draft-ietf-quic-transport-33},
 	type =		{Internet-Draft},
 	institution =	{Internet Engineering Task Force},
 	publisher =	{Internet Engineering Task Force},
@@ -736,8 +747,8 @@ series = {SIGCOMM ’94}
 	title =		{{QUIC: A UDP-Based Multiplexed and Secure Transport}},
 	pagetotal =	182,
 	year =		2020,
-	month =		may,
-	day =		19,
+	month =		dec,
+	day =		13,
 	abstract =	{This document defines the core of the QUIC transport protocol. Accompanying documents describe QUIC's loss detection and congestion control and the use of TLS for key negotiation. Note to Readers Discussion of this draft takes place on the QUIC working group mailing list (quic@ietf.org (mailto:quic@ietf.org)), which is archived at https://mailarchive.ietf.org/arch/search/?email\_list=quic Working Group information can be found at https://github.com/quicwg; source code and issues list for this draft can be found at https://github.com/quicwg/base-drafts/labels/-transport.},
 }
 @misc{RFC7414,
@@ -870,7 +881,6 @@ reau, Jay and Stack, Tim},
 	pagetotal =	64,
 	year =		2013,
 	month =		jan,
-	abstract =	{TCP/IP communication is currently restricted to a single path per connection, yet multiple paths often exist between peers. The simultaneous use of these multiple paths for a TCP/IP session would improve resource usage within the network and, thus, improve user experience through higher throughput and improved resilience to network failure. Multipath TCP provides the ability to simultaneously use multiple paths between peers. This document presents a set of extensions to traditional TCP to support multipath operation. The protocol offers the same type of service to applications as TCP (i.e., reliable bytestream), and it provides the components necessary to establish and use multiple TCP flows across potentially disjoint paths. This document defines an Experimental Protocol for the Internet community.},
 }
 
 @misc{rfc5482,
@@ -949,7 +959,7 @@ reau, Jay and Stack, Tim},
   year={2012}
 }
 @inproceedings{kotzias2018coming,
-  title={Coming of age: A longitudinal study of tls deployment},
+  title={Coming of age: A longitudinal study of {TLS} deployment},
   author={Kotzias, Platon and Razaghpanah, Abbas and Amann, Johanna and Paterson, Kenneth G and Vallina-Rodriguez, Narseo and Caballero, Juan},
   booktitle={Proceedings of the Internet Measurement Conference 2018},
   pages={415--428},
@@ -1120,8 +1130,10 @@ series = {CCS ’18}
   booktitle = {Computer-Supported Cooperative Work and Social Computing},
   publisher = {ACM},
   year = {2017},
-  url = {https://nehakumardotorg.files.wordpress.com/2014/03/p1591-bin-morshed.pdf},
-}
+  url = {https://nehakumardotorg.files.wordpress.com/2014/03/p1591-bin-morshed.pdf}
+  }
+  
+
 @inproceedings{Gosain2017a,
   author = {Devashish Gosain and Anshika Agarwal and Sahil Shekhawat and H. B. Acharya and Sambuddho Chakravarty},
   title = {Mending Wall: On the Implementation of Censorship in {I}ndia},
@@ -1186,4 +1198,109 @@ year = "2019",
 type = 	 "cs.{NI}",
 number = 	"1904.11277",
 month = "April",
+}
+
+
+@inproceedings{narayan2018restructuring,
+  title={Restructuring endpoint congestion control},
+  author={Narayan, Akshay and Cangialosi, Frank and Raghavan, Deepti and Goyal, Prateesh and Narayana, Srinivas and Mittal, Radhika and Alizadeh, Mohammad and Balakrishnan, Hari},
+  booktitle={Proceedings of the 2018 Conference of the ACM Special Interest Group on Data Communication},
+  pages={30--43},
+  year={2018}
+}
+
+@article{paxson1994growth,
+  title={Growth trends in wide-area TCP connections},
+  author={Paxson, Vern},
+  journal={IEEE Network},
+  volume={8},
+  number={4},
+  pages={8--17},
+  year={1994},
+  publisher={IEEE}
+}
+
+@inproceedings{claffy1993traffic,
+  title={Traffic characteristics of the T1 NSFNET backbone},
+  author={Claffy, Kimberly C and Polyzos, George C and Braun, H-W},
+  booktitle={IEEE INFOCOM'93 The Conference on Computer Communications, Proceedings},
+  pages={885--892},
+  year={1993},
+  organization={IEEE}
+}
+
+@inproceedings{maier2009dominant,
+  title={On dominant characteristics of residential broadband internet traffic},
+  author={Maier, Gregor and Feldmann, Anja and Paxson, Vern and Allman, Mark},
+  booktitle={Proceedings of the 9th ACM SIGCOMM Conference on Internet Measurement},
+  pages={90--102},
+  year={2009}
+}
+
+@article{trevisan2020five,
+  title={Five years at the edge: Watching internet from the isp network},
+  author={Trevisan, Martino and Giordano, Danilo and Drago, Idilio and Munaf{\`o}, Maurizio Matteo and Mellia, Marco},
+  journal={IEEE/ACM Transactions on Networking},
+  volume={28},
+  number={2},
+  pages={561--574},
+  year={2020},
+  publisher={IEEE}
+}
+
+@article{thompson1997wide,
+  title={Wide-area Internet traffic patterns and characteristics},
+  author={Thompson, Kevin and Miller, Gregory J and Wilder, Rick},
+  journal={IEEE network},
+  volume={11},
+  number={6},
+  pages={10--23},
+  year={1997},
+  publisher={IEEE}
+}
+
+
+@misc{rfc7258,
+  author="S. Farrell and H. Tschofenig",
+  title="{Pervasive Monitoring Is an Attack}",
+  howpublished="RFC 7258 (Best Current Practice)",
+  series="Internet Request for Comments",
+  type="RFC",
+  number="7258",
+  year=2014,
+  month=may,
+  issn="2070-1721",
+  publisher="RFC Editor",
+  institution="RFC Editor",
+  organization="RFC Editor",
+  address="Fremont, CA, USA",
+  url="https://www.rfc-editor.org/rfc/rfc7258.txt",
+  key="RFC 7258",
+  abstract={Pervasive monitoring is a technical attack that should be mitigated 
+in the design of IETF protocols, where possible.},
+  keywords="pervasive monitoring",
+  doi="10.17487/RFC7258",
+  }
+
+@inproceedings{de2018optimizing,
+  title={Optimizing UDP for content delivery: GSO, pacing and zerocopy},
+  author={de Bruijn, Willem and Dumazet, Eric},
+  booktitle={Linux Plumbers Conference},
+  year={2018}
+}
+
+@inproceedings{marx2020same,
+  title={Same Standards, Different Decisions: A Study of QUIC and HTTP/3 Implementation Diversity},
+  author={Marx, Robin and Herbots, Joris and Lamotte, Wim and Quax, Peter},
+  booktitle={Proceedings of the Workshop on the Evolution, Performance, and Interoperability of QUIC},
+  pages={14--20},
+  year={2020}
+}
+
+@inproceedings{de2017multipath,
+  title={Multipath quic: Design and evaluation},
+  author={De Coninck, Quentin and Bonaventure, Olivier},
+  booktitle={Proceedings of the 13th international conference on emerging networking experiments and technologies},
+  pages={160--166},
+  year={2017}
 }
