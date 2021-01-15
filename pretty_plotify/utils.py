@@ -36,6 +36,7 @@ plot(..., ls=linestyles['dotted'])
 Taken from https://matplotlib.org/3.1.0/gallery/lines_bars_and_markers/linestyles.html
 """
 linestyle_tuple = [
+     ('solid', (0, ())),
      ('loosely dotted',        (0, (1, 10))),
      ('dotted',                (0, (1, 1))),
      ('densely dotted',        (0, (1, 1))),

@@ -90,11 +90,16 @@ def parse_file(tcpdump_file, interval):
 if __name__ == "__main__":
     args = parser.parse_args()
     min_timing = float("inf")
-    #fig, [ax1, ax2, ax3] = plt.subplots(3, 1)
-    fig, [ax1, ax3] = plt.subplots(2, 1)
-    ax1.set(xlabel="time (s)", ylabel="Bandwidth (Mbits)")
-    #ax2.set(xlabel="time (s)", ylabel="Bandwidth (Mbits)")
-    ax3.set(xlabel="time (s)", ylabel="Bandwidth (Mbits)")
+
+    fig, [ax1, ax3] = plt.subplots(2, 1, figsize=(15,10))
+
+    my_colors=['b','r','g','m','y','c','firebrick']
+
+    ax1.set_xlabel(latex_label("time (s)"), fontsize=24)
+    ax1.set_ylabel(latex_label("Bandwidth (Mbits)"), fontsize=24)
+
+    ax3.set_xlabel(latex_label("time (s)"), fontsize=24)
+    ax3.set_ylabel(latex_label("Bandwidth (Mbits)"), fontsize=24)
     x_max = 0
     tot_mptcp_throughput = 0
     tot_mptcp_goodput = 0
@@ -106,7 +111,8 @@ if __name__ == "__main__":
         for path in set(paths_mptcp.values()):
             ax1.plot([(x-min_mptcp)/1000000 for x in x_mptcp[path][:-1]],
                      [(y*8/1000000)/args.i for y in y_mptcp[path][:-1]],
-                     label="Throughput Path {0}".format(path))
+                     label=legend_label("Throughput Path {0}".format(path)), color=my_colors[int(format(path))])
+
             tot_mptcp_throughput += sum(y_mptcp[path][:-1])
             x_max_mptcp = x_mptcp[path][-1]
             if x_max_mptcp-min_mptcp > x_max:
@@ -117,8 +123,9 @@ if __name__ == "__main__":
             for path in set(paths_mptcp.values()):
                 ax1.plot([(x-min_mptcp)/1000000 for x in x_mptcp[path][:-1]],
                          [(y*8/1000000)/args.i for y in y_mptcp[path][:-1]],
-                         color='orange', label="Goodput")
+                         color='orange', label=legend_label("Goodput"))
                 tot_mptcp_goodput += sum(y_mptcp[path][:-1])
+
     if args.tpquic:
         if args.gpquic:
             paths_pquic, x_pquic, y_pquic, min_pquic = parse_file(args.gpquic,
@@ -132,8 +139,19 @@ if __name__ == "__main__":
         for path in set(paths_pquic.values()):
             ax2.plot([(x-min_pquic)/1000000 for x in x_pquic[path][:-1]],
                      [(y*8/1000000)/args.i for y in y_pquic[path][:-1]],
-                     label="Throughput Path {0}".format(path))
+                     label=legend_label("Throughput Path {0}".format(path)))
     if args.ttcpls:
+        paths_tcpls, x_tcpls, y_tcpls, min_tcpls = parse_file(args.ttcpls,
+                                                              args.i*1000000/2)
+        for path in set(paths_tcpls.values()):
+            ax3.plot([(x-min_tcpls)/1000000 for x in x_tcpls[path][:-1]],
+                     [(y*8/1000000)/args.i for y in y_tcpls[path][:-1]],
+                     label=legend_label("Throughput Path {0}".format(path)), lw=2, color=my_colors[int(format(path))])
+            tot_tcpls_throughput += sum(y_tcpls[path][:-1])
+            x_max_tcpls = x_tcpls[path][-1]
+            if x_max_tcpls-min_tcpls > x_max:
+                x_max = x_max_tcpls-min_tcpls
+
         if args.gtcpls:
             paths_tcpls, x_tcpls, y_tcpls, min_tcpls = parse_file(args.gtcpls,
                                                                   args.i*1000000/2)
@@ -141,7 +159,7 @@ if __name__ == "__main__":
             for path in set(paths_tcpls.values()):
                 ## Hardcode path number to match the tcpdump trace:
                 if path == 0:
-                    labeline = "Goodput"
+                    labeline = legend_label("Goodput")
                     val = 0
                 else:
                     labeline = None
@@ -151,36 +169,29 @@ if __name__ == "__main__":
                          color="orange", linestyle="-",
                          label=labeline)
                 tot_tcpls_goodput += sum(y_tcpls[path][:-1])
-        paths_tcpls, x_tcpls, y_tcpls, min_tcpls = parse_file(args.ttcpls,
-                                                              args.i*1000000/2)
-        for path in set(paths_tcpls.values()):
-            ax3.plot([(x-min_tcpls)/1000000 for x in x_tcpls[path][:-1]],
-                     [(y*8/1000000)/args.i for y in y_tcpls[path][:-1]],
-                     label="Throughput Path {0}".format(path))
-            tot_tcpls_throughput += sum(y_tcpls[path][:-1])
-            x_max_tcpls = x_tcpls[path][-1]
-            if x_max_tcpls-min_tcpls > x_max:
-                x_max = x_max_tcpls-min_tcpls
+
 
     if args.gtcpls and args.gmptcp:
         print("Mptcp overhead: {0}".format(tot_mptcp_throughput/tot_mptcp_goodput))
         print("TCPLS overhead: {0}".format(tot_tcpls_throughput/tot_tcpls_goodput))
         print("MPTCP overhead/TCPLS overhead:\
               {0}".format((tot_mptcp_throughput/tot_mptcp_goodput)/(tot_tcpls_throughput/tot_tcpls_goodput)))
-    ax1.set_xlim(0, x_max/1000000)
 
-    ax1.text(.5,.9,'MPTCP 0.94.7',
-        horizontalalignment='center',
-        transform=ax1.transAxes, fontsize="16")
-    # ax2.set_xlim(0, x_max/1000000)
-    # ax2.text(.5,.9,'PQUIC + multipath_rr.plugin',
-        # horizontalalignment='center',
-        # transform=ax2.transAxes, fontsize="16")
+    ax1.set_xlim(0, x_max/1000000)
+    ax1.set_title(latex_label('MPTCP 0.94.7'), fontsize=18)
+
     ax3.set_xlim(0, x_max/1000000)
-    ax3.text(.5,.9,'TCPLS',
-        horizontalalignment='center',
-        transform=ax3.transAxes, fontsize="16")
-    ax1.legend()
-    # ax2.legend()
-    ax3.legend()
-    plt.show()
+    ax3.set_title(latex_label('TCPLS'), fontsize=18)
+
+    ax1.legend(fontsize=17, ncol=2, columnspacing=0.4, edgecolor="black", fancybox=False)
+    ax3.legend(fontsize=17, ncol=2, columnspacing=0.4, edgecolor="black", fancybox=False)
+
+    axis_aesthetic(ax1)
+    axis_aesthetic(ax3)
+
+    subplots_adjust(hspace=0.4)
+
+    ax1.grid(True, color='gray', linestyle='dashed', which='major')
+    ax3.grid(True, color='gray', linestyle='dashed', which='major')
+
+    savefig('tcpls_mpls.png', bbox_inches='tight')
