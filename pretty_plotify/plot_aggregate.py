@@ -13,6 +13,7 @@ parser.add_argument("--goodput", type=str, help="goodput trace produced by the\
 parser.add_argument("--tcpdump", type=str, help="tcpdump trace")
 
 parser.add_argument("--oname", type=str, help="output figure  name")
+parser.add_argument("--ext", type=str, help="output figure extension")
 
 parser.add_argument("-i", type=float, default=0.1, help="Time interval on which each bandwidth datapoint is computed")
 parser.add_argument("--event_at", type=str, nargs="+", help="Event happened at? in\
@@ -154,12 +155,11 @@ if __name__ == "__main__":
     for event in args.event_at:
         event = parse_time(event)
         plt.axvline(x=(event-min_timing)/1000000, color="k", lw=2)
-        #plt.text((event-min_timing)/1000000, args.event_pos[counter], args.event_text[counter],
-        #         color="k")
-        ax.annotate(legend_label('New stream attached'),
-                    xy=((event-min_timing)/1000000, args.event_pos[counter]),
-                    xytext=(0, args.event_pos[counter]-0.5),
-                    arrowprops=dict(arrowstyle="<-"))
+        ax.annotate(legend_label(args.event_text[counter]),
+                    xy=((event-min_timing)/1000000, args.event_pos[counter]+counter*25),
+                    xytext=(0, (args.event_pos[counter]-0.5)+counter*25),
+                    arrowprops=dict(arrowstyle="<|-", color='darkgray'), fontsize=10,
+                    color='darkgray')
         counter+=1
 
     axis_aesthetic(ax=ax)
@@ -167,9 +167,12 @@ if __name__ == "__main__":
     ax.set_xlabel(latex_label('time (s)'), fontsize=20)
     ax.set_ylabel(latex_label('Bandwidth (Mbits)'), fontsize=20)
 
-    ax.set_ylim(-1, 70)
+    if(args.oname=="multipath_aggregate"):
+        ax.set_ylim(-1, 70)
+    else:
+        ax.set_ylim(-1, 200)
 
     plt.legend(loc='upper left', fontsize=12)
     grid(True, color='gray', linestyle='dashed', which='major')
 
-    savefig('multipath_aggregate.png', bbox_inches='tight')
+    savefig(args.oname+'.'+args.ext, bbox_inches='tight')
