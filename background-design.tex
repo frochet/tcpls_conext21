@@ -18,7 +18,8 @@ potential middlebox interferences~\cite{honda2011still}. \tcpls aims to solve
 to exchange \tcp options without suffering from middlebox interferences and size restrictions in \tcp headers.
 Second, \tls does not have a clear view of the transport protocol, and offering
 one with \tcpls brings opportunity for performance improvement (e.g., avoiding
-records fragmentation by matching the record size to the congestion window), and
+records fragmentation with dynamic receive buffer auto-tuning and/or with
+dynamic control of the record length), and
 for connection reliability (e.g., failover).  Third, applications are becoming
 more complex, which appeals to exposing transport-level
 functionalities and letting them tune the underlying transport to their use case.
@@ -75,19 +76,19 @@ Section~\ref{sec:connmigr}.
 %sending its \syn with the \texttt{MP\_CAPABLE} initially and then removing this
 %option after the third retransmission of the SYN \cite{raiciu2012hard}.
 
-In our current prototype, a \tcpls session starts with a classic \tcp
-handshake. Immediately after, the client sends the ClientHello \tls message. The
-server replies with a ServerHello message which can contain encrypted data but
-also encrypted control information. For example, a dual-stack server may
-advertise its IPv6 address in the encrypted ServerHello message when contacted
-over its IPv4 address.
-%Essentially, the \tcpLS handshake can become a control
-%channel for goth \tcp and \tls.
-We highlight one of our roadmap features in
-Section~\ref{sec:research} to enable a 0-RTT \tcpls which would enable \tcp to catchup
-the QUIC design regarding fast connection establishment. We also describe in
-Section~\ref{sec:content} how our current prototype uses this
-information to support connection migration, failover, and other features.
+%In our current prototype, a \tcpls session starts with a classic \tcp
+%handshake. Immediately after, the client sends the ClientHello \tls message. The
+%server replies with a ServerHello message which can contain encrypted data but
+%also encrypted control information. For example, a dual-stack server may
+%advertise its IPv6 address in the encrypted ServerHello message when contacted
+%over its IPv4 address.
+%%Essentially, the \tcpLS handshake can become a control
+%%channel for goth \tcp and \tls.
+%We highlight one of our roadmap features in
+%Section~\ref{sec:research} to enable a 0-RTT \tcpls which would enable \tcp to catchup
+%the QUIC design regarding fast connection establishment. We also describe in
+%Section~\ref{sec:content} how our current prototype uses this
+%information to support connection migration, failover, and other features.
 
 
 %The \tcpls handshake can start with a \syn packet that contains a \tls
@@ -131,14 +132,7 @@ datastreams over a single \tcpls session. The data from all these streams is
 encrypted using \tls. Furthermore, thanks to the \tcpls API, the client and the
 server can map each data stream to an underlying \tcp connection.
 Thus, a \tcpls session can be composed of one or more \tcp connections
-similarly as a Multipath \tcp connection gathers subflows. Note that, if
-the multipath mode is enabled, then a lost packet over one \tcp connection may
-create HOL blocking since packets received on other streams may have to wait for
-the lost packet to be properly reordered and delivered to the application. In
-the case of the multipath mode not enabled, this problem would not happen, but
-the application has to be careful to map application objects per stream, and not to
-mix these objects among several streams since the ordering would not be
-guaranteed.
+similarly as a Multipath \tcp connection gathers subflows. 
 
 %This channel is used to exchange \tcp options and other TCPLS control messages.
 %\tcpls uses it also to exchange information about the client and server

@@ -1,4 +1,4 @@
-This is BibTeX, Version 0.99d (TeX Live 2020)
+This is BibTeX, Version 0.99d (TeX Live 2019/Debian)
 Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: paper.aux
 The style file: ACM-Reference-Format.bst
@@ -21,15 +21,24 @@ Warning--empty address in Chai2019a
 Warning--page numbers missing in both pages and numpages fields in Chai2019a
 Warning--empty publisher in chatterjee2011another
 Warning--empty address in chatterjee2011another
+Warning--empty publisher in claffy1993traffic
+Warning--empty address in claffy1993traffic
+Warning--empty publisher in de2017multipath
+Warning--empty address in de2017multipath
 Warning--empty publisher in de2019pluginizing
 Warning--empty address in de2019pluginizing
 Warning--empty address in DHBVD13
 Warning--page numbers missing in both pages and numpages fields in DHBVD13
+Warning--empty publisher in edeline2017first
+Warning--empty address in edeline2017first
 Warning--empty address in Gosain2017a
 Warning--page numbers missing in both pages and numpages fields in Gosain2017a
+Warning--empty year in quicimplem
 Warning--empty year in aeadlimits
 Warning--empty publisher in hesmans2016enhanced
 Warning--empty address in hesmans2016enhanced
+Warning--empty publisher in hesmans2013tcp
+Warning--empty address in hesmans2013tcp
 Warning--no number and no volume in holz2019era
 Warning--page numbers missing in both pages and numpages fields in holz2019era
 Warning--empty publisher in honda2011still
@@ -44,14 +53,23 @@ Warning--empty publisher in kotzias2018coming
 Warning--empty address in kotzias2018coming
 Warning--empty publisher in langley2017quic
 Warning--empty address in langley2017quic
+Warning--numpages field, but no articleno or eid field, in 10.1145/3098822.3098842
 Warning--no number and no volume in luykx2015limits
 Warning--page numbers missing in both pages and numpages fields in luykx2015limits
+Warning--empty publisher in maier2009dominant
+Warning--empty address in maier2009dominant
+Warning--empty publisher in marx2020same
+Warning--empty address in marx2020same
+Warning--empty publisher in medina2004measuring
+Warning--empty address in medina2004measuring
 Warning--no number and no volume in 10.1145/1064413.1064418
 Warning--numpages field, but no articleno or eid field, in 10.1145/1064413.1064418
 Warning--empty publisher in michel2019quic
 Warning--empty address in michel2019quic
 Warning--empty address in Morshed2017a
 Warning--page numbers missing in both pages and numpages fields in Morshed2017a
+Warning--empty publisher in radhakrishnan2011tcp
+Warning--empty address in radhakrishnan2011tcp
 Warning--empty publisher in raiciu2012hard
 Warning--empty address in raiciu2012hard
 Warning--empty publisher in schmidt2013socket
@@ -68,45 +86,45 @@ Warning--empty publisher in wischik2011design
 Warning--empty address in wischik2011design
 Warning--empty publisher in xu2015investigating
 Warning--empty address in xu2015investigating
-You've used 59 entries,
+You've used 73 entries,
             5795 wiz_defined-function locations,
-            1668 strings with 27146 characters,
-and the built_in function-call counts, 76707 in all, are:
-= -- 9155
-> -- 3004
+            1744 strings with 30307 characters,
+and the built_in function-call counts, 95084 in all, are:
+= -- 11185
+> -- 3881
 < -- 7
-+ -- 1007
-- -- 1746
-* -- 5957
-:= -- 8071
-add.period$ -- 310
-call.type$ -- 59
-change.case$ -- 454
-chr.to.int$ -- 59
-cite$ -- 117
-duplicate$ -- 5691
-empty$ -- 4019
-format.name$ -- 1220
-if$ -- 16966
-int.to.chr$ -- 2
++ -- 1306
+- -- 2042
+* -- 7403
+:= -- 10060
+add.period$ -- 382
+call.type$ -- 73
+change.case$ -- 578
+chr.to.int$ -- 72
+cite$ -- 149
+duplicate$ -- 7260
+empty$ -- 5111
+format.name$ -- 1563
+if$ -- 21262
+int.to.chr$ -- 3
 int.to.str$ -- 1
-missing$ -- 158
-newline$ -- 560
-num.names$ -- 472
-pop$ -- 2225
+missing$ -- 215
+newline$ -- 669
+num.names$ -- 583
+pop$ -- 2888
 preamble$ -- 1
-purify$ -- 967
+purify$ -- 1209
 quote$ -- 0
-skip$ -- 2020
+skip$ -- 2576
 stack$ -- 0
-substring$ -- 7342
-swap$ -- 480
+substring$ -- 8591
+swap$ -- 639
 text.length$ -- 1479
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 1588
-warning$ -- 58
-while$ -- 406
+type$ -- 1960
+warning$ -- 76
+while$ -- 512
 width$ -- 0
-write$ -- 1106
-(There were 58 warnings)
+write$ -- 1348
+(There were 76 warnings)

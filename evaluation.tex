@@ -50,6 +50,26 @@ QUIC~\cite{de2019pluginizing}.
   \label{table:tcplsvsquic}
 \end{table}
 
+\subsection{Performance}
+
+TCPLS vs QUIC vs TLS/TCP
+
+Bar chart or/and tabular with throughput performance
+
+\subsection{Middlebox Interferences}
+
+Montrer que TCPLS handshake et JOIN handshake passent/passent pas les middlebox,
+discuter les implications
+
+\subsection{Bandwidth Aggregation}
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=\columnwidth]{figures/multipath_aggregation_comparison.png}
+  \end{center}
+  \caption{Bandwidth aggregation comparison between MPTCP and TCPLS}
+\end{figure}
+  
 \subsection{Application-level migration}
 
 Detailler pourquoi on a besoin du controle applicatif pour la migration, et à
@@ -98,17 +118,25 @@ TCPLS overhead: 1.0994282363439873
 MPTCP overhead/TCPLS overhead:              0.9773259975513828
 
 
-\subsection{Middlebox Interferences}
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=\columnwidth]{figures/breakage_analysis.png}
+  \end{center}
+  \caption{Recovery speed analysis}
+\end{figure}
+  
 
-Montrer que TCPLS handshake et JOIN handshake passent/passent pas les middlebox,
-discuter les implications
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=\columnwidth]{figures/tcpls_mpls.png}
+  \end{center}
+  \caption{Connection reliability: influence of the path manager and congestion
+  control}
+\end{figure}
+  
+
 
 \subsection{Congestion Control Injection}
 
 Injecter un control de congestion, montrer que les perf s'améliorent
 
-\subsection{Performance}
-
-TCPLS vs QUIC vs TLS/TCP
-
-Bar chart or/and tabular with throughput performance

@@ -64,6 +64,18 @@ record (TCP\_OPTION), while its  Type is set to $APPDATA$.
 \subsection{Multipath in a Modern Transport Protocol}
 \label{sec:multipath}
 
+
+\fr{notes sur HOL:}
+
+Note that, if
+the multipath mode is enabled, then a lost packet over one \tcp connection may
+create HOL blocking since packets received on other streams may have to wait for
+the lost packet to be properly reordered and delivered to the application. In
+the case of the multipath mode not enabled, this problem would not happen, but
+the application has to be careful to map application objects per stream, and not to
+mix these objects among several streams since the ordering would not be
+guaranteed.
+
 \subsection{Datastreams and \tcp Connections}
 \label{sec:datastreams}
 
