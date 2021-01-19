@@ -15,6 +15,9 @@ parser.add_argument("--breakage_at", type=str, help="Breakage happened at? in\
                     second")
 parser.add_argument("-i", type=float, default=0.1, help="Time interval on which each bandwidth datapoint is computed")
 
+parser.add_argument("--oname", type=str, help="Output figure name")
+parser.add_argument("--ext", type=str, help="Output file extension (e.g., pdf, png)")
+
 
 def parse_time(timestr):
     tab = timestr.split(":")
@@ -65,14 +68,16 @@ def parse_file(tcpdump_file, interval):
 
 if __name__ == "__main__":
     args = parser.parse_args()
+
     if len(args.trace) != len(args.legend):
         raise ValueError("Different numbers of --trace and --legend. We should have one legend for each trace")
 
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(8,6))
     i = 0
     minimum = 10000000000000000000
     linemodify = ["-"]
-    markers = ["o", "^", "v", "<", ">", "*", "+", "x"]
+    #markers = ["o", "^", "v", "<", ">", "*", "+", "x"]
+    markers = ["o", "x", "v", "p", ">", "*", "+", "x"]
     for trace in args.trace:
         x, y, min_timing = parse_file(trace, args.i*1000000/2)
         minimum = min(min_timing, minimum)
@@ -84,7 +89,7 @@ if __name__ == "__main__":
         i+=1
 
     ax.set_xlim(2, 7.5)
-    ax.set_ylim(-1, 35)
+    ax.set_ylim(-1, 60)#35)
 
     axis_aesthetic(ax)
 
@@ -92,11 +97,11 @@ if __name__ == "__main__":
     ax.set_ylabel(latex_label('Bandwidth (Mbits)'), fontsize=20)
 
     breakage = parse_time(args.breakage_at)
-    plt.axvline(x=(breakage-minimum)/1000000, ymin=0, ymax=0.93, color="k", ls='--', lw=2)
-    plt.text(((breakage-minimum)/1000000)-0.5, 65, legend_label('Breakage'), fontsize=16)
+    plt.axvline(x=(breakage-minimum)/1000000, ymin=0, ymax=0.91, color="k", ls='--', lw=2)
+    plt.text(((breakage-minimum)/1000000)-0.5, 55, legend_label('Breakage'), fontsize=16)
     #, rotation=45, fontsize=16)
 
-    plt.legend(bbox_to_anchor=(-0.05,0.95,1,0.2), ncol=2, columnspacing=0.2, fontsize=12)
+    plt.legend(bbox_to_anchor=(-0.05,0.95,1,0.2), ncol=2, columnspacing=0.2, fontsize=12, edgecolor="black", fancybox=False)
     grid(True, color='gray', linestyle='dashed', which='major')
 
-    savefig('breakage_analysis.png', bbox_inches='tight')
+    savefig(args.oname+'.'+args.ext, bbox_inches='tight')
