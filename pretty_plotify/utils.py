@@ -9,12 +9,13 @@ __date__    = "14/01/2021"
 from pylab import *
 from matplotlib.font_manager import *
 import numpy as np
+import pandas as pd
 
 rc('text', usetex=True)
 rc('font',family='Times New Roman')
 rc('xtick', labelsize='40')
 rc('ytick', labelsize='40')
-rc('lines', markersize=10)
+rc('lines', markersize=6)
 rc('legend', numpoints=1)
 
 """

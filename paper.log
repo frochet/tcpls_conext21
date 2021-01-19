@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2020.9.13)  19 JAN 2021 14:37
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2020.9.13)  19 JAN 2021 17:06
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1372,27 +1372,27 @@ Overfull \hbox (11.70338pt too wide) in paragraph at lines 26--49
  [][] 
  []
 
-<figures/multipath_aggregate.png, id=323, 537.6888pt x 436.5108pt>
+<figures/multipath_aggregate.png, id=323, 529.0164pt x 411.939pt>
 File: figures/multipath_aggregate.png Graphic file (type png)
 <use figures/multipath_aggregate.png>
 Package pdftex.def Info: figures/multipath_aggregate.png  used on input line 68.
-(pdftex.def)             Requested size: 170.71652pt x 138.59396pt.
+(pdftex.def)             Requested size: 170.71652pt x 132.93573pt.
 [6.6]
-<figures/migration.png, id=339, 546.3612pt x 436.5108pt>
+<figures/migration.png, id=339, 529.0164pt x 411.939pt>
 File: figures/migration.png Graphic file (type png)
 <use figures/migration.png>
 Package pdftex.def Info: figures/migration.png  used on input line 99.
-(pdftex.def)             Requested size: 170.71652pt x 136.3893pt.
+(pdftex.def)             Requested size: 170.71652pt x 132.93573pt.
 
 Overfull \hbox (61.8896pt too wide) in paragraph at lines 110--113
 \T1/LinuxLibertineT-TLF/m/n/10 (-20) 1.0994282363439873 MPTCP over-head-/TC-PLS over-head: 0.9773259975513828 
  []
 
-<figures/breakage_analysis.png, id=340, 528.2937pt x 473.3685pt>
+<figures/breakage_analysis.png, id=340, 520.344pt x 449.5194pt>
 File: figures/breakage_analysis.png Graphic file (type png)
 <use figures/breakage_analysis.png>
 Package pdftex.def Info: figures/breakage_analysis.png  used on input line 117.
-(pdftex.def)             Requested size: 170.71652pt x 152.96895pt.
+(pdftex.def)             Requested size: 170.71652pt x 147.4776pt.
 <figures/tcpls_mptcp.png, id=341, 916.3836pt x 650.43pt>
 File: figures/tcpls_mptcp.png Graphic file (type png)
 <use figures/tcpls_mptcp.png>
@@ -1486,14 +1486,14 @@ LaTeX Warning: There were undefined references.
 Here is how much of TeX's memory you used:
  31855 strings out of 480608
  549822 string characters out of 5903630
- 829144 words of memory out of 5000000
+ 829390 words of memory out of 5000000
  46375 multiletter control sequences out of 15000+600000
  691505 words of font info for 391 fonts, out of 8000000 for 9000
  1302 hyphenation exceptions out of 8191
  63i,15n,100p,805b,836s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2020/texmf-dist/fonts/enc/dvips/libertine/lbtn_25tcsq.enc}{/usr/local/texlive/2020/texmf-dist/fonts/enc/dvips/libertine/lbtn_oexx6f.enc}{/usr/local/texlive/2020/texmf-dist/fonts/enc/dvips/libertine/lbtn_7grukw.enc}{/usr/local/texlive/2020/texmf-dist/fonts/enc/dvips/inconsolata/i4-t1-4.enc}{/usr/local/texlive/2020/texmf-dist/fonts/enc/dvips/libertine/lbtn_nh77jq.enc}{/usr/local/texlive/2020/texmf-dist/fonts/enc/dvips/libertine/lbtn_76gpa5.enc}</usr/local/texlive/2020/texmf-dist/fonts/type1/public/inconsolata/Inconsolata-zi4b.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/inconsolata/Inconsolata-zi4r.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/newtx/LibertineMathMI.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/newtx/LibertineMathMI7.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/libertine/LinBiolinumT.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/libertine/LinBiolinumTB.pfb></usr/local/texlive/2020/tex
 mf-dist/fonts/type1/public/libertine/LinBiolinumTI.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/libertine/LinLibertineT.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/libertine/LinLibertineTB.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/libertine/LinLibertineTI.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/newtx/txexs.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/txfonts/txsya.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/urw/zapfding/uzdr.pfb>
-Output written on paper.pdf (10 pages, 802561 bytes).
+Output written on paper.pdf (10 pages, 807554 bytes).
 PDF statistics:
  514 PDF objects out of 1000 (max. 8388607)
  459 compressed objects within 5 object streams

@@ -1,1 +1,0 @@
-python plot_aggregate.py --goodput results/tcpls_aggregation_goodput.log --tcpdump results/tcpls_aggregation_pruned_tcpdump.log --oname multipath_aggregate --ext $1 -i 0.1 --event_at 20:16:54.698002 --event_text "<- New stream attached" --event_pos 3

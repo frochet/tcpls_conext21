@@ -18,12 +18,15 @@ parser.add_argument("-tpquic", type=str, help="The tcpdump simplified trace\
                     output from convert_tcpdump.py")
 parser.add_argument("-gpquic", type=str, help="The pquic goodput trace")
 
+parser.add_argument("--ext", type=str, help="Output file extension (e.g., pdf, png)")
+parser.add_argument("--oname", type=str, help="Output figure name")
+
 parser.add_argument("-i", type=float, default=0.1, help="Time interval on which each bandwidth datapoint is computed")
 
 def parse_time(timestr):
     """
-        timestr: HH:MM:SS.µS
-        returns the line timestr in µs
+        timestr: HH:MM:SS.microS
+        returns the line timestr in micros
     """
     tab = timestr.split(":")
     h, m = int(tab[0]), int(tab[1])
@@ -95,11 +98,6 @@ if __name__ == "__main__":
 
     my_colors=['b','r','g','m','y','c','firebrick']
 
-    ax1.set_xlabel(latex_label("time (s)"), fontsize=24)
-    ax1.set_ylabel(latex_label("Bandwidth (Mbits)"), fontsize=24)
-
-    ax3.set_xlabel(latex_label("time (s)"), fontsize=24)
-    ax3.set_ylabel(latex_label("Bandwidth (Mbits)"), fontsize=24)
     x_max = 0
     tot_mptcp_throughput = 0
     tot_mptcp_goodput = 0
@@ -171,11 +169,11 @@ if __name__ == "__main__":
                 tot_tcpls_goodput += sum(y_tcpls[path][:-1])
 
 
-    if args.gtcpls and args.gmptcp:
-        print("Mptcp overhead: {0}".format(tot_mptcp_throughput/tot_mptcp_goodput))
-        print("TCPLS overhead: {0}".format(tot_tcpls_throughput/tot_tcpls_goodput))
-        print("MPTCP overhead/TCPLS overhead:\
-              {0}".format((tot_mptcp_throughput/tot_mptcp_goodput)/(tot_tcpls_throughput/tot_tcpls_goodput)))
+#    if args.gtcpls and args.gmptcp:
+#        print("Mptcp overhead: {0}".format(tot_mptcp_throughput/tot_mptcp_goodput))
+#        print("TCPLS overhead: {0}".format(tot_tcpls_throughput/tot_tcpls_goodput))
+#        print("MPTCP overhead/TCPLS overhead:\
+#              {0}".format((tot_mptcp_throughput/tot_mptcp_goodput)/(tot_tcpls_throughput/tot_tcpls_goodput)))
 
     ax1.set_xlim(0, x_max/1000000)
     ax1.set_title(latex_label('MPTCP 0.94.7'), fontsize=18)
@@ -189,9 +187,15 @@ if __name__ == "__main__":
     axis_aesthetic(ax1)
     axis_aesthetic(ax3)
 
+    ax1.set_xlabel(latex_label("time (s)"), fontsize=24)
+    ax1.set_ylabel(latex_label("Bandwidth (Mbits)"), fontsize=24)
+
+    ax3.set_xlabel(latex_label("time (s)"), fontsize=24)
+    ax3.set_ylabel(latex_label("Bandwidth (Mbits)"), fontsize=24)
+
     subplots_adjust(hspace=0.4)
 
     ax1.grid(True, color='gray', linestyle='dashed', which='major')
     ax3.grid(True, color='gray', linestyle='dashed', which='major')
 
-    savefig('tcpls_mptcp.pdf', bbox_inches='tight')
+    savefig(args.oname+'.'+args.ext, bbox_inches='tight')
