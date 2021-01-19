@@ -1,4 +1,4 @@
-
+% !TEX root = ./paper.tex
 \subsection{General Methodology}
 
 
@@ -63,13 +63,13 @@ discuter les implications
 
 \subsection{Bandwidth Aggregation}
 
-\begin{figure}
+\begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=\columnwidth]{figures/multipath_aggregation_comparison.png}
+    \includegraphics[width=6cm]{figures/multipath_aggregate.png}
   \end{center}
-  \caption{Bandwidth aggregation comparison between MPTCP and TCPLS}
+  \caption{Bandwidth aggregation comparison between MPTCP and TCPLS.}
 \end{figure}
-  
+
 \subsection{Application-level migration}
 
 Detailler pourquoi on a besoin du controle applicatif pour la migration, et à
@@ -88,22 +88,16 @@ downloads a 60 MB file from a server and migrates to the v6 connection in
 the middle of the download.
 
 Triggering the connection migration involves chaining 5 API calls:
-first, \texttt{tcpls\_handshake()} configured with handshake properties announcing a
-JOIN over the v6 connection id. Then, the creation of a new stream
-\texttt{tcpls\_stream\_new()} for the v6 connection id, finally followed by the attachment of this new
-stream \texttt{tcpls\_streams\_attach()} and the secure closing of the v4 \tcp
-connection using \texttt{tcpls\_stream\_close()}. Following these events, the
-server seamlessly switches the path while looping over \texttt{tcpls\_send} to
-send the file content. Note that all the events trigger callbacks on the server side, to
-let the server react appropriately if other requirements need to be fulfilled.
+first, \texttt{tcpls\_handshake()} configured with handshake properties announcing a JOIN over the v6 connection id. Then, the creation of a new stream
+\texttt{tcpls\_stream\_new()} for the v6 connection id, finally followed by the attachment of this new stream \texttt{tcpls\_streams\_attach()} and the secure closing of the v4 \tcp connection using \texttt{tcpls\_stream\_close()}. Following these events, the server seamlessly switches the path while looping over \texttt{tcpls\_send} to send the file content. Note that all the events trigger callbacks on the server side, to let the server react appropriately if other requirements need to be fulfilled.
 
 \tcpls's application connection migration takes advantage of multipath to offer
 a smooth handover to applications, which QUIC cannot do at the moment.
 
-\begin{figure}
+\begin{figure}[!t]
   \centering
-  \includegraphics[scale=0.5]{figures/migration.png}
-  \caption{Application-level connection migration during a 60MB file download}
+  \includegraphics[width=6cm]{figures/migration.png}
+  \caption{Application-level connection migration during a 60MB file download.}
   \label{fig:conn_migration}
 \end{figure}
 
@@ -118,25 +112,24 @@ TCPLS overhead: 1.0994282363439873
 MPTCP overhead/TCPLS overhead:              0.9773259975513828
 
 
-\begin{figure}
+\begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=\columnwidth]{figures/breakage_analysis.png}
+    \includegraphics[width=6cm]{figures/breakage_analysis.png}
   \end{center}
-  \caption{Recovery speed analysis}
+  \caption{Recovery speed analysis.}
 \end{figure}
-  
 
-\begin{figure}
+
+\begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=\columnwidth]{figures/tcpls_mpls.png}
+    \includegraphics[width=6cm]{figures/tcpls_mptcp.png}
   \end{center}
   \caption{Connection reliability: influence of the path manager and congestion
-  control}
+  control.}
 \end{figure}
-  
+
 
 
 \subsection{Congestion Control Injection}
 
 Injecter un control de congestion, montrer que les perf s'améliorent
-
