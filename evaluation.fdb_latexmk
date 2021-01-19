@@ -1,0 +1,13 @@
+# Fdb version 3
+["pdflatex"] 1611063194 "evaluation.tex" "evaluation.pdf" "evaluation" 1611063195
+  "/usr/local/texlive/2020/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
+  "/usr/local/texlive/2020/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm" 1136768653 1328 c834bbb027764024c09d3d2bf908b5f0 ""
+  "/usr/local/texlive/2020/texmf-dist/fonts/tfm/public/cm/cmtt10.tfm" 1136768653 768 1321e9409b4137d6fb428ac9dc956269 ""
+  "/usr/local/texlive/2020/texmf-dist/web2c/texmf.cnf" 1583102494 39451 60d7debd9ef8ece44cbe965493576c2d ""
+  "/usr/local/texlive/2020/texmf-var/web2c/pdftex/pdflatex.fmt" 1599985035 2432462 e177a9c7c80fc85f3a899302cb21b5eb ""
+  "/usr/local/texlive/2020/texmf.cnf" 1586288231 577 d60164b4589a341208aff7a667fbbdcb ""
+  "evaluation.aux" 1611063194 8 a94a2480d3289e625eea47cd1b285758 ""
+  "evaluation.tex" 1611063194 6011 14fc1aa759347cd07da541f630a3fd90 ""
+  (generated)
+  "evaluation.pdf"
+  "evaluation.log"

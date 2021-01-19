@@ -194,4 +194,4 @@ if __name__ == "__main__":
     ax1.grid(True, color='gray', linestyle='dashed', which='major')
     ax3.grid(True, color='gray', linestyle='dashed', which='major')
 
-    savefig('tcpls_mpls.png', bbox_inches='tight')
+    savefig('tcpls_mptcp.pdf', bbox_inches='tight')
