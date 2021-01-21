@@ -165,7 +165,7 @@ if __name__ == "__main__":
                 transform=axs[0].transAxes, fontsize="16")
     axs[1].text(.5, .9, 'TCPLS', horizontalalignment='center',
                 transform=axs[1].transAxes, fontsize="16")
-    plt.show()
+    plt.tight_layout()
     plt.show()
 
 

@@ -2,11 +2,13 @@ import matplotlib.pyplot as plt
 import argparse
 import numpy as np
 
+plt.rc('xtick', labelsize=12)
 parser = argparse.ArgumentParser(description="")
 
 parser.add_argument("--trace", nargs="+", required=True)
 parser.add_argument("--label", nargs="+", required=True)
 parser.add_argument("--color", nargs="+")
+
 
 def parse_data(filepath):
     bytes = []
@@ -42,10 +44,11 @@ if __name__ == "__main__":
     bar_height_pps_sorted = [(x[0], mapping[x[0]]) for x in bar_height_bw]
     bar_height_pps = bar_height_pps_sorted
     y_pos = np.arange(len(bar_height_bw))
-    plt.barh(y_pos, [height[1]/1000000 for height in bar_height_bw])
-    plt.yticks(y_pos, [height[0] for height in bar_height_bw])
+    plt.barh(y_pos, [8*height[1]/1000000 for height in bar_height_bw])
+    plt.yticks(y_pos, [height[0] for height in bar_height_bw], fontsize=14)
     for i, bw in enumerate(bar_height_bw):
-        plt.text(bw[1]/1000000 - 50, i-0.15, str(bar_height_pps[i][1])+" pps")
-    plt.xlabel("Download in MB/s")
+        plt.text((8*bw[1])/1000000 + 20, i-0.15, str(bar_height_pps[i][1])+" pps",
+                 fontsize=14)
+    plt.xlabel("Download in Mbit/s", fontsize=14)
     plt.subplots_adjust(left=0.35)
     plt.show()

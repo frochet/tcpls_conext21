@@ -107,9 +107,14 @@
 \citation{rfc6824}
 \citation{draft-ietf-tcpm-tcp-edo-10}
 \citation{rfc5482}
-\citation{hesmans2016enhanced}
-\citation{de2019pluginizing}
-\citation{ipmininet,jadin2020educational}
+\citation{mvfast}
+\citation{quicly}
+\citation{msquic}
+\citation{pquic}
+\citation{quic-go}
+\citation{vpp}
+\citation{edeline2019mmb}
+\citation{mininet}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.2}On \texttt  {TCP}~extensibility}{6}{subsection.4.2}\protected@file@percent }
 \newlabel{sec:tcpoptions}{{4.2}{6}{On \tcp extensibility}{subsection.4.2}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Multipathing}{6}{subsection.4.3}\protected@file@percent }
@@ -120,19 +125,20 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.4}0-RTT Connections}{6}{subsection.4.4}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {5}Evaluation[BUDGET=3p]}{6}{section.5}\protected@file@percent }
 \newlabel{sec:evaluation}{{5}{6}{Evaluation[BUDGET=3p]}{section.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}General Methodology}{6}{subsection.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Capability Comparison Between QUIC, \texttt  {TCP}~and \texttt  {TLS}~/\texttt  {TCP}~}{6}{subsection.5.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Performance}{6}{subsection.5.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Middlebox Interferences}{6}{subsection.5.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Bandwidth Aggregation}{6}{subsection.5.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.6}Application-level migration}{6}{subsection.5.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Methodology}{6}{subsection.5.1}\protected@file@percent }
+\citation{hesmans2016enhanced}
+\citation{de2019pluginizing}
+\citation{ipmininet,jadin2020educational}
 \@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Protocol features comparison. ({\fontfamily  {pzd}\fontencoding  {U}\fontseries  {m}\fontshape  {n}\selectfont  \char 55}) means that the feature is available, but not straightforward to use. (\text  {$\mathsurround \z@ \mathchar "7D8$}) means that the feature is partially available and under development.\relax }}{7}{table.caption.6}\protected@file@percent }
 \newlabel{table:tcplsvsquic}{{1}{7}{Protocol features comparison. (\xmark ) means that the feature is available, but not straightforward to use. (\checkmark ) means that the feature is partially available and under development.\relax }{table.caption.6}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Bandwidth aggregation comparison between MPTCP and TCPLS.\relax }}{7}{figure.caption.7}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Application-level connection migration during a 60MB file download.\relax }}{7}{figure.caption.8}\protected@file@percent }
-\newlabel{fig:conn_migration}{{5}{7}{Application-level connection migration during a 60MB file download.\relax }{figure.caption.8}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Recovery speed analysis.\relax }}{7}{figure.caption.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.7}Failover}{7}{subsection.5.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Capability Comparison}{7}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Performance}{7}{subsection.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Middlebox Interferences}{7}{subsection.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Bandwidth Aggregation}{7}{subsection.5.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.6}Application-level migration}{7}{subsection.5.6}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Throughput measurements of various QUIC stacks, TLS/TCP and TCPLS\relax }}{7}{figure.caption.7}\protected@file@percent }
+\newlabel{fig:perf}{{4}{7}{Throughput measurements of various QUIC stacks, TLS/TCP and TCPLS\relax }{figure.caption.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Bandwidth aggregation comparison between MPTCP and TCPLS.\relax }}{7}{figure.caption.8}\protected@file@percent }
 \bibstyle{ACM-Reference-Format}
 \bibdata{reference}
 \bibcite{aas2019let}{{1}{2019}{{Aas et~al\mbox  {.}}}{{Aas, Barnes, Case, Durumeric, Eckersley, Flores-L{\'o}pez, Halderman, Hoffman-Andrews, Kasten, Rescorla, et~al\mbox  {.}}}}
@@ -144,6 +150,15 @@
 \bibcite{rfc1323}{{7}{1992}{{Borman et~al\mbox  {.}}}{{Borman, Braden, and Jacobson}}}
 \bibcite{brakmo2017tcp}{{8}{2017}{{Brakmo}}{{Brakmo}}}
 \bibcite{budzisz2012taxonomy}{{9}{2012}{{Budzisz et~al\mbox  {.}}}{{Budzisz, Garcia, Brunstrom, and Ferr{\'u}s}}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Application-level connection migration during a 60MB file download.\relax }}{8}{figure.caption.9}\protected@file@percent }
+\newlabel{fig:conn_migration}{{6}{8}{Application-level connection migration during a 60MB file download.\relax }{figure.caption.9}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Recovery speed analysis.\relax }}{8}{figure.caption.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.7}Failover}{8}{subsection.5.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.8}Congestion Control Injection}{8}{subsection.5.8}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Connection reliability: influence of the path manager and congestion control.\relax }}{8}{figure.caption.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusion[BUDGET=0.5]}{8}{section.6}\protected@file@percent }
+\newlabel{sec:conclusion}{{6}{8}{Conclusion[BUDGET=0.5]}{section.6}{}}
+\@writefile{toc}{\contentsline {section}{References}{8}{section*.15}\protected@file@percent }
 \bibcite{Chai2019a}{{10}{2019}{{Chai et~al\mbox  {.}}}{{Chai, Ghafari, and Houmansadr}}}
 \bibcite{chatterjee2011another}{{11}{2011}{{Chatterjee et~al\mbox  {.}}}{{Chatterjee, Menezes, and Sarkar}}}
 \bibcite{rfc7413}{{12}{2014}{{Cheng et~al\mbox  {.}}}{{Cheng, Chu, Radhakrishnan, and Jain}}}
@@ -161,11 +176,6 @@
 \bibcite{rfc6824}{{24}{2013}{{Ford et~al\mbox  {.}}}{{Ford, Raiciu, Handley, and Bonaventure}}}
 \bibcite{rfc8684}{{25}{2020}{{Ford et~al\mbox  {.}}}{{Ford, Raiciu, Handley, Bonaventure, and Paasch}}}
 \bibcite{rfc5482}{{26}{2009}{{Gont and Eggert}}{{Gont and Eggert}}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Connection reliability: influence of the path manager and congestion control.\relax }}{8}{figure.caption.10}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.8}Congestion Control Injection}{8}{subsection.5.8}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusion[BUDGET=0.5]}{8}{section.6}\protected@file@percent }
-\newlabel{sec:conclusion}{{6}{8}{Conclusion[BUDGET=0.5]}{section.6}{}}
-\@writefile{toc}{\contentsline {section}{References}{8}{section*.14}\protected@file@percent }
 \bibcite{Gosain2017a}{{27}{2017}{{Gosain et~al\mbox  {.}}}{{Gosain, Agarwal, Shekhawat, Acharya, and Chakravarty}}}
 \bibcite{quicimplem}{{28}{[n. d.]}{{Group}}{{Group}}}
 \bibcite{aeadlimits}{{29}{[n. d.]}{{G{\"u}nther et~al\mbox  {.}}}{{G{\"u}nther, Thomson, and Wood}}}
