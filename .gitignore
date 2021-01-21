@@ -5,5 +5,9 @@ paper.blg
 paper.log
 paper.out
 paper.pdf
+*.fls
+*.synctex
+*.DS_Store
+*.fdb_latexmk
 # emacs
 *~
