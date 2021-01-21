@@ -87,10 +87,22 @@ QUIC~\cite{de2019pluginizing}.
 \subsection{Performance}
 \label{sec:perf}
 
+We perform a throughput evaluation of \tcpls and compare it to several major
+QUIC implementations: mvfst~\cite{} from Facebook, msquic~\cite{} from Microsoft
+and quicly~\cite{} from Fastly. Our choice of QUIC implementations was mainly
+influenced by the availability of a client/server perf tool specifically
+engineered for a throughput evaluation. A second criterion was the advancement
+of the implementation and the quality of the code. We hope to avoid most of the
+bugs negatively impacting their results by selecting the QUIC implementation
+that show advanced features and testings. A third criterion was the development
+language used. \tcpls is written in C, and we prefer to compare it against QUIC
+implementation written in a language compiled by clang or gcc. Mvfst, msquic
+and quicly meet these criteria. Besides, mvfast and quicly also support generic
+segmentation, which is a plus for throughput experimentation, since those
+implementions would speed up thanks to the offloading UDP segmentation and
+checksum computation available on our NICs.
 
-TCPLS vs QUIC vs TLS/TCP
-
-Bar chart or/and tabular with throughput performance
+Figure~\ref{fig:perf} shows several interesting
 
 \begin{figure}[!t]
    \begin{center}

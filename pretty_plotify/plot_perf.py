@@ -39,8 +39,8 @@ if __name__ == "__main__":
     for file in args.trace:
         bw_median, bw_max, pps_median, pps_max = parse_data(file)
         bar_height_bw.append((args.label[counter], bw_median))
-        #print("Max bw for {} is {}".format(args.label[counter], bw_max))
-        #print("Max pps for {} is {}".format(args.label[counter], pps_max))
+        print("Max bw for {} is {}".format(args.label[counter], bw_max))
+        print("Max pps for {} is {}".format(args.label[counter], pps_max))
         bar_height_pps.append((args.label[counter], pps_median))
         counter+=1
 
