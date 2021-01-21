@@ -1,6 +1,26 @@
 % !TEX root = ./paper.tex
 \subsection{General Methodology}
 
+For performance and middlebox interference experiments, we build a testbed
+composed of three machines with Intel Xeon CPU E5-2630
+2.40GHz, 16 Threads, at least 16GB RAM, running Debian with 5.7 and
+5.9 kernels. Two of these machines play the role of Client and Server,
+while one is the Middlebox (MB). Each machine is equipped with an
+Intel XL710 2x40GB NIC, directly connected as shown in Fig.~\ref{fig:perf_testbed}.
+Traffic exchanged by C and S has to go through MB first. Each device is
+configured to maximize its performances, with a single TCP connection
+reaching 22 Gbps with a 1500 Bytes MTU and linerate (i.e., 40 Gbps) when
+using jumbo frames.
+
+\begin{figure}[!t]
+  \begin{center}
+    \includegraphics[width=6cm]{figures/testbed.png}
+  \end{center}
+  \vspace{-0.5cm}
+  \caption{Performance Measurements Setups. C = Client. S = Server. MB = Middlebox.}
+  \label{fig:perf_testbed}
+    \vspace{-0.5cm}
+\end{figure}
 
 \subsection{Capability Comparison Between QUIC, \tcp and \tls/\tcp}
 
@@ -51,6 +71,7 @@ QUIC~\cite{de2019pluginizing}.
 \end{table}
 
 \subsection{Performance}
+
 
 TCPLS vs QUIC vs TLS/TCP
 

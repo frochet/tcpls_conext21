@@ -1,21 +1,13 @@
 % !TEX root = ./paper.tex 
 
 % testbed description
- We deploy a testbed composed of three machines with Intel Xeon CPU E5-2630
-2.40GHz, 16 Threads, at least 16GB RAM, running Debian 9.0 with 4.9 and
-4.12 kernels. Two of these machines play the role of Client and Server,
-while one is the Network Simulator (NS). Each machine is equipped with an
+We deploy a testbed composed of three machines with Intel Xeon CPU E5-2630
+2.40GHz, 16 Threads, at least 16GB RAM, running Debian with 5.7 and
+5.9 kernels. Two of these machines play the role of Client and Server,
+while one is the Middlebox (MB). Each machine is equipped with an
 Intel XL710 2x40GB NIC, directly connected as shown in Fig.~\fig{testbed}.
-Traffic exchanged by client and server has to go through the NS first.
+Traffic exchanged by C and S has to go through MB first. Each device is
+configured to maximize its performances, with a single TCP connection
+reaching 22 Gbps with a 1500 Bytes MTU and linerate (i.e., 40 Gbps) when
+using jumbo frames.
 
-% More details on the NS
-The NS relies on \dfn{Vector Packet Processing} (VPP)~\cite{vpp}, a
-kernel-bypass packet processing framework, and on \mmb and \texttt{nsim}
-plugins for simulating realistic network conditions and middlebox
-interferences. \mmb is a middlebox plugin for VPP that allows to build various
-stateless and stateful classification and rewriting middlebox
-policies~\cite{edeline2019mmb}. It is used to recreate existing middlebox
-traffic impairments without introducing additional processing overhead.
-\texttt{nsim} is a network delay simulator that adds delay and shapes traffic
-by processing packet vectors. The NS device is configured to maximize
-its performances, to make sure that it is not the measurements bottleneck.

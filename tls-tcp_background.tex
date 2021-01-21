@@ -25,12 +25,15 @@ traffic \cite{trevisan2020five}.
 
 TCP was designed as an end-to-end protocol that is only used on
 endhosts. Despite this architectural principale, network operators
-have deployed a variety of middleboxes (firewalls, NAT, transparent
-proxies, \ldots) that sometimes interfere with TCP or its extensions
-\cite{medina2004measuring, honda2011still, edeline2017first}.
-These middleboxes make some assumptions about the content of TCP
-packets and do not always complete follow the TCP specifications
-\cite{honda2011still, hesmans2013tcp}. 
+have deployed a variety of middleboxes (e.g., firewalls, NATs, transparent
+proxies) that sometimes interfere with TCP or its extensions
+\cite{medina2004measuring, honda2011still, edeline2019bottom}.
+These in-path network functions make assumptions about the content of TCP
+packets, invalidating the initial end-to-end paradigm of TCP.
+Moreover, they do not always strictly follow the TCP specifications
+\cite{honda2011still, hesmans2013tcp}, which may negatively affect
+TCP evolution and performances~\cite{edeline2020evaluating}.
+% which
 
 %\cite{honda2011still} % honda still possible to extend TCP
 
