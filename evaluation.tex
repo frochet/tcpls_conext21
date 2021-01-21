@@ -5,7 +5,7 @@ Our objective is to evaluate whether our design and implementation are indeed
 fast, flexible and does not conflict with several commercial and open-source
 middleboxes. Moreover, we expect to showcase and compare TCPLS's functionalities
 such as the App-level connection migration, the failover mechanism or the
-aggragation compability and discuss them  with the state
+bandwidth aggregation capability. We discuss them against the state
 of the art designs, such as mvfst~\cite{mvfast}, quicly~\cite{quicly},
 msquic~\cite{msquic}, MPTCP~\ref{mptcp}, pquic~\cite{pquic},
 quic-go~\cite{quic-go} and MPQUIC~\ref{mpquic}.
@@ -64,7 +64,7 @@ QUIC~\cite{de2019pluginizing}.
     Transport reliability & \checkmark & \checkmark &
     \checkmark & \checkmark \\
     Message conf. and auth.&  \xmark & \checkmark & \checkmark & \checkmark \\
-    Connection reliability &  \xmark & \xmark & (\checkmark) & (\checkmark) \\
+    Connection reliability (failover) &  \xmark & \xmark & (\checkmark) & \checkmark \\
     0-RTT & \checkmark & (\xmark) & \checkmark  & \checkmark \\
     Session Resumption & \xmark & \checkmark & \checkmark & \checkmark \\
     Connection Migration & \xmark & \xmark & \checkmark & \checkmark \\
@@ -74,8 +74,8 @@ QUIC~\cite{de2019pluginizing}.
     \hspace{2em} Explicit Multipath & \xmark & \xmark & \xmark & \checkmark \\
     \hspace{2em} App-level Con. migration & \xmark & \xmark & \xmark & \checkmark \\
     \hspace{2em} Pluginization & \xmark & \xmark & \xmark & (\checkmark) \\
-    Resilience to HOL blocking & \xmark & \xmark & \checkmark  & (\checkmark) \\
-    Secure Connection Closing & \xmark &  \xmark & \checkmark & (\checkmark) \\
+    Resilience to HOL blocking & \xmark & \xmark & \checkmark  & \checkmark \\
+    Secure Connection Closing & \xmark &  \xmark & \checkmark & \checkmark \\
     \bottomrule
   \end{tabular}
   \caption{Protocol features comparison. (\xmark) means that the feature is
