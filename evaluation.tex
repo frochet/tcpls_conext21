@@ -114,8 +114,30 @@ Figure~\ref{fig:perf} shows several interesting
 
 \subsection{Middlebox Interferences}
 
-Montrer que TCPLS handshake et JOIN handshake passent/passent pas les middlebox,
-discuter les implications
+When deploying a novel protocol, different middlebox interferences may arise
+depending on the changes introduced in the packets wire image. In this
+regard, \tcpls comes with two novel \tls extensions: \tcpls and \join.
+We discuss the potential issues and contermeasures below.
+
+If a clients attempts to open a \tcpls to in the presence of a \tls termination
+proxy, it sends a ClientHello that includes the \tcpls extension. If the proxy
+does not support \tcpls, it replies with a ServerHello message that does not
+include the \tcpls extension. From this point, the client implicitely fallback
+to \tls, and continues with the handshake.
+
+Certain legacy \tls server implementations are known not to implement the \tls
+specification properly and might abort connections when receiving unknown TLS
+extensions. Analogous behavior has been observed in overly restrictive stateful
+firewalls.  To ensure connectivity in the presence of such policies, \tcpls
+implements an explicit fallback mechanism. If a device sends a \tcp \rst in
+response to the \tcpls-setup ClientHello, or silently discards it, the client
+attempts at negotiating a second non-\tcpls \tls connection, either immediately
+or after a timeout. Similarly, a \tcpls \join extension might be blocked on the
+path. In this case, the subflow attachment is canceled, and the application
+is directly notified to be able to react appropriatly.
+
+We tested \tcpls against several opensource and commercial stateful firewalls
+implementations (i.e., pfSense, IPFire, Cisco ASAv) and found no interferences.
 
 \subsection{Bandwidth Aggregation}
 
