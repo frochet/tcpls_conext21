@@ -1,1 +1,0 @@
-python3 plot_aggregate_dual.py --goodput results/mptcp_client_goodput_aggregation.log results/tcpls_client_goodput_aggregation.log --tcpdump results/mptcp_client_tcpdump_pruned_aggregation.log results/tcpls_client_tcpdump_pruned_aggregation.log --event_at 18:42:08.472578 18:23:38.244172 --event_text " <- Interface UP" " <- APP decision to use new path" --event_pos 15 5 -i 0.05

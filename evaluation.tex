@@ -13,10 +13,25 @@ quic-go~\cite{quic-go} and MPQUIC~\ref{mpquic}.
 %TODO do we also evelatuate security? with a simple proof and discussion?
 To evaluate the performance (Section~\ref{sec:perf}) and middlebox traversal
 (Section~\ref{sec:middlebox}), we deploy a testbed composed of three machines with Intel Xeon CPU E5-2630
-2.40GHz, 16 Threads, at least 16GB RAM, running Debian 10.0 with 5.9 and
+2.40GHz, 16 Threads, at least 16GB RAM, running Debian with 5.9 and
 5.7 kernels. Two of these machines play the role of Client and Server,
 while one is the Network Simulator (NS). Each machine is equipped with an
-Intel XL710 2x40GB NIC, directly connected as shown in Fig.~\fig{testbed}.
+Intel XL710 2x40GB NIC, directly connected as shown in
+Fig.~\ref{fig:perf_testbed}.
+Each device is configured to maximize its performances, with a single TCP connection
+reaching 22 Gbps with a 1500 Bytes MTU and linerate (i.e., 40 Gbps) when
+using jumbo frames.
+
+\begin{figure}[!t]
+  \begin{center}
+    \includegraphics[width=6cm]{figures/testbed.png}
+  \end{center}
+  \vspace{-0.5cm}
+  \caption{Performance Measurements Setups. C = Client. S = Server. MB = Middlebox.}
+  \label{fig:perf_testbed}
+    \vspace{-0.5cm}
+\end{figure}
+
 Traffic exchanged by client and server has to go through the NS first.
 % More details on the NS
 The NS relies on \dfn{Vector Packet Processing} (VPP)~\cite{vpp}, a
@@ -82,6 +97,7 @@ QUIC~\cite{de2019pluginizing}.
 
 \subsection{Performance}
 \label{sec:perf}
+
 
 TCPLS vs QUIC vs TLS/TCP
 

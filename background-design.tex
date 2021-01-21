@@ -9,13 +9,13 @@
 
 \tcpls offers a cross-layer interface to \tls and \tcp
 with the motivation to do more than securing the transport layer. Merging the
-stacks benefits both
-protocols
+stacks benefits both protocols
 and the application using this new approach. First, \tcp suffers from a lack of
 extensibility due to size restrictions in its header and due to
 potential middlebox interferences~\cite{honda2011still}. \tcpls aims to solve
 \tcp's extensibility issue in the long run by offering a secure control channel
-to exchange \tcp options without suffering from middlebox interferences and size restrictions in \tcp headers.
+to exchange \tcp options without suffering from middlebox interferences
+and size restrictions in \tcp headers.
 Second, \tls does not have a clear view of the transport protocol, and offering
 one with \tcpls brings opportunity for performance improvement (e.g., avoiding
 records fragmentation with dynamic receive buffer auto-tuning and/or with
