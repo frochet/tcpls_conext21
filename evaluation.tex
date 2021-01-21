@@ -98,19 +98,52 @@ that show advanced features and testings. A third criterion was the development
 language used. \tcpls is written in C, and we prefer to compare it against QUIC
 implementation written in a language compiled by clang or gcc. Mvfst, msquic
 and quicly meet these criteria. Besides, mvfast and quicly also support generic
-segmentation, which is a plus for throughput experimentation, since those
+segmentation offload, which is a plus for throughput experimentation, since those
 implementions would speed up thanks to the offloading UDP segmentation and
-checksum computation available on our NICs.
+checksum computation available on our NICs. We use the implementation's
+client/server perf tools as is, exploiting the optional arguments provided
+by their interface to increase the throughput but drawing the line there. That
+is, we do not change their implementation.
 
-Figure~\ref{fig:perf} shows several interesting
+Figure~\ref{fig:perf} shows several interesting results. First, while
+offering similar (and more) capabilities than what QUIC is providing today,
+\tcpls is also more than twice faster than the strongest evaluated QUIC
+implementation (quicly) over CPU limited experimentations. We evaluate \tcpls
+in four different settings: with a path mtu of 1500 or 9000, and with failover
+enabled or not. The failover functionality is an internal stack feature that
+provides session reliability, which increases the number of syscalls that TCPLS
+makes by exchanging TCPLS-level record acknowledgments. We currently send an ack
+for every 16 received records, or when we receive 15 times the maximum TLS
+payload, or when a timer expires. Reducing the frequency would improve
+throughput at the price of a slower recovery in case of network failure.
 
-\begin{figure}[!t]
-   \begin{center}
-     \includegraphics[width=\columnwidth]{figures/perf_analysis.png}
-   \end{center}
-   \caption{Throughput measurements of various QUIC stacks, TLS/TCP and TCPLS}
-   \label{fig:perf}
-\end{figure}
+TLS/TCP's experiments uses \texttt{picotls}'s client/server implementation with
+the same commit than our initial fork for TCPLS. TLS/TCP's lower performance results
+can be explained by the receiving buffer size provided to \texttt{read()}, which
+is hardcoded to 16384 bytes. This choice makes the client suffers from
+fragmentation and cannot exploit the zero-copy code path provided by the
+library, which \tcpls can do with a larger read buffer. At first, we may think
+that this is not a fair comparison, however the devil is in the detail. In our
+implementation, the application developers cannot touch \texttt{read()}'s
+interface. That is, the application developer cannot missuse the relationship
+between TLS and TCP by creating fragmented records and doing unecessary copies
+to handle those fragments. TCPLS's design and implementation may try to prevent
+such fragmentation to happen, by first, having a sufficiently large read buffer
+size. Second, by deciphering a record only when we known we received the record
+entirely. TLS/TCP record fragmentation is provided by TLS libraries as a
+usability feature that spares the application developers to care about TLS
+details, at the cost of slower performance. \tcpls allows the application
+developers to ignore TLS details without missusing the interface,
+which is the reason this comparison is interesting. Moreover, but this has not
+yet been implemented, it could be interesting to match the TLS record size to
+the congestion window to deliver faster the data to the application whe the
+network is under congestion.
+
+
+\begin{figure}[!t] \begin{center}
+    \includegraphics[width=\columnwidth]{figures/perf_analysis.png} \end{center}
+  \caption{Throughput measurements of various QUIC stacks, TLS/TCP and TCPLS}
+  \label{fig:perf} \end{figure}
 
 \subsection{Middlebox Interferences}
 
@@ -119,12 +152,10 @@ discuter les implications
 
 \subsection{Bandwidth Aggregation}
 
-\begin{figure}[!t]
-  \begin{center}
+\begin{figure}[!t] \begin{center}
     \includegraphics[width=\columnwidth]{figures/aggregate_dual.png}
-  \end{center}
-  \caption{Bandwidth aggregation comparison between MPTCP and TCPLS.}
-\end{figure}
+  \end{center} \caption{Bandwidth aggregation comparison between MPTCP and
+    TCPLS.} \end{figure}
 
 \subsection{Application-level migration}
 
