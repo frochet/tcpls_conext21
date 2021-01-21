@@ -260,7 +260,7 @@ We leverage these new eBPF capabilities to
 demonstrate the feasibility of injecting and
 updating a congestion control scheme during a TCPLS session.
 
-We perform our experiment using Mininet over a 100 Mbps emulated link that has a 60 msec delay. Figure~\ref{fig:vegasCubic} shows a client that uses the TCP Vegas \cite{10.1145/190314.190317} congestion control scheme to upload a file. This TCLPS session fully uses the bottleneck link. After some time, another client starts an upload, but using the CUBIC congestion controller \cite{rfc8312}. This results in an unfair distribution of the bandwidth. The server then sends the eBPF bytecode of the CUBIC congestion control scheme to the TCP Vegas client that injects it in its kernel and the unfairness disappears.
+We perform our experiment using Mininet over a 100 Mbps emulated link that has a 60 msec delay. Figure~\ref{fig:vegasCubic} shows a client that uses the TCP Vegas \cite{10.1145/190314.190317} congestion control scheme to upload a file. This TCLPS session fully uses the bottleneck link. After some time, another client starts an upload, but using the CUBIC congestion controller \cite{rfc8312}. This results in an unfair distribution of the bandwidth. The server then sends the eBPF bytecode of the CUBIC congestion control scheme to the TCP Vegas client that injects it in its kernel and the unfairness disappears. We performed the same experiment for different delay, ​​varying from (10ms to 100ms).
 
 \begin{figure}[!t]
   \begin{center}
