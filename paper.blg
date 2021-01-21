@@ -5,6 +5,12 @@ The style file: ACM-Reference-Format.bst
 Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
 Database file #1: reference.bib
+Warning--I didn't find a database entry for "mvfast"
+Warning--I didn't find a database entry for "quicly"
+Warning--I didn't find a database entry for "msquic"
+Warning--I didn't find a database entry for "pquic"
+Warning--I didn't find a database entry for "quic-go"
+Warning--I didn't find a database entry for "mininet"
 Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated glb_str_ptr (elt_size=4) to 20 items from 10.
 Reallocated global_strs (elt_size=200001) to 20 items from 10.
@@ -29,8 +35,10 @@ Warning--empty publisher in de2019pluginizing
 Warning--empty address in de2019pluginizing
 Warning--empty address in DHBVD13
 Warning--page numbers missing in both pages and numpages fields in DHBVD13
-Warning--empty publisher in edeline2017first
-Warning--empty address in edeline2017first
+Warning--empty publisher in edeline2019bottom
+Warning--empty address in edeline2019bottom
+Warning--empty publisher in edeline2020evaluating
+Warning--empty address in edeline2020evaluating
 Warning--empty address in Gosain2017a
 Warning--page numbers missing in both pages and numpages fields in Gosain2017a
 Warning--empty year in quicimplem
@@ -86,45 +94,45 @@ Warning--empty publisher in wischik2011design
 Warning--empty address in wischik2011design
 Warning--empty publisher in xu2015investigating
 Warning--empty address in xu2015investigating
-You've used 73 entries,
+You've used 74 entries,
             5795 wiz_defined-function locations,
-            1744 strings with 30307 characters,
-and the built_in function-call counts, 95084 in all, are:
-= -- 11185
-> -- 3881
+            1754 strings with 30479 characters,
+and the built_in function-call counts, 96294 in all, are:
+= -- 11313
+> -- 3919
 < -- 7
-+ -- 1306
-- -- 2042
-* -- 7403
-:= -- 10060
-add.period$ -- 382
-call.type$ -- 73
-change.case$ -- 578
-chr.to.int$ -- 72
-cite$ -- 149
-duplicate$ -- 7260
-empty$ -- 5111
-format.name$ -- 1563
-if$ -- 21262
++ -- 1319
+- -- 2058
+* -- 7476
+:= -- 10181
+add.period$ -- 387
+call.type$ -- 74
+change.case$ -- 584
+chr.to.int$ -- 73
+cite$ -- 152
+duplicate$ -- 7382
+empty$ -- 5195
+format.name$ -- 1583
+if$ -- 21547
 int.to.chr$ -- 3
 int.to.str$ -- 1
-missing$ -- 215
-newline$ -- 669
-num.names$ -- 583
-pop$ -- 2888
+missing$ -- 220
+newline$ -- 676
+num.names$ -- 591
+pop$ -- 2942
 preamble$ -- 1
-purify$ -- 1209
+purify$ -- 1224
 quote$ -- 0
-skip$ -- 2576
+skip$ -- 2622
 stack$ -- 0
-substring$ -- 8591
-swap$ -- 639
+substring$ -- 8681
+swap$ -- 650
 text.length$ -- 1479
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 1960
-warning$ -- 76
-while$ -- 512
+type$ -- 1990
+warning$ -- 78
+while$ -- 523
 width$ -- 0
-write$ -- 1348
-(There were 76 warnings)
+write$ -- 1363
+(There were 84 warnings)

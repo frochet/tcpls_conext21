@@ -32,18 +32,7 @@ using jumbo frames.
     \vspace{-0.5cm}
 \end{figure}
 
-Traffic exchanged by client and server has to go through the NS first.
-% More details on the NS
-The NS relies on \dfn{Vector Packet Processing} (VPP)~\cite{vpp}, a
-kernel-bypass packet processing framework, and on \mmb and \texttt{nsim}
-plugins for simulating realistic network conditions and middlebox
-interferences. \mmb is a middlebox plugin for VPP that allows to build various
-stateless and stateful classification and rewriting middlebox
-policies~\cite{edeline2019mmb}. It is used to recreate existing middlebox
-traffic impairments without introducing additional processing overhead.
-\texttt{nsim} is a network delay simulator that adds delay and shapes traffic
-by processing packet vectors. The NS device is configured to maximize
-its performances, to make sure that it is not the measurements bottleneck.
+The traffic exchanged by client and server has to go through the NS first.
 
 To evaluate TCPLS's functionalities, we rely on reproducible network
 experimentations with Mininet~\cite{mininet}. Our objective is to compare the
@@ -105,7 +94,7 @@ Bar chart or/and tabular with throughput performance
 
 \begin{figure}[!t]
    \begin{center}
-     \includegraphics[width=\columnwidth]{figures/perf.png}
+     \includegraphics[width=\columnwidth]{figures/perf_analysis.png}
    \end{center}
    \caption{Throughput measurements of various QUIC stacks, TLS/TCP and TCPLS}
    \label{fig:perf}
@@ -120,7 +109,7 @@ discuter les implications
 
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=\columnwidth]{figures/multipath_aggregation_comparison.png}
+    \includegraphics[width=\columnwidth]{figures/aggregate_dual.png}
   \end{center}
   \caption{Bandwidth aggregation comparison between MPTCP and TCPLS.}
 \end{figure}

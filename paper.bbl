@@ -2,7 +2,7 @@
 %%% Do NOT edit. File created by BibTeX with style
 %%% ACM-Reference-Format-Journals [18-Jan-2012].
 
-\begin{thebibliography}{73}
+\begin{thebibliography}{74}
 
 %%% ====================================================================
 %%% NOTE TO THE USER: you can override these defaults by providing
@@ -294,14 +294,24 @@
 
 
 \bibitem[\protect\citeauthoryear{Edeline and Donnet}{Edeline and
-  Donnet}{2017}]%
-        {edeline2017first}
+  Donnet}{2019}]%
+        {edeline2019bottom}
 \bibfield{author}{\bibinfo{person}{Korian Edeline} {and}
-  \bibinfo{person}{Benoit Donnet}.} \bibinfo{year}{2017}\natexlab{}.
-\newblock \showarticletitle{A first look at the prevalence and persistence of
-  middleboxes in the wild}. In \bibinfo{booktitle}{{\em 2017 29th International
-  Teletraffic Congress (ITC 29)}}, Vol.~\bibinfo{volume}{1}. IEEE,
-  \bibinfo{pages}{161--168}.
+  \bibinfo{person}{Benoit Donnet}.} \bibinfo{year}{2019}\natexlab{}.
+\newblock \showarticletitle{A bottom-up investigation of the transport-layer
+  ossification}. In \bibinfo{booktitle}{{\em 2019 Network Traffic Measurement
+  and Analysis Conference (TMA)}}. IEEE, \bibinfo{pages}{169--176}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Edeline and Donnet}{Edeline and
+  Donnet}{2020}]%
+        {edeline2020evaluating}
+\bibfield{author}{\bibinfo{person}{Korian Edeline} {and}
+  \bibinfo{person}{Benoit Donnet}.} \bibinfo{year}{2020}\natexlab{}.
+\newblock \showarticletitle{Evaluating the Impact of Path Brokenness on TCP
+  Options}. In \bibinfo{booktitle}{{\em Proceedings of the Applied Networking
+  Research Workshop}}. \bibinfo{pages}{38--44}.
 \newblock
 
 
