@@ -3,6 +3,7 @@ import os
 import argparse
 import pdb
 import matplotlib.pyplot as plt
+from utils import *
 
 parser = argparse.ArgumentParser(description="Parse and plot trace experiments\
                                  produced within IP mininet")
@@ -11,7 +12,8 @@ parser.add_argument("--goodput", type=str, help="goodput trace produced by the\
                     cli", nargs="+")
 parser.add_argument("--tcpdump", type=str, help="tcpdump trace", nargs="+")
 
-parser.add_argument("--oname", type=str, help="output figure  name")
+parser.add_argument("--oname", type=str, help="Output figure name")
+parser.add_argument("--ext", type=str, help="Output file extension (e.g., pdf, png)")
 
 parser.add_argument("-i", type=float, default=0.1, help="Time interval on which each bandwidth datapoint is computed")
 parser.add_argument("--event_at", type=str, nargs="+", help="Event happened at? in\
@@ -127,11 +129,9 @@ def parse_goodput(goodput_file, interval):
 
 
 if __name__ == "__main__":
-    
+
     args = parser.parse_args()
-    fix, axs = plt.subplots(2, 1)
-    axs[0].set(xlabel="time (s)", ylabel="Bandwidth (Mbits)")
-    axs[1].set(xlabel="time (s)", ylabel="Bandwidth (Mbits)")
+    fix, axs = plt.subplots(2, 1, figsize=(15,10))
 
     min_timing = 100000000000000000
     elem = 0
@@ -140,32 +140,45 @@ if __name__ == "__main__":
         x_g, y_g, min_timing_g = parse_goodput(args.goodput[elem], args.i*1000000)
         min_timing = min(min_timing, min_timing_g)
         x_max = max(x_max, (x_g[-1]-min_timing)/1000000)
-        print("goodput tot : {0} bytes".format(sum(y_g)))
+        #print("goodput tot : {0} bytes".format(sum(y_g)))
+
         ax.plot([(x-min_timing)/1000000 for x in x_g[:-1]],
-                [(y*8/1000000)/(2*args.i) for y in y_g[:-1]], label="Goodput")
+                [(y*8/1000000)/(2*args.i) for y in y_g[:-1]], label=legend_label("Goodput"), lw=2)
         paths, x_t, y_t, min_timing_t = parse_tcpdump(args.tcpdump[elem], args.i*1000000)
         counter = 0
+
         for path in set(paths.values()):
             x_max = max(x_max, (x_t[path][-1]-min_timing_t)/1000000)
             ax.plot([(x-min_timing_t)/1000000 for x in x_t[path][:-1]],
                     [(y*8/1000000)/(2*args.i) for y in y_t[path][:-1]],
-                label="Throughput subflow Conn {}".format(counter))
+                label=legend_label("Throughput subflow Conn {}".format(counter)), lw=2)
             counter+=1
+
         event = parse_time(args.event_at[elem])
-        ax.axvline(x=(event-min_timing_t)/1000000, color="k")
-        ax.text((event-min_timing)/1000000, args.event_pos[elem], args.event_text[elem],
-                 color="k")
+        ax.axvline(x=(event-min_timing_t)/1000000, color="k", lw=2)
+        #ax.text((event-min_timing)/1000000, args.event_pos[elem], args.event_text[elem],
+        #         color="k")
+        ax.annotate(legend_label(args.event_text[elem]),
+                    xy=((event-min_timing)/1000000, args.event_pos[elem]),
+                    xytext=(1, (args.event_pos[elem])),
+                    arrowprops=dict(arrowstyle="<|-", color='dimgray'), fontsize=17,
+                    color='dimgray')
         elem+=1
-    #plt.savefig(args.oname)
+
+    axis_aesthetic(axs[0])
+    axis_aesthetic(axs[1])
+
     for ax in axs:
-        ax.legend()
+        ax.legend(loc='upper left', fontsize=17, edgecolor="black", fancybox=False)
         ax.set_xlim(0, x_max)
         ax.set_ylim(0, 65)
-    axs[0].text(.5, .9, 'MPTCP v0.94.7', horizontalalignment='center',
-                transform=axs[0].transAxes, fontsize="16")
-    axs[1].text(.5, .9, 'TCPLS', horizontalalignment='center',
-                transform=axs[1].transAxes, fontsize="16")
-    plt.show()
-    plt.show()
+        ax.set_xlabel(latex_label("Time (s)"), fontsize=24)
+        ax.set_ylabel(latex_label("Bandwidth (Mbits)"), fontsize=24)
+        ax.grid(True, color='gray', linestyle='dashed', which='major')
 
+    axs[0].set_title(latex_label('MPTCP 0.94.7'), fontsize=18)
+    axs[1].set_title(latex_label('TCPLS'), fontsize=18)
 
+    subplots_adjust(hspace=0.4)
+
+    savefig(args.oname+'.'+args.ext, bbox_inches='tight')

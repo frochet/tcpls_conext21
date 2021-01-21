@@ -93,7 +93,7 @@ if __name__ == "__main__":
 
     axis_aesthetic(ax)
 
-    ax.set_xlabel(latex_label('time (s)'), fontsize=20)
+    ax.set_xlabel(latex_label('Time (s)'), fontsize=20)
     ax.set_ylabel(latex_label('Bandwidth (Mbits)'), fontsize=20)
 
     breakage = parse_time(args.breakage_at)

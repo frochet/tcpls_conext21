@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
     axis_aesthetic(ax=ax)
 
-    ax.set_xlabel(latex_label('time (s)'), fontsize=20)
+    ax.set_xlabel(latex_label('Time (s)'), fontsize=20)
     ax.set_ylabel(latex_label('Goodput (Mbps)'), fontsize=20)
 
     plt.legend(loc='upper right', fontsize=12, edgecolor="black", fancybox=False)
