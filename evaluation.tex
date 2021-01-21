@@ -104,7 +104,7 @@ checksum computation available on our NICs. We use the implementation's
 client/server perf tools as is, exploiting the optional arguments provided
 by their interface to increase the throughput but drawing the line there. That
 is, we do not change their implementation.
-
+\paragraph*{TCPLS}
 Figure~\ref{fig:perf} shows several interesting results. First, while
 offering similar (and more) capabilities than what QUIC is providing today,
 \tcpls is also more than twice faster than the strongest evaluated QUIC
@@ -116,8 +116,8 @@ makes by exchanging TCPLS-level record acknowledgments. We currently send an ack
 for every 16 received records, or when we receive 15 times the maximum TLS
 payload, or when a timer expires. Reducing the frequency would improve
 throughput at the price of a slower recovery in case of network failure.
-
-TLS/TCP's experiments uses \texttt{picotls}'s client/server implementation with
+\paragraph*{TCPLS vs TLS/TCP}
+Our TLS/TCP's experiments uses \texttt{picotls}'s client/server implementation with
 the same commit than our initial fork for TCPLS. TLS/TCP's lower performance results
 can be explained by the receiving buffer size provided to \texttt{read()}, which
 is hardcoded to 16384 bytes. This choice makes the client suffers from
@@ -134,15 +134,27 @@ entirely. TLS/TCP record fragmentation is provided by TLS libraries as a
 usability feature that spares the application developers to care about TLS
 details, at the cost of slower performance. \tcpls allows the application
 developers to ignore TLS details without missusing the interface,
-which is the reason this comparison is interesting. Moreover, but this has not
+which is the reason this comparison is interesting. \tcpls constrains the
+application developer to use a buffer type provided by the API, but offers
+zero-copy deciphered records in return. Moreover, but this has not
 yet been implemented, it could be interesting to match the TLS record size to
 the congestion window to deliver faster the data to the application whe the
 network is under congestion.
+\paragraph{TCPLS vs QUIC}
+QUIC is young protocol, and all implementations are in active development, with
+different states for their available features and optimizations. For example,
+none of the implementations were able to take advantage of a path mtu larger
+than 1500, and it even degraded the performance in the case of quicly. Two of them
+(quicly and mvfst) have implemented the support for \texttt{gso} leading in the
+case of quicly to more than 4 gb/s of throughput with a udp payload length
+configured to match TCP (1460). This result is directly comparable to TCPLS with
+tso on, which still performs more than twice faster at 100\% CPU peak with
+similar configurations for the transport parameters.
 
 
 \begin{figure}[!t] \begin{center}
     \includegraphics[width=\columnwidth]{figures/perf_analysis.png} \end{center}
-  \caption{Throughput measurements of various QUIC stacks, TLS/TCP and TCPLS}
+  \caption{CPU limited Throughput measurements of various QUIC stacks, TLS/TCP and TCPLS}
   \label{fig:perf} \end{figure}
 
 \subsection{Middlebox Interferences}
