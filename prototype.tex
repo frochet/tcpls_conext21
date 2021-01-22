@@ -1,42 +1,30 @@
 % !TEX root = ./paper.tex
 \label{sec:content}
 
-This section describes several of the possible benefits of \tcpls
-compared to keeping \tcp and \tls isolated.
-We provide some use cases and experiment with the
-connection application-level connection migration offered by our API. Other user
-cases described in Section~\ref{sec:research} are flagged to the roadmap and we
-expect them to further demonstrate the
-strength of a more intertwined \tls/\tcp transport protocol.
+%This section describes several of the possible benefits of \tcpls compared to keeping \tcp and \tls isolated. We provide some use cases and experiment with the connection application-level connection migration offered by our API. Other user cases described in Sec.~\ref{sec:research} are flagged to the roadmap and we expect them to further demonstrate the strength of a more intertwined \tls/\tcp transport protocol.
+\todo{BD: I commented the introductory paragraph as I'm not sure it still fits in with the paper content.}
 
-Our current implementation offers:
-%\begin{enumerate}[label=(\roman*)]
-\textit{(i)} An experimental API that wraps \tls and \tcp and enables
-    applications to
+In this section, we describe our \tcpls implementation.  In a nutshell, our implementation offers the following benefits:
+($i$) An experimental API that wraps \tls and \tcp and enables applications to
     handle multihoming, multipathing, and various transport layer mechanisms.
-  \textit{(ii)} An improved \tcp extensibility mechanism that sends \tcp options
-    through the secure \tcpls channel. We currently support the \tcp
-    User Timeout option. Supporting another \tcp option is only a matter of
-    extending the sender's API and processing the option
-    on the receiver side. \tcpls's internal machinery can already send any \tcp
-    option during or after the handshake.
-\textit{(iii)} The ability for the server to send eBPF bytecode over the secure
+($ii$) An improved \tcp extensibility mechanism that sends \tcp options
+   through the secure \tcpls channel (as described in Sec.~\ref{sec:background-design}). We currently support the \tcp User Timeout option. Supporting another \tcp option is only a matter of extending the sender's API and processing the option on the receiver side. \tcpls's internal machinery can already send any \tcp option during or after the handshake.
+($iii$) The ability for the server to send eBPF bytecode over the secure
   channel to upgrade the client's \tcp congestion control scheme or
-  tune other \tcp mechanisms \cite{brakmo2017tcp, tran2019beyond}.
-  \textit{(iv)} The support of parallel streams and multiplexing over \tcp connections
-    with different cryptographic context.
-%\end{enumerate}
+  tune other \tcp mechanisms~\cite{brakmo2017tcp, tran2019beyond}.
+($iv$) The support of parallel streams and multiplexing over \tcp connections
+  with different cryptographic context.
+
 
 \subsection{The \tcpls API}
 
 The API that applications use to interact with a protocol plays an important
 role in enabling them to leverage all the protocol features. The most
 popular API to interact with the transport layer remains the BSD socket
-API. Researchers and the IETF have explored new
-ways to expose a transport API~\cite{draft-ietf-taps-arch,hruby2014sockets,rfc6458,hesmans2016enhanced,schmidt2013socket}.
+API. Researchers and the IETF have explored new ways to expose a transport API~\cite{draft-ietf-taps arch,hruby2014sockets,rfc6458,hesmans2016enhanced,schmidt2013socket}.
 
 In this spirit, application-level developers would only be required to
-configure a \texttt{\tcpls} context and register function callbacks.
+configure a \tcpls context and register function callbacks.
 %We design \tcpls such
 %that the application-level developers can ignore any notion of Network IPC as
 %defined by, for example, the POSIX API, the Berkeley socket API or Winsock,
@@ -48,15 +36,15 @@ configure a \texttt{\tcpls} context and register function callbacks.
 %features.
 %\todo{we need to explain the mpjoin}
 To illustrate \tcpls API's flexibility, we consider a simple
-use case inspired by Happy Eyeballs \cite{rfc8305}. This technique is
+use case inspired by Happy Eyeballs~\cite{rfc8305}. This technique is
 used by web browsers when interacting with dual-stack servers. They
 try to establish \tcp connections using IPv4 and IPv6 and prefer the
 one that offers the lowest latency. This avoids problems when an address
 family is broken on a path but not the other and sometimes results in
-lower latency \cite{bajpai2019longitudinal}.
+lower latency~\cite{bajpai2019longitudinal}.
 
 
-\begin{figure}[t]
+\begin{figure}[!t]  
   \resizebox{0.49\textwidth}{!}{%
 \begin{tikzpicture}
    \colorlet{lightgray}{black!20}
@@ -99,8 +87,7 @@ lower latency \cite{bajpai2019longitudinal}.
    \node[fill=white] at (4.7,-0.85) {tcpls\_receive()};
 \end{tikzpicture}
 }
-\caption{API Workflow example. * means optional call, [ ] means optional call flow, and \{
-  \} means encrypted.}
+\caption{API Workflow example. * means optional call, [ ] means optional call flow, and \{ \} means encrypted.}
   \label{fig:api}
 \end{figure}
 
@@ -183,4 +170,3 @@ describing Failover
 Describing orderings and schedulers
 
 \subsection{0-RTT Connections}
-
