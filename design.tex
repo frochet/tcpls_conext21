@@ -103,13 +103,13 @@ plaintext is encrypted multiple times with the same key~\cite{bellare2016multi,
 times starting from the leftmost bits to encrypt a TLS record of maximum size
 (16384 bytes, i.e, 1024 times 128 bits for the the minimum block size). So,
 doing the math, we observe that 7 bits among those 32 bits are untouchable,
-which lead to at least 25 bits to encode a unique stream number. Encoding such
+which leads to at least 25 bits to encode a unique stream number. Encoding such
 unique number in this space of the cryptographic nonce allows each stream to
 start its sequence number at 0 while encrypting its record with the same key.
 This observation means that we can create independant cryptographic context
 based on a tweak of the cryptographic nonce, which allows streams to encrypt and
 decrypt independently of each other, with the same key value. This trick
-maintains AEAS's core assumption (uniqueness of nonce), which means that the
+maintains AEAD's core assumption (uniqueness of nonce), which means that the
 state of art AEAD's security proof starting from that assumption applies to our
 design~\cite{chatterjee2011another} and guarantees the security of our scheme.
 
@@ -141,7 +141,7 @@ successful forgery may be considered as a non-negligeable probability.
 %are mapped on the same underlying \tcp connection, head-of-line blocking remains
 %possible. However, this blocking can be prevented by using different \tcp
 %connections to transport the different data streams.
-
+\paragraph*{Handling multiple \tcp connections}
 \tcpls enables the client
 or the server to associate new \tcp connections to an existing \tcpls
 connection. This is similar to what Mutipath \tcp does \cite{raiciu2012hard,rfc6824},
