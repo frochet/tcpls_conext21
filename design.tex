@@ -22,7 +22,7 @@ Indeed, censorship~\cite{Morshed2017a, Gosain2017a,Chai2019a} can be easily impl
 can be distinguished, and avoiding trivial
 opportunities to implement censorship should become the bare minimum in
 designing a new protocol. \tcpls's control protocol considers those problems by
-avoiding unencrypted data within the ClientHello.
+avoiding unencrypted application extensions within the ClientHello.
 
 In our design, the client indicates its willingness to use \tcpls
 with a transport parameter in the ClientHello. Upon reception of this parameter,
@@ -61,22 +61,8 @@ record (TCP\_OPTION), while its  Type is set to $APPDATA$.
 \end{figure}
 
 
-\subsection{Multipath in a Modern Transport Protocol}
-\label{sec:multipath}
 
-
-\fr{notes sur HOL:}
-
-Note that, if
-the multipath mode is enabled, then a lost packet over one \tcp connection may
-create HOL blocking since packets received on other streams may have to wait for
-the lost packet to be properly reordered and delivered to the application. In
-the case of the multipath mode not enabled, this problem would not happen, but
-the application has to be careful to map application objects per stream, and not to
-mix these objects among several streams since the ordering would not be
-guaranteed.
-
-\subsection{Datastreams and \tcp Connections}
+\subsection{Datastreams}
 \label{sec:datastreams}
 
 \paragraph*{Cryptographic details and tricks}
@@ -141,19 +127,36 @@ successful forgery may be considered as a non-negligeable probability.
 %are mapped on the same underlying \tcp connection, head-of-line blocking remains
 %possible. However, this blocking can be prevented by using different \tcp
 %connections to transport the different data streams.
-\paragraph*{Handling multiple \tcp connections}
-\tcpls enables the client
-or the server to associate new \tcp connections to an existing \tcpls
-connection. This is similar to what Mutipath \tcp does \cite{raiciu2012hard,rfc6824},
-but with some differences. First, Multipath TCP supports only one bytestream.
-Second, \tcpls does not suffer from the same security limitations as Multipath
-TCP. To secure the attachment of additional subflows, Multipath TCP hosts
-\title{A \LaTeX\ Template for SIGCOMM 18}
-exchange keys in plaintext during the handshake \cite{rfc6824, rfc8684}.
-These keys are
+
+
+\subsection{Multipath in a Modern Transport Protocol}
+\label{sec:multipath}
+
+\tcpls enables the client or the server to associate new \tcp connections to an
+existing \tcpls connection. This is similar to what Mutipath \tcp does
+\cite{raiciu2012hard,rfc6824}, but with some differences. First, Multipath TCP
+supports only one bytestream.  Second, \tcpls does not suffer from the same
+security limitations as Multipath TCP. To secure the attachment of additional
+subflows, Multipath TCP hosts \title{A \LaTeX\ Template for SIGCOMM 18} exchange
+keys in plaintext during the handshake \cite{rfc6824, rfc8684}.  These keys are
 then used later to authenticate the attachment of subflows to a connection. An
 attacker that has observed the initial handshake can attach any subflow to an
-existing Multipath TCP connection \cite{rfc6181}.
+existing Multipath TCP connection \cite{rfc6181}. Finally,  \tcpls offers
+several mode of multipathing. An aggregation mode is an option to take advantage of
+multiple network interfaces and safely splitting an applical-level object over
+them. However, \tcpls also offers multiple paths without bandwidth aggregation.
+This is a choice left to the application using the API, and it has several
+advantages and inconvenients compared to the aggregation mode. For example, the
+aggregation mode is simple to use and can potentially saturate all available
+network paths but creates HOL blocking, since packets sent over different TCP
+connections need to be eventually re-ordered. This mode is also more CPU
+costly, since a zero-copy codepath is technically possible only when the packets
+arrive in order. In the multipath non-aggregated mode, the application needs to
+take care to fully send an application-level object over the same stream, since
+the ordering is only guaranteed per-stream in this mode. However, \tcpls
+guarantees this mode to offer zero-copy of the decrypted application data, which
+makes this mode potentially quite interesting for application protocol such as
+HTTP.
 
 \tcpls securely solves this \texttt{"connection join"} problem. For example, consider a
 client connecting to a dual-stack server. Figure~\ref{fig:join-example} depicts
