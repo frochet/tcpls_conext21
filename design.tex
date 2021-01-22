@@ -145,6 +145,8 @@ successful forgery may be considered as a non-negligeable probability.
 \subsection{Multipath in a Modern Transport Protocol}
 \label{sec:multipath}
 
+\paragraph*{The \tcpls approach to Multipath}
+
 \tcpls enables the client or the server to associate new \tcp connections to an
 existing \tcpls connection. This is similar to what Mutipath \tcp does
 \cite{raiciu2012hard,rfc6824}, but with some differences. First, Multipath TCP
@@ -170,6 +172,8 @@ the ordering is only guaranteed per-stream in this mode. However, \tcpls
 guarantees this mode to offer zero-copy of the decrypted application data, which
 makes this mode potentially quite interesting for application protocol such as
 HTTP.
+
+\paragraph*{How to Join}
 
 \tcpls securely solves this \texttt{"connection join"} problem. For example, consider a
 client connecting to a dual-stack server. Figure~\ref{fig:join-example} depicts
