@@ -6,7 +6,7 @@ paper.log
 paper.out
 paper.pdf
 *.fls
-*.synctex
+*.synctex.gz
 *.DS_Store
 *.fdb_latexmk
 # emacs
