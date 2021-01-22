@@ -43,8 +43,7 @@ one that offers the lowest latency. This avoids problems when an address
 family is broken on a path but not the other and sometimes results in
 lower latency~\cite{bajpai2019longitudinal}.
 
-
-\begin{figure}[!t]  
+\begin{figure}[!t]
   \resizebox{0.49\textwidth}{!}{%
 \begin{tikzpicture}
    \colorlet{lightgray}{black!20}
@@ -91,47 +90,33 @@ lower latency~\cite{bajpai2019longitudinal}.
   \label{fig:api}
 \end{figure}
 
-Figure~\ref{fig:api}
-shows an example of our current API workflow. The API can handle
-explicit multipath techniques such as Happy Eyeball by chaining
+Fig.~\ref{fig:api} shows an example of our current API workflow. The API can handle explicit multipath techniques such as Happy Eyeball by chaining
 \texttt{tcpls\_connect()} with an appropriate timeout of 50ms, as shown in the
-Figure. \tcpls lets the application explicitly choose
-the multipath mesh by calling several times \texttt{tcpls\_connect(src, dest,
-  timeout)};. The application may configure callbacks to connection events that
-would occur within \tcpls, such as a connection establishment, a stream
-attachment, a multipath join, the reception of a \tcp option to tune TCP, and
-more. When
-multiple streams are attached to multiple \tcp connections, the application may
-configure various \tcpls behaviours. Among them, we support HOL-blocking avoidance, aggregation of
-bandwidth with multipathing, connection failover, and connection migration.
-Note that, HOL-blocking avoidance is incompatible with the aggregation of bandwidth
-with multipathing (the application can do either one but not both at the same
-time).
+Figure. \tcpls lets the application explicitly choose the multipath mesh by calling several times \texttt{tcpls\_connect(src, dest,timeout)};. The application may configure callbacks to connection events that would occur within \tcpls, such as a connection establishment, a stream attachment, a multipath join, the reception of a \tcp option to tune \tcp, and
+more. When multiple streams are attached to multiple \tcp connections, the application may configure various \tcpls behaviours. Among them, we support HOL-blocking avoidance, aggregation of bandwidth with multipathing, connection failover, and connection migration. Note that, HOL-blocking avoidance is incompatible with the aggregation of bandwidth with multipathing (the application can do either one but not both at the same time).
 
 
 
 %Note, those features are not stable yet, and many bugs remain to be fixed.
 
-\subsection{On \tcp extensibility}
+\subsection{On \tcp Extensibility}
 \label{sec:tcpoptions}
 
-The \tcp specification limits the size of the entire \tcp header (including options)
-to 64 bytes. Unfortunately, the \tcp designers did not foresee that so many \tcp
-extensions would be standardized. Today, the size of the \tcp header
+The \tcp specification limits the size of the entire \tcp header (including options) to 64 bytes. Unfortunately, the \tcp designers did not foresee that so many \tcp extensions would be standardized. Today, the size of the \tcp header
 becomes a constraint. For example, it severely limits the number of gaps that
 can be covered by selective acknowledgments. This gets worse with extensions
-such as Multipath \tcp \cite{rfc6824} that consume more space in the \tcp header.
+such as \mptcp~\cite{rfc6824} that consume more space in the \tcp header.
 The IETF has discussed this problem for several years, but the latest attempt
-to solve it \cite{draft-ietf-tcpm-tcp-edo-10} has not yet been implemented by
+to solve it~\cite{draft-ietf-tcpm-tcp-edo-10} has not yet been implemented by
 major \tcp stacks.
 
 \tcpls provides more space for some \tcp options. First, with \tcpls, \tcp
 options can be negotiated during the \tls handshake. Since the \tls messages are
 included in the \tcp payload, there is more space to carry them. Another
-advantage of this approach is that the TCP options are secured by \tls. This
+advantage of this approach is that the \tcp options are secured by \tls. This
 implies that they cannot be modified by middleboxes. This could be an advantage,
 but could also prevent \tcpls from correctly working through some types of
-transparent TCP proxies.
+transparent \tcp proxies.
 
 Second, we can also carry \tcp options inside \tls records. For example, we used
 this feature to implement the \tcp User Time Out option \cite{rfc5482}. A client
@@ -146,24 +131,17 @@ and performs the required \texttt{setsockopt}.
 \label{sec:connmigr}
 
 Given the availability of multiple IP paths, connection migration might be a
-powerful tool to improve the application connection's reliability.  We
-implement Connection migration and Failover as two distinct measures to handle
-two different inquiries: 1) The application expects to take advantage of multiple
-IP paths. 2) The application expects to be resilient to a network outage. In the
-first case, we implement connection migration and multipathing from a
-protocol viewpoint, as the same exchange of messages and API calls from \tcpls.
-It is left for the application to decide and program
+powerful tool to improve the application connection's reliability.  We implement Connection migration and Failover as two distinct measures to handle
+two different inquiries: ($i$) The application expects to take advantage of multiple IP paths. ($ii$) The application expects to be resilient to a network outage. In the first case, we implement connection migration and multipathing from a protocol viewpoint, as the same exchange of messages and API calls from \tcpls. It is left for the application to decide and program
 through the API calls whether it wants to move all the traffic from one path to
 another or split the traffic among the available paths according to any
-scheduling policy. The second
-inquiry focuses on simply configuring \tcpls to automatically move the traffic to
-another available IP-level path if a network outage is detected.
+scheduling policy. The second inquiry focuses on simply configuring \tcpls to automatically move the traffic to another available IP-level path if a network outage is detected.
 %The current implementation supports surviving abrupt reset of the connection,
 %yet we may also want to
 %monitor the connection and switch to another one if the path quality is low.
 
 
-\subsubsection{Failover}
+\subsubsection{Failover}\label{failover}
 describing Failover
 
 \subsubsection{Data Aggregation}
