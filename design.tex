@@ -266,6 +266,24 @@ outage.
 
 \subsection{Secure Connection Closing}
 
+\tcpls's semantic offers a secure stream abstraction to the upper application
+layer.
+Streams can be attached to and closed from what we call a \texttt{transportid}
+(the application does not have knowledge of the \tcp interface). When a stream
+gets attached for the first time to a \tcp connection, this connection becomes
+active. The only way to gracefully close the transport is by securly closing all
+streams attached to this transport, then \tcpls gracefully close the \tcp
+connection. That is, if \tcpls receives a $RST$ or a $FIN$ over a \tcp
+connection on which streams are still attached, \tcpls would try to re-establish
+a \tcp connection. If the failover feature is enabled, \tcpls would try another
+network path first if any are available. If not, a connection over the same
+source and address is reestablished and the streams are moved to this new \tcp
+connection. If failover is not enabled, \tcpls would opportunistically try to
+re-establish the connection. However, if the failover feature is not enabled and
+records were in flight during an illegitimate $RST$ or $FIN$ (e.g., sent by a
+middlebox), \tcpls may suffer from a decyption error, and report a critical
+error to the application.
+
 
 
 %\fr{JOIN is explained here =)}
