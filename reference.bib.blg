@@ -1,0 +1,14 @@
+[0] Config.pm:304> INFO - This is Biber 2.12 running in TOOL mode
+[1] Config.pm:307> INFO - Logfile is 'reference.bib.blg'
+[45] biber:315> INFO - === Thu Jan 14, 2021, 17:54:54
+[146] Biber.pm:4250> INFO - Looking for bibtex format file 'reference.bib'
+[156] bibtex.pm:1512> INFO - LaTeX decoding ...
+[267] bibtex.pm:1329> INFO - Found BibTeX data source 'reference.bib'
+[325] Utils.pm:193> WARN - Datamodel: Entry 'quicimplem' (reference.bib): Field 'optkey' invalid in data model - ignoring
+[325] Utils.pm:193> WARN - Datamodel: Entry 'quicimplem' (reference.bib): Field 'optmonth' invalid in data model - ignoring
+[326] Utils.pm:193> WARN - Datamodel: Entry 'quicimplem' (reference.bib): Field 'optyear' invalid in data model - ignoring
+[327] Utils.pm:193> WARN - Datamodel: Entry 'quicimplem' (reference.bib): Field 'optannote' invalid in data model - ignoring
+[715] Utils.pm:193> WARN - BibTeX subsystem: /tmp/BRnu2WOv6i/reference.bib_31376.utf8, line 435, warning: possible runaway string started at line 434
+[716] Utils.pm:209> ERROR - BibTeX subsystem: /tmp/BRnu2WOv6i/reference.bib_31376.utf8, line 1284, syntax error: at end of input, expected one of: number, name (entry type, key, field, or macro name) or quoted string ({...} or "...")
+[716] Biber.pm:110> INFO - WARNINGS: 5
+[717] Biber.pm:114> INFO - ERRORS: 1
