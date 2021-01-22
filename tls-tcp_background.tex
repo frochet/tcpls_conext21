@@ -1,19 +1,18 @@
 
-The Transmission Control Protocol (TCP) \cite{rfc793} is the most
-popular Internet transport protocol. It enables a client and a server
-to exchange data over a connection that exposes a bidirectional
-reliable bytestream. 
-TCP has evolved a lot since the publication of
-the first specification while still preserving the same packet
-format. Dozens of TCP extensions have been standardised and
-implemented \cite{RFC7414}. Several of these extensions rely on TCP
-options and are negotiated during the three-way handshake.
+% !TEX root = ./paper.tex
+The Transmission Control Protocol (\tcp)~\cite{rfc793} is the most popular
+Internet transport protocol. It enables a client and a server to exchange data
+over a connection that exposes a bidirectional reliable bytestream. \tcp has
+evolved a lot since the first specification publication while still preserving
+the same packet format. Dozens of \tcp extensions have been standardised and
+implemented~\cite{RFC7414}. Several of these extensions rely on \tcp options and
+are negotiated during the three-way handshake.
 
-The measurement studies carried out during the last decades, see
-e.g. \cite{paxson1994growth,claffy1993traffic,maier2009dominant,trevisan2020five},
-have shown that TCP was by far the most widely used protocols. It is
-only recently that measurement studies have shown a growth in UDP
-traffic \cite{trevisan2020five}.  
+The measurement studies carried out during the last decades, see,
+e.g.,~ \cite{paxson1994growth,claffy1993traffic,maier2009dominant,trevisan2020five},
+have shown that \tcp was by far the most widely used protocols. It is only
+recently that measurement studies have shown a growth in \udp
+traffic~\cite{trevisan2020five}.
 
 %\cite{RFC793}
 %\cite{RFC7414} % roadmap extensions (dozen)
@@ -23,60 +22,54 @@ traffic \cite{trevisan2020five}.
 % mais problème (christoph)
 %\cite{paasch2016network}
 
-TCP was designed as an end-to-end protocol that is only used on
-endhosts. Despite this architectural principale, network operators
-have deployed a variety of middleboxes (e.g., firewalls, NATs, transparent
-proxies) that sometimes interfere with TCP or its extensions
-\cite{medina2004measuring, honda2011still, edeline2019bottom}.
-These in-path network functions make assumptions about the content of TCP
-packets, invalidating the initial end-to-end paradigm of TCP.
-Moreover, they do not always strictly follow the TCP specifications
-\cite{honda2011still, hesmans2013tcp}, which may negatively affect
-TCP evolution and performances~\cite{edeline2020evaluating}.
+\tcp was designed as an end-to-end protocol that is only used on endhosts.
+Despite this architectural principale, network operators have deployed a variety
+of middleboxes (e.g., firewalls, NATs, transparent proxies)~\cite{mCloud} that
+sometimes interfere with \tcp or its extensions~\cite{medina2004measuring,
+honda2011still, edeline2019bottom}.  These in-path network functions make
+assumptions about the content of \tcp packets, invalidating the initial
+end-to-end paradigm of \tcp. Moreover, they do not always strictly follow the
+\tcp specifications~\cite{honda2011still, hesmans2013tcp}, which may negatively
+affect \tcp evolution and performances~\cite{edeline2020evaluating}.
 % which
 
 %\cite{honda2011still} % honda still possible to extend TCP
 
-%- de très nombreux types de middleboxes
-%\cite{medina2004measuring} % oldest middlebox paper   title={Measuring interactions between transport protocols and middleboxes},
+%- de très nombreux types de middleboxes \cite{medina2004measuring} % oldest
+%middlebox paper   title={Measuring interactions between transport protocols and
+%middleboxes},
 
 %\cite{edeline2017first} % title={A first look at the prevalence and persistence of middleboxes in the wild},
 %\cite{hesmans2013tcp} % {Are TCP extensions middlebox-proof?}},
 %\cite{detal2013revealing} % tracebox, probablement pas utile
 
 
-In the 1990s and early 2000s, TCP was mainly used directly by
-applications such as HTTP, SMTP, FTP, telnet, ssh, \ldots However,
-when an application exchanges plaintext using TCP, it exposes its
-users to various privacy problems and attacks. Initially, only banks
-and e-commerce websites considered the usage of plaintext to be
-problematic and used cryptographic techniques to encrypt and
-authenticate the information exchanged using Secure Socket Layer (SSL)
-\cite{draft-hickman-netscape-ssl}. At that time, using SSL was costly
-from a performance viewpoint. During the last two decades, the
-situation completed changed. Modern CPUs include specialised
-instructions that enable fast encryption. Furthermore, the
-standardisation of SSL improved the security of the protocol. The most
-recent version (TLS 1.3 \cite{rfc8446}) is considered to be much more
-secure than the previous ones. Furthermore, Let's Encrypt
-\cite{aas2019let} has simplified the distribution of
-certificates. 
-Transport Layer Security (TLS) is on 90\% of the Alexa
-top 1M websites \cite{holz2019era,holz2020tracking} and many other applications also
-rely on TLS  \cite{anderson2019tls}. 
-More importantly, modern applications
-require \textbf{both} the reliability provided by TCP and the security provided
-by TLS. 
+In the 1990s and early 2000s, \tcp was mainly used directly by applications such
+as HTTP, SMTP, FTP, telnet, ssh, \ldots However, when an application exchanges
+plaintext using \tcp, it exposes its users to various privacy problems and
+attacks. Initially, only banks and e-commerce websites considered the usage of
+plaintext to be problematic and used cryptographic techniques to encrypt and
+authenticate the information exchanged using Secure Socket Layer
+(SSL)~\cite{draft-hickman-netscape-ssl}. At that time, using SSL was costly from
+a performance viewpoint. During the last two decades, the situation completly
+changed. Modern CPUs include specialised instructions that enable fast
+encryption. Furthermore, the SSL standardisation improved the protocol security.
+The most recent version (\tls 1.3~\cite{rfc8446}) is considered to be much more
+secure than the previous ones. Furthermore, Let's Encrypt~\cite{aas2019let} has
+simplified the certificates distribution. Transport Layer Security (\tls) is on
+90\% of the Alexa top 1M websites~\cite{holz2019era,holz2020tracking} and many
+other applications also rely on \tls~\cite{anderson2019tls}. More importantly,
+modern applications require both the reliability provided by \tcp and the
+security provided by \tls.
 
-TLS 1.3 brings several important features compared to the previous
-versions. It includes a secure handshake that allows to negotiate the
-security parameters and keys within one round-trip-time. Thanks to
-TCP Fast Open \cite{radhakrishnan2011tcp}, it is possible to perform
-the secure handshake during the TCP handshake. Furthermore, it is
-possible to also exchange application data during the handshake.
-The TLS 1.3 record layer protects all application data with encryption and
-authentication. This record layer is extensible and to prevent
-ossification, TLS record types are also encrypted.
+\tls 1.3 brings several important features compared to the previous versions. It
+includes a secure handshake that allows to negotiate the security parameters and
+keys within one round-trip-time. Thanks to \tcp Fast Open
+\cite{radhakrishnan2011tcp}, it is also possible to perform the secure handshake
+during the \tcp handshake. Furthermore, it is possible to also exchange
+application data during the handshake. The \tls 1.3 record layer protects all
+application data with encryption and authentication. This record layer is
+extensible and to prevent ossification, \tls record types are also encrypted.
 
 %TLS, 1.1 -> TLS.3
 
@@ -93,39 +86,36 @@ ossification, TLS record types are also encrypted.
 % let's ecnrypt justifie le succès
 %\cite{aas2019let}
 
-During the last five years, cloud vendors and the IETF have put a lot
-of effort in designing and deploying a new transport protocol targeted
-at web applications: QUIC \cite{10.1145/3098822.3098842}. QUIC
-provides a secure and reliable delivery like the traditional TLS/TCP
-stack, but on top of UDP. This choice was motivated by two design
-requirements. First, QUIC must be able to go through middleboxes and most
-of the deployed ones only support TCP and UDP. Second, it must be
-possible to implement QUIC as a userspace library. The version 1.0 of
-QUIC is being finalised \cite{draft-ietf-quic-transport} and there are
-more than a dozen implementations \cite{quicimplem,marx2020same}. QUIC is used in
-production as shown by recent measurement studies \cite{trevisan2020five}.  
+During the last five years, cloud vendors and the IETF have put a lot of effort
+in designing and deploying a new transport protocol targeted at web
+applications: \quic \cite{10.1145/3098822.3098842}. \quic provides a secure and
+reliable delivery like the traditional \tls/\tcp stack, but on top of \udp. This
+choice was motivated by two design requirements. First, \quic must be able to go
+through middleboxes and most of the deployed ones only support \tcp and \udp.
+Second, it must be possible to implement \quic as a userspace library. \quic
+version 1.0 is being finalised~\cite{draft-ietf-quic-transport} and there are
+more than a dozen implementations~\cite{quicimplem,marx2020same}. \quic is used
+in production as shown by recent measurement studies~\cite{trevisan2020five}.
 
 % derniers drafts et papier google
-%\cite{10.1145/3098822.3098842} % QUIC google
-%\cite{draft-ietf-quic-transport}
+%\cite{10.1145/3098822.3098842} % QUIC google \cite{draft-ietf-quic-transport}
 
 % quicimplementations (bcp)
 %\cite{quicimplem}
 
-In addition to reliable and secure delivery, a growing number of
-applications are used on devices such as smartphones that are attached
-to two or more networks. Users expect their applications to be
-resilient to network failures. With regular TCP, applications need to
-reestablish their connections when one of their network connection
-fails. Multipath TCP \cite{rfc8684,raiciu2012hard} is a TCP extension
-that enables a connection to use different paths. One of the main use
-cases for Multipath TCP is to provide fast failovers on iPhones
-\cite{bonaventure2016multipath}. It also provides bandwidth
-aggregation by simultaneously using two or more network paths to
-support one connection. Multipath extensions have also been proposed
-for QUIC \cite{viernickel2018multipath,de2017multipath}. QUIC version
-1.0 \cite{draft-ietf-quic-transport} includes a connection migration
-capability that supports failovers but not bandwidth aggregation.
+In addition to reliable and secure delivery, a growing number of applications
+are used on devices such as smartphones that are attached to two or more
+networks. Users expect their applications to be resilient to network failures.
+With regular \tcp, applications need to reestablish their connections when one
+of their network connection fails. Multipath \tcp
+(\mptcp)~\cite{rfc8684,raiciu2012hard} is a \tcp extension that enables a
+connection to use different paths. One of the main use cases for \mptcp is to
+provide fast failovers on iPhones~\cite{bonaventure2016multipath}. It also
+provides bandwidth aggregation by simultaneously using two or more network paths
+to support one connection. Multipath extensions have also been proposed for
+\quic~\cite{viernickel2018multipath,de2017multipath}. \quic version
+1.0~\cite{draft-ietf-quic-transport} includes a connection migration capability
+that supports failovers but not bandwidth aggregation.
 
 
 %Multipath transport (MPTCP et MPQUIC), deux use case failover et agregation
@@ -149,7 +139,7 @@ capability that supports failovers but not bandwidth aggregation.
 
 % mptcp scheduler
 
-%MPQUIC: 
+%MPQUIC:
 
 
 %Protocol extensibility ? Pas encore sur que c'est le meilleur endroit

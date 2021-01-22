@@ -92,35 +92,61 @@ guaranteed.
 \subsection{Datastreams and \tcp Connections}
 \label{sec:datastreams}
 
-In \tcpls, each stream has its own cryptographic
-context. They use the same key but derive the blockcipher IV such that
-nonce-misuse cannot happen while the record sequence number within each stream
-starts at 0. Only one application-level key is used for N streams, for each direction.
-The reason behind this design choice is to avoid security degradation with the
-usage of multiple keys (by a factor $k$ with $k$
-keys)~\cite{chatterjee2011another}.
+\paragraph*{Cryptographic details and tricks}
+In \tcpls, each stream has its own cryptographic context. They use the same key
+but derive the blockcipher IV (Initial Vector, also called cryptographic nonce)
+such that nonce-misuse cannot happen while the record sequence number within
+each stream starts at 0. Only one application-level key is used for N streams,
+for each direction.  The reason behind this design choice is to avoid security
+degradation with the usage of multiple keys (by a factor $k$ with $k$
+keys)~\cite{chatterjee2011another}. To understand the trick behind every
+stream sequences to start at 0, we need some AEAD details. In \tcpls, the AEAD
+nonce must be of unique use when encrypting and decrypting a message. The
+initial nonce must also be unpredictable for an adversary observig the
+handshake, and is in practice derived from the TLS handshake session secret in a
+similar fashion than the TLS keys. The nonce size is specified to be from $96$
+bits to $128$ bits depending on the underlying cipher used. In all cases, for a
+nonce of size $N$ in TLS, the cryptographic nonce given to the underlying cipher
+is computed from concatenating the N-64 leftmost bits with the 64 lower bits xored
+with the record's implicit sequence number encoded in 64 bits. The lower 64 bits
+xoring gives some more unpredictability to the nonce in the case of the same
+plaintext is encrypted multiple times with the same key~\cite{bellare2016multi,
+  hoang2018multi}. This design means that we give to the underlaying cipher the
+32 upper bits untouched. The resulting value is then incremented at most 1024
+times starting from the leftmost bits to encrypt a TLS record of maximum size
+(16384 bytes, i.e, 1024 times 128 bits for the the minimum block size). So,
+doing the math, we observe that 7 bits among those 32 bits are untouchable,
+which leads to at least 25 bits to encode a unique stream number. Encoding such
+unique number in this space of the cryptographic nonce allows each stream to
+start its sequence number at 0 while encrypting its record with the same key.
+This observation means that we can create independant cryptographic context
+based on a tweak of the cryptographic nonce, which allows streams to encrypt and
+decrypt independently of each other, with the same key value. This trick
+maintains AEAD's core assumption (uniqueness of nonce), which means that the
+state of art AEAD's security proof starting from that assumption applies to our
+design~\cite{chatterjee2011another} and guarantees the security of our scheme.
 
-Having a separate cryptographic
-context means that \tcpls can do concurrent encryption and decryption
-between streams while maintaining decryption correctness and security, and potentially also use this
-capability to process streams over multiple cores. Finally, if we have multiple
-streams over the same \tcp connection, \tcpls does not explicitely know which received data belongs to
+\paragraph*{Multiple Streams over the same transport}
+Having a separate cryptographic context means that \tcpls can do concurrent
+encryption and decryption between streams while maintaining decryption
+correctness and security, and potentially also use this capability to process
+streams over multiple cores. Finally, if we have multiple streams over the same
+\tcp connection, \tcpls does not explicitely know which received data belongs to
 which stream. To obtain this information, we either require to modify the
 associated information within  \tls records to add a stream id (these associated
-data are not encrypted but the AEAD cipher authenticates them). This
-choice means potential middlebox interference, which we chose to avoid. The other option
-is to leverage the AEAD cipher to check the authentication tag of the incoming
-record until we find the stream that properly verifies the tag). This operation is
-lightweight: it does not require full decryption of the record because
-\texttt{TLS 1.3}
-uses AEAD ciphers doing Encrypt then MAC (and MAC then
+data are not encrypted but the AEAD cipher authenticates them). This choice
+means potential middlebox interference, which we chose to avoid. The other
+option is to leverage the AEAD cipher to check the authentication tag of the
+incoming record until we find the stream that properly verifies the tag). This
+operation is lightweight: it does not require full decryption of the record
+because \texttt{TLS 1.3} uses AEAD ciphers doing Encrypt then MAC (and MAC then
 Decrypt), and looking for the right stream needs to be performed once each time
 the application writes to another stream over the same \tcp connection.
 
 Note that, security-wise, each failed decryption is considered as a
 forgery attempt. However, we have large limits on the confidentiality and
 integrity with all AEAD ciphers~\cite{luykx2015limits, aeadlimits} before a
-successful iorgery may be considered as a non-negligeable probability.
+successful forgery may be considered as a non-negligeable probability.
 
 %Streams are an interesting abstraction for applications. Experience with HTTP/2
 %has shown that head-of-line blocking was an important factor in web performance.
@@ -128,7 +154,7 @@ successful iorgery may be considered as a non-negligeable probability.
 %are mapped on the same underlying \tcp connection, head-of-line blocking remains
 %possible. However, this blocking can be prevented by using different \tcp
 %connections to transport the different data streams.
-
+\paragraph*{Handling multiple \tcp connections}
 \tcpls enables the client
 or the server to associate new \tcp connections to an existing \tcpls
 connection. This is similar to what Mutipath \tcp does \cite{raiciu2012hard,rfc6824},
