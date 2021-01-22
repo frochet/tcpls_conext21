@@ -230,7 +230,7 @@ guarantees this mode to offer zero-copy of the decrypted application data, which
 makes this mode potentially quite interesting for application protocol such as
 HTTP that needs to fetch multiple application objects at the same time.
 
-\paragraph*{3) More Flexible Connection Migration}
+\paragraph*{3) A More Flexible Connection Migration}
 Conceptually, we define two mode of migrations with again, different advantages
 and incovenients. First, the Failover mode. The Failover is fully internal to
 TCPLS and similar to QUIC connection migration: upon network outage, \tcpls is
@@ -278,8 +278,8 @@ connection on which streams are still attached, \tcpls would try to re-establish
 a \tcp connection. If the failover feature is enabled, \tcpls would try another
 network path first if any are available. If not, a connection over the same
 source and address is reestablished and the streams are moved to this new \tcp
-connection. If failover is not enabled, \tcpls would opportunistically try to
-re-establish the connection. However, if the failover feature is not enabled and
+connection. If the failover feature is not enabled, \tcpls would opportunistically try to
+reestablish the connection. However, if the failover feature is not enabled and
 records were in flight during an illegitimate $RST$ or $FIN$ (e.g., sent by a
 middlebox), \tcpls may suffer from a decyption error, and report a critical
 error to the application.

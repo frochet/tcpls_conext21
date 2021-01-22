@@ -66,7 +66,7 @@ if __name__ == "__main__":
     axis_aesthetic(ax)
 
     plt.xlabel(latex_label("Download in MBit/s"), fontsize=20)
-    grid(True, color='gray', linestyle='dashed', which='major')
+    #grid(True, color='gray', linestyle='dashed', which='major')
 
     axhline(y=3.5, lw=2, color='k')
     axhline(y=5.5, lw=2, color='k')

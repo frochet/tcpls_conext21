@@ -7,16 +7,25 @@
 %\tls 1.3's extensibility cannot compete with QUIC.
 %Gives an overview of \tls / \tcp and how they interact.
 
-\tcpls offers a cross-layer interface to \tls and \tcp with the motivation to do more than securing the transport layer. Merging the stacks benefits both protocols and the application using this new approach. First, \tcp suffers from a lack of extensibility due to size restrictions in its header and due to
+\tcpls offers a cross-layer interface to \tls and \tcp with the motivation to do
+more than securing the transport layer. Merging the stacks benefits both
+protocols and the application using this new approach. First, \tcp suffers from
+a lack of extensibility due to size restrictions in its header and due to
 potential middlebox interferences~\cite{honda2011still}. \tcpls aims to solve
-\tcp extensibility issue in the long run by offering a secure control channel
-to exchange \tcp options without suffering from middlebox interferences
-and size restrictions in \tcp headers. Second, \tls does not have a clear view of the transport protocol, and offering one with \tcpls brings opportunity for performance improvement (e.g., avoiding records fragmentation with dynamic receive buffer auto-tuning and/or with dynamic control of the record length), and for connection reliability (e.g., failover).  Third, applications are becoming more complex, which appeals to exposing transport-level functionalities and letting them tune the underlying transport to their use case. Essentially, this last motivation discusses a novel manner to expose
-transport-level functionalities that are encrypted, authenticated, reliable,
-extensible, and adapted to complex application-level requirements.
-%The lack of
-%extensibility impacts the design and deployability of new protocols,
-%such as \texttt{MP\tcp}~\cite{raiciu2012hard,rfc6824} or
+\tcp extensibility issue in the long run by offering a secure control channel to
+exchange \tcp options without suffering from middlebox interferences and size
+restrictions in \tcp headers. Second, \tls does not have a clear view of the
+transport protocol, and offering one with \tcpls brings opportunity for
+performance improvement (e.g., avoiding records fragmentation with dynamic
+receive buffer auto-tuning and/or with dynamic control of the record length),
+and for connection reliability (e.g., failover).  Third, applications are
+becoming more complex, which appeals to exposing transport-level functionalities
+and letting them tune the underlying transport to their use case. Essentially,
+this last motivation discusses a novel manner to expose transport-level
+functionalities that are encrypted, authenticated, reliable, extensible, and
+adapted to complex application-level requirements.
+%The lack of extensibility impacts the design and deployability of new
+%protocols, such as \texttt{MP\tcp}~\cite{raiciu2012hard,rfc6824} or
 %\texttt{SCTP}~\cite{rfc4960}, and
 %has motivated the design of QUIC~\cite{langley2017quic}.% and PQUIC~\cite{de2019pluginizing}.
 %Therefore, designing a new extensibility mechanism could empower new
@@ -37,16 +46,27 @@ extensible, and adapted to complex application-level requirements.
 %\synack packets.
 \subsection{Overview}
 
-\tcp separates control information and data by placing the control information in the packet header and the data in the payload. This separation worked well until middleboxes started to interfere with \tcp~\cite{10.1145/1064413.1064418,
-honda2011still, DHBVD13}.  On a fraction of Internet paths, including e.g.,
+\tcp separates control information and data by placing the control information
+in the packet header and the data in the payload. This separation worked well
+until middleboxes started to interfere with \tcp~\cite{10.1145/1064413.1064418,
+  honda2011still, DHBVD13}.  On a fraction of Internet paths, including e.g.,
 some enterprise and cellular networks, some middleboxes interfere by adding,
-removing, or changing \tcp options~\cite{wang2011untold, honda2011still, xu2015investigating} and, in some cases, also transparently terminating \tcp connections. These middleboxes have slowed down the evolution of \tcp in recent years. \tcpls also uses the packet header to exchange \tcp control information, but it leverages \tls to create a second and secure control channel. In a nutshell, \tcpls leverages the extensibility of \tls 1.3 to place control information such as \tcp options inside the \tls handshake messages and new \tls records. Since this information is encrypted and authenticated, the communicating hosts can exchange new control information without encountering middlebox interference. We describe several examples of these new
-types of control information in Sec.~\ref{sec:extending} and
-Sec.~\ref{sec:connmigr}.
+removing, or changing \tcp options~\cite{wang2011untold, honda2011still,
+  xu2015investigating} and, in some cases, also transparently terminating \tcp
+connections. These middleboxes have slowed down the evolution of \tcp in recent
+years. \tcpls also uses the packet header to exchange \tcp control information,
+but it leverages \tls to create a second and secure control channel. In a
+nutshell, \tcpls leverages the extensibility of \tls 1.3 to place control
+information such as \tcp options inside the \tls handshake messages and new \tls
+records. Since this information is encrypted and authenticated, the
+communicating hosts can exchange new control information without encountering
+middlebox interference. We describe several examples of these new types of
+control information in Sec.~\ref{sec:extending} and Sec.~\ref{sec:connmigr}.
 
 
-%A key benefit of \tcpls is that it leverages the encrypted parts of the \tls 1.3
-%messages and records to create a new secure and independent channel between the
+%A key benefit of \tcpls is that it leverages the encrypted parts of the \tls
+%1.3 messages and records to create a new secure and independent channel between
+%the
 %communicating hosts.
 
 %interference that enables it to fallback to regular \tcp in the (expected rare)
@@ -98,19 +118,20 @@ Sec.~\ref{sec:connmigr}.
 %This could help to
 %cope with some specific middleboxes that have affected the deployment
 %of \tcp Fast Open \cite{paasch2016network}.
-
+\fr{rework following paragraphs + link fig1}
 Once the \tcpls session has been established, \tcpls sends TLS records. Most of
 these records contain application data transmitted by the client or
 the server. The control channel between the client and the
-server enables \tcpls to support new features, such as streams. Indeed, applications such as HTTP/2 support multiple streams mapped to a single
-\tcp connection. However, there are situations, e.g., to prevent head-of-line
+server enables \tcpls to support new features, such as streams. Indeed,
+applications such as HTTP/2 support multiple streams mapped to a single \tcp
+connection. However, there are situations, e.g., to prevent head-of-line
 blocking, where different streams should be mapped over other underlying \tcp
 connections. With \tcpls, the client and the server can establish different
 datastreams over a single \tcpls session. The data from all these streams is
 encrypted using \tls. Furthermore, thanks to the \tcpls API, the client and the
-server can map each data stream to an underlying \tcp connection.
-Thus, a \tcpls session can be composed of one or more \tcp connections
-similarly as a \mptcp connection gathers subflows.
+server can map each data stream to an underlying \tcp connection.  Thus, a
+\tcpls session can be composed of one or more \tcp connections similarly as a
+\mptcp connection gathers subflows.
 
 %This channel is used to exchange \tcp options and other TCPLS control messages.
 %\tcpls uses it also to exchange information about the client and server
@@ -128,7 +149,13 @@ acknowledgments, a \tcpls session can react to the failure of the underlying
 \tcp connection by reestablishing a new \tcp connection to continue the data transfer and replay the records that have been lost.
 %This is similar to the handover capability of Multipath \tcp.
 
-A \tcp connection ends with the exchange of \fin or \rst packets. However, some middleboxes force the termination of \tcp connections by sending \rst packets~\cite{rfc3360,weaver2009detecting}. \tcpls can preserve established connections by automatically restarting the underlying \tcp connection upon reception of a spurious reset. \tcpls defines the connection termination at the stream level: closing the last stream attached to a \tcp connection allows clients and servers to securely terminate the \tcpls session.
+A \tcp connection ends with the exchange of \fin or \rst packets. However, some
+middleboxes force the termination of \tcp connections by sending \rst
+packets~\cite{rfc3360,weaver2009detecting}. \tcpls can preserve established
+connections by automatically restarting the underlying \tcp connection upon
+reception of a spurious reset. \tcpls defines the connection termination at the
+stream level: closing the last stream attached to a \tcp connection allows
+clients and servers to securely terminate the \tcpls session.
 
 
 %Todo explain that the transport abstraction level failed to offera versatile
