@@ -143,7 +143,8 @@ similarly as a Multipath \tcp connection gathers subflows.
 %connection over each network interface to support the same \tcpls
 %connection.
 To support data from a given datastream to be exchanged over several \tcp
-connections, \tcpls includes its sequence numbers. A client and server can also
+connections, \tcpls includes its sequence numbers when the multipath aggregation
+mode is activated. A client and server can also
 enable acknowledgments. Thanks to these \tcpls
 acknowledgments, a \tcpls session can react to the failure of the underlying
 \tcp connection by reestablishing a new \tcp connection to continue the transfer
