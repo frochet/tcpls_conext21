@@ -143,7 +143,6 @@ successful forgery may be considered as a non-negligeable probability.
 \label{sec:multipath}
 
 \paragraph*{The \tcpls approach to Multipath}
-\paragraph*{Handling Multiple \tcp Connections}
 \tcpls enables the client or the server to associate new \tcp connections to an
 existing \tcpls connection. This is similar to what \mptcp
 does~\cite{raiciu2012hard,rfc6824}, but with some differences. First, \mptcp
@@ -168,9 +167,8 @@ take care to fully send an application-level object over the same stream, since
 the ordering is only guaranteed per-stream in this mode. However, \tcpls
 guarantees this mode to offer zero-copy of the decrypted application data, which
 makes this mode potentially quite interesting for application protocol such as
-HTTP.
+HTTP that needs to fetch multiple application objects at the same time.
 
-\paragraph*{How to Join}
 
 \begin{figure}[!t]
   \centering
@@ -199,17 +197,31 @@ HTTP.
     handshake key.}
   \label{fig:join-example}
 \end{figure}
+\paragraph*{How to Join}
 
-\tcpls securely solves this \texttt{``connection join''} problem. For example, consider a client connecting to a dual-stack server. Fig.~\ref{fig:join-example} depicts the \tls messages exchanged.  The client starts with a \textsc{ClientHello}. This includes the \tcpls extension to negotiate \tcpls. The server replies with a \textsc{ServerHello} containing several important and encrypted control information $\alpha$. First, the server announces
-its IPv4 and IPv6 addresses. Second, it associates one connection identifier.
-This identifier uniquely identifies the connection on the server. Third, the
-server provides a list of cookies that enable the client to attach additional
-\tcp connections to the \tcpls connection. To attach a new connection, e.g., using the server's IPv6 address, the client opens a \tcp connection and sends a
-\textsc{ClientHello} message containing the connection identifier ($CONNID$) and one of the cookies supplied ($COOKIE$) by the server.
+\tcpls securely solves this \texttt{``connection join''} problem. For example,
+consider a client connecting to a dual-stack server. Fig.~\ref{fig:join-example}
+depicts the \tls messages exchanged.  The client starts with a
+\textsc{ClientHello}. This includes the \tcpls extension to negotiate \tcpls.
+The server replies with a \textsc{ServerHello} containing several important and
+encrypted control information $\alpha$. First, the server announces its IPv4 and
+IPv6 addresses. Second, it associates one connection identifier.  This
+identifier uniquely identifies the connection on the server. Third, the server
+provides a list of cookies that enable the client to attach additional \tcp
+connections to the \tcpls connection. To attach a new connection, e.g., using
+the server's IPv6 address, the client opens a \tcp connection and sends a
+\textsc{ClientHello} message containing the connection identifier ($CONNID$) and
+one of the cookies supplied ($COOKIE$) by the server.
 
 The Connection identifier allows the server to attach the new \tcp connection to
 the right \tcpls session, assuming the received cookie is valid. The Connection
-identifier and the cookie play that same role as \mptcp's token. However, the cookie is longer, encrypted in the \textsc{ServerHello} message, and one-time use (i.e., when the server receives a valid cookie, it accepts the connection, attaches it to the right \tcpls session, and discard the cookie). Thanks to the cookies, the server can limit the number of \tcp connections that a client can attach to a \tcpls connection. This prevents some denial-of-service attacks that are possible with \mptcp.
+identifier and the cookie play that same role as \mptcp's token. However, the
+cookie is longer, encrypted in the initial \textsc{ServerHello} message, and
+one-time use (i.e., when the server receives a valid cookie, it accepts the
+connection, attaches it to the right \tcpls session, and discard the cookie).
+Thanks to the cookies, the server can limit the number of \tcp connections that
+a client can attach to a \tcpls connection. This prevents some denial-of-service
+attacks that are possible with \mptcp.
 
 \subsection{Secure Connection Closing}
 
