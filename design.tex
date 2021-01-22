@@ -201,33 +201,33 @@ networking outage on both the initial path and the path in which the application
 wants to migrate its traffic.
 
 
-%\begin{figure}[!t]
- % \centering
-  %\begin{tikzpicture}
-   % \colorlet{lightgray}{black!20}
-    %\tikzstyle{arrow} = [thick,->,>=stealth]
-    %\tikzset{state/.style={rectangle, dashed, draw, fill=white} }
-    %\node[black, fill=white] at (0,10) {Client};
-    %\node[black, fill=white] at (6,10) {Server};
-    %\node[red, fill=white] at (5.6,9.5) {@v4};
-    %\node[blue, fill=white] at (6.4,9.5) {@v6};
-    %\node[red, fill=white] at (-0.4,9.5) {@v4};
-    %\node[blue, fill=white] at (0.5,9.5) {@v6};
-    %\draw[red, very thick,->] (-0.4,9.5) -- (-0.4,6.5);
-    %\draw[blue, very thick,->] (0.5,9.5) -- (0.5,6.5);
-    %\draw[red, very thick,->] (5.6,9.5) -- (5.6,6.5);
-    %\draw[blue, very thick,->] (6.4,9.5) -- (6.4,6.5);
-   %\draw[black, thick, ->] (-0.4,9) -- (5.6,9) node [midway, fill=white, above,
-   %text width=3cm] {\textsc{ClientHello}+\emph{\tcpls}};
-   %\draw[black, thick, <-] (-0.4,8.7) -- (5.6,8.7) node [midway, fill=white, below, text width=4.5cm] {\textsc{ServerHello}+\emph{\tcpls($\alpha_0$\ldots$%\alpha_n$)} };
-  % \draw[black, thick, ->] (0.5,7) -- (6.4,7) node [midway, %fill=white, above,
- %  text width=3cm] {\textsc{ClientHello}\\+JOIN($CONNID$,$COOKIE$)};
-  %\end{tikzpicture}
- % \caption{\tcpls supports the attachment of additional \tcp
-  %  connections to a \tcpls connection. Each $\alpha_i$ is encrypted with the
-   % handshake key.}
-%  \label{fig:join-example}
-%\end{figure}
+\begin{figure}[!t]
+  \centering
+  \begin{tikzpicture}
+    \colorlet{lightgray}{black!20}
+    \tikzstyle{arrow} = [thick,->,>=stealth]
+    \tikzset{state/.style={rectangle, dashed, draw, fill=white} }
+    \node[black, fill=white] at (0,10) {Client};
+    \node[black, fill=white] at (6,10) {Server};
+    \node[red, fill=white] at (5.6,9.5) {@v4};
+    \node[blue, fill=white] at (6.4,9.5) {@v6};
+    \node[red, fill=white] at (-0.4,9.5) {@v4};
+    \node[blue, fill=white] at (0.5,9.5) {@v6};
+    \draw[red, very thick,->] (-0.4,9.5) -- (-0.4,6.5);
+    \draw[blue, very thick,->] (0.5,9.5) -- (0.5,6.5);
+    \draw[red, very thick,->] (5.6,9.5) -- (5.6,6.5);
+    \draw[blue, very thick,->] (6.4,9.5) -- (6.4,6.5);
+   \draw[black, thick, ->] (-0.4,9) -- (5.6,9) node [midway, fill=white, above,
+   text width=3cm] {\textsc{ClientHello}+\emph{\tcpls}};
+   \draw[black, thick, <-] (-0.4,8.7) -- (5.6,8.7) node [midway, fill=white, below, text width=4.5cm] {\textsc{ServerHello}+\emph{\tcpls($\alpha_0$\ldots$\alpha_n$)} };
+   \draw[black, thick, ->] (0.5,7) -- (6.0,7) node [midway, %fill=white, above,
+   text width=3cm] {\textsc{ClientHello}\\+JOIN($CONNID$,$COOKIE$)};
+  \end{tikzpicture}
+  \caption{\tcpls supports the attachment of additional \tcp
+    connections to a \tcpls connection. Each $\alpha_i$ is encrypted with the
+    handshake key.}
+  \label{fig:join-example}
+\end{figure}
 
 \begin{figure}[!t]
   \begin{center}
