@@ -15,6 +15,7 @@
 \usepackage{bytefield}
 \usepackage{paralist}
 \usepackage[htt]{hyphenat}
+\usepackage{xspace}
 
 
 % Copyright
@@ -45,19 +46,24 @@
 %% {} with no args suppresses printing of the price
 %\acmPrice{}
 
-\newcommand{\tcpls}{\texttt{TCPLS}~}
-\newcommand{\join}{\texttt{JOIN}~}
-\newcommand{\syn}{\texttt{SYN}~}
-\newcommand{\ack}{\texttt{ACK}~}
-\newcommand{\fin}{\texttt{FIN}~}
-\newcommand{\rst}{\texttt{RST}~}
+\newcommand{\tcpls}{\texttt{TCPLS}\xspace}
+\newcommand{\join}{\texttt{JOIN}\xspace}
+\newcommand{\syn}{\texttt{SYN}\xspace}
+\newcommand{\ack}{\texttt{ACK}\xspace}
+\newcommand{\fin}{\texttt{FIN}\xspace}
+\newcommand{\rst}{\texttt{RST}\xspace}
 
-\newcommand{\synack}{\texttt{SYN+ACK}~}
+\newcommand{\synack}{\texttt{SYN+ACK}\xspace}
 
-\newcommand{\tcp}{\texttt{TCP}~}
-\newcommand{\tls}{\texttt{TLS}~}
+\newcommand{\tcp}{\texttt{TCP}\xspace}
+\newcommand{\udp}{\texttt{UDP}\xspace}
+\newcommand{\dccp}{\texttt{DCCP}\xspace}
+\newcommand{\sctp}{\texttt{SCTP}\xspace}
+\newcommand{\xtp}{\texttt{XTP}\xspace}
+\newcommand{\tls}{\texttt{TLS}\xspace}
+\newcommand{\quic}{\texttt{QUIC}\xspace}
 
-\newcommand{\todo}[1]{\textcolor{red}{\textbf{TODO: #1}}}
+\newcommand{\todo}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
 \newcommand{\fr}[1]{\textcolor{blue}{\textbf{FR: #1}}}
 
 
@@ -85,9 +91,9 @@
 
 
 \begin{abstract}
-  TCP and TLS are among the most essential protocols in today's Internet. TCP ensures reliable delivery of data while TLS secures the data transfer. Following the layered model, TLS was designed to be as independent as possible from the underlying transport protocol. This paper revisits this assumption and demonstrates the various benefits that a closer integration between TCP and TLS brings.
+  \tcp and \tls are among the most essential protocols in today's Internet. \tcp ensures reliable delivery of data while \tls secures the data transfer. Following the layered model, \tls was designed to be as independent as possible from the underlying transport protocol. This paper revisits this assumption and demonstrates the various benefits a closer integration between \tcp and \tls brings.
 
-  TCPLS is a modern and secure transport that is wire-compatible with TCP and thus transparent for middleboxes. It leverages the extensibility of TLS 1.3 to support connection migration, seamless handovers or bandwidth aggregation. Compared with Multipath TCP and QUIC, TCPLS is both easy to deploy as an extension to the userspace TLS libraries and provides high performance by leveraging the existing TCP support in the network interface cards. Measurements with our TCPLS prototype show that it provides higher performance than existing QUIC libraries with similar protocol features.
+  This paper introduces \tcpls, a modern and secure transport that is wire-compatible with \tcp and thus transparent for middleboxes. It leverages the extensibility of \tls 1.3 to support connection migration, seamless handovers, or bandwidth aggregation. Compared with Multipath \tcp and \quic, \tcpls is easy to deploy as an extension to the userspace \tls libraries and provides high performance by leveraging the existing \tcp support in the network interface cards. Measurements with our \tcpls prototype show that it provides higher performance than existing \quic libraries with similar protocol features.
 
 \end{abstract}
 \maketitle
