@@ -176,7 +176,7 @@ if __name__ == "__main__":
 #              {0}".format((tot_mptcp_throughput/tot_mptcp_goodput)/(tot_tcpls_throughput/tot_tcpls_goodput)))
 
     ax1.set_xlim(0, x_max/1000000)
-    ax1.set_title(latex_label('MPTCP 0.94.7'), fontsize=18)
+    ax1.set_title(latex_label('MPTCP 0.94.7', format=True), fontsize=18)
 
     ax3.set_xlim(0, x_max/1000000)
     ax3.set_title(latex_label('TCPLS'), fontsize=18)
