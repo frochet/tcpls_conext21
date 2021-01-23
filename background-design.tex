@@ -24,26 +24,6 @@ and letting them tune the underlying transport to their use case. Essentially,
 this last motivation discusses a novel manner to expose transport-level
 functionalities that are encrypted, authenticated, reliable, extensible, and
 adapted to complex application-level requirements.
-%The lack of extensibility impacts the design and deployability of new
-%protocols, such as \texttt{MP\tcp}~\cite{raiciu2012hard,rfc6824} or
-%\texttt{SCTP}~\cite{rfc4960}, and
-%has motivated the design of QUIC~\cite{langley2017quic}.% and PQUIC~\cite{de2019pluginizing}.
-%Therefore, designing a new extensibility mechanism could empower new
-%application-level products and technologies. For these reasons, we design \tcpLS
-%as an application-level configurable cross-layer wrapper for \texttt{\tls/\tcp} using
-%\tls 1.3's extensibility mechanism to address \tcp's extensibility
-%issues.
-% High level vision
-%To
-%structure the discussion, we first focus on the establishment of a \tcpls
-%connection. Then we discuss the exchange of data and the end of a connection.
-
-
-%\tcp uses a three-way handshake to establish a connection. Many server stacks
-%generate the \synack directly from the \syn and only create state
-%upon reception of the third \ack \cite{rfc4987}. \tcp extensions are
-%usually negotiated using \tcp options in the \syn and
-%\synack packets.
 \subsection{Overview}
 
 \tcp separates control information and data by placing the control information
@@ -63,91 +43,42 @@ communicating hosts can exchange new control information without encountering
 middlebox interference. We describe several examples of these new types of
 control information in Sec.~\ref{sec:extending} and Sec.~\ref{sec:connmigr}.
 
+\paragraph*{Streams}
+Once the \tcpls session has been established, \tcpls requires the upper layer to
+open streams and attach them to the session. A stream is an independant
+cryptographic context derived from the \tcpls handshake. They must be attached to a
+\textit{Connected} \tcp bytestream exported as a \texttt{transportid} to the
+application. To manipulate streams, \tcpls offers an API to open, attach
+and close streams to any available \texttt{transportid} in the \textit{Connected} state,
+while offering the Stream as the only bytestream abstraction to the upper layer.
+Streams can only be attached to one \texttt{transportid}, but they can be moved,
+several streams can be attached to a given \texttt{transportid}, and multiple
+streams can be attached to multiple \texttt{transportid}s.
 
-%A key benefit of \tcpls is that it leverages the encrypted parts of the \tls
-%1.3 messages and records to create a new secure and independent channel between
-%the
-%communicating hosts.
+\tcpls can attach streams using the Secure Control Channel and send TLS records
+within them in a zero-rtt fashion. That is, when the peer receives a
+\texttt{STREAM\_ATTACH} message, it has everything needed to securly derive the
+right cryptographic context to process the TLS record encryted within this
+stream. No round-trips are needed to attach a new stream.  Most of these records
+contain application data transmitted by the client or the server.  The control
+channel between the client and the server enables \tcpls to define a new
+bytestream abstraction and support many new features while benefitting from the
+current kernel and network optimization for \tcp performance.
 
-%interference that enables it to fallback to regular \tcp in the (expected rare)
-%case of middlebox interference. This is similar to what Multipath \tcp does by
-%sending its \syn with the \texttt{MP\_CAPABLE} initially and then removing this
-%option after the third retransmission of the SYN \cite{raiciu2012hard}.
-
-%In our current prototype, a \tcpls session starts with a classic \tcp
-%handshake. Immediately after, the client sends the ClientHello \tls message. The
-%server replies with a ServerHello message which can contain encrypted data but
-%also encrypted control information. For example, a dual-stack server may
-%advertise its IPv6 address in the encrypted ServerHello message when contacted
-%over its IPv4 address.
-%%Essentially, the \tcpLS handshake can become a control
-%%channel for goth \tcp and \tls.
-%We highlight one of our roadmap features in
-%Section~\ref{sec:research} to enable a 0-RTT \tcpls which would enable \tcp to catchup
-%the QUIC design regarding fast connection establishment. We also describe in
-%Section~\ref{sec:content} how our current prototype uses this
-%information to support connection migration, failover, and other features.
-
-
-%The \tcpls handshake can start with a \syn packet that contains a \tls
-%ClientHello message inside its payload. This differs from the original \tcp
-%handshake that does not usually include data in \syn packets.  We leverage the
-%fact that the \tcp specification \cite{rfc793} allows a \syn to carry a payload
-%and use it like the \tcp Fast Open extension (TFO) \cite{rfc7413}. As TFO,
-%\tcpls uses cookies to counter attacks with spoofed packets, but these cookies
-%are included in the ClientHello and can be much larger than those used by TFO.
-%The server returns a \synack packet that contains the ServerHello message whose
-%content is encrypted and authenticated. Since the ServerHello message is
-%included in the payload, its length is not limited by a space requirement as in
-%the \tcp header, but rather by a server choice of functionalities versus
-%potential amplication attacks. It can contain additional information such as an
-%identifier of the connection, the other addresses of the server or lightweight
-%\tcp options such as a TCP User Timeout~\cite{rfc5482}.
-
-%FR: this can be removed; it is almost a copycat at the end already
-%In \tcpls, some \tcp options are sent in clear in the TCP headers
-%while others can be encrypted. This brings two benefits.
-%First, this hides those \tcp options from
-%on-path middleboxes, including experimental ones \cite{rfc6994},
-%that could be blocked. Second, \tcpls hosts can exchange over \tls
-%records a summary of their state (initial sequence numbers, negotiated \tcp
-%options, \ldots) to verify that their \tcp headers have not been tampered by
-%middleboxes. Otherwise, they can fall back to regular \tls over regular \tcp
-%to preserve connectivity as Multipath \tcp does it the MP\_CAPABLE
-%option is stripped during the handshake \cite{rfc6824}.
-%This could help to
-%cope with some specific middleboxes that have affected the deployment
-%of \tcp Fast Open \cite{paasch2016network}.
-\fr{rework following paragraphs + link fig1}
-Once the \tcpls session has been established, \tcpls sends TLS records. Most of
-these records contain application data transmitted by the client or
-the server. The control channel between the client and the
-server enables \tcpls to support new features, such as streams. Indeed,
-applications such as HTTP/2 support multiple streams mapped to a single \tcp
+Applications such as HTTP/2 support multiple streams mapped to a single \tcp
 connection. However, there are situations, e.g., to prevent head-of-line
 blocking, where different streams should be mapped over other underlying \tcp
 connections. With \tcpls, the client and the server can establish different
-datastreams over a single \tcpls session. The data from all these streams is
-encrypted using \tls. Furthermore, thanks to the \tcpls API, the client and the
-server can map each data stream to an underlying \tcp connection.  Thus, a
+datastreams over a single \tcpls session, preventing \tcp's HOL. Thus, a
 \tcpls session can be composed of one or more \tcp connections similarly as a
 \mptcp connection gathers subflows.
 
-%This channel is used to exchange \tcp options and other TCPLS control messages.
-%\tcpls uses it also to exchange information about the client and server
-%addresses. Indeed, it is also
-%possible to attach another \tcp connection to complement the TCPLS session, and
-%attach QUIC-like streams to those \tcp connections. This can
-%be used by multihomed devices such as smartphones to establish one \tcp
-%connection over each network interface to support the same \tcpls
-%connection.
 To support data from a given datastream to be exchanged over several \tcp
 connections, \tcpls includes its sequence numbers when the multipath aggregation
-mode is activated. A client and server can also
-enable acknowledgments. Thanks to these \tcpls
-acknowledgments, a \tcpls session can react to the failure of the underlying
-\tcp connection by reestablishing a new \tcp connection to continue the data transfer and replay the records that have been lost.
-%This is similar to the handover capability of Multipath \tcp.
+mode is activated. A client and server can also enable acknowledgments. Thanks
+to these \tcpls acknowledgments, a \tcpls session can react to the failure of
+the underlying \tcp connection by reestablishing a new \tcp connection to
+continue the data transfer and replay the records that have been lost.
 
 A \tcp connection ends with the exchange of \fin or \rst packets. However, some
 middleboxes force the termination of \tcp connections by sending \rst
@@ -157,6 +88,11 @@ reception of a spurious reset. \tcpls defines the connection termination at the
 stream level: closing the last stream attached to a \tcp connection allows
 clients and servers to securely terminate the \tcpls session.
 
+That is, with the Secure Control Channel, we offer a flexible bytestream
+abstraction to the upper layer that supports various new features such as
+Streams, Connection reliability, various secure multipath modes, secure
+connection closing and benefit from \tcp's state of performance and \tls's
+state of deployment.
 
 %Todo explain that the transport abstraction level failed to offera versatile
 %usage
