@@ -61,19 +61,20 @@ within them in a zero-rtt fashion. That is, when the peer receives a
 to securly derive the right cryptographic context to process the TLS record
 encryted within this stream. No round-trips are needed to attach a new stream.
 Most of records encrypted with a Stream's context contain application data
-transmitted by the client or the server. However, streams can also carry records
-of the control channel. The control channel between the client and the server
-enables \tcpls to define a new bytestream abstraction and support many new
-features while benefitting from the current kernel and network optimization for
-\tcp performance.
+transmitted by the client or the server. However, streams can also carry control
+records.
+%The control channel between the client and the server
+%enables \tcpls to define a new bytestream abstraction and support many new
+%features while benefitting from the current kernel and network optimization for
+%\tcp performance.
 
-Applications such as HTTP/2 support multiple streams mapped to a single \tcp
-connection. However, there are situations, e.g., to prevent head-of-line
-blocking, where different streams should be mapped over other underlying \tcp
-connections. With \tcpls, the client and the server can establish different
-datastreams over a single \tcpls session, preventing \tcp's HOL. Thus, a
-\tcpls session can be composed of one or more \tcp connections similarly as a
-\mptcp connection gathers subflows.
+%Applications such as HTTP/2 support multiple streams mapped to a single \tcp
+%connection. However, there are situations, e.g., to prevent head-of-line
+%blocking, where different streams should be mapped over other underlying \tcp
+%connections. With \tcpls, the client and the server can establish different
+%datastreams over a single \tcpls session, preventing \tcp's HOL. Thus, a
+%\tcpls session can be composed of one or more \tcp connections similarly as a
+%\mptcp connection gathers subflows.
 
 To support data from a given datastream to be exchanged over several \tcp
 connections, \tcpls includes its sequence numbers when the multipath aggregation
@@ -93,7 +94,7 @@ clients and servers to securely terminate the \tcpls session.
 That is, with the Secure Control Channel, we offer a flexible bytestream
 abstraction to the upper layer that supports various new features such as
 Streams, Connection reliability, various secure multipath modes, secure
-connection closing,  \tcp Options and benefit from \tcp's state of performance
+connection closing,  encrypted \tcp options and benefit from \tcp's state of performance
 and \tls's state of deployment.
 
 %Todo explain that the transport abstraction level failed to offera versatile
