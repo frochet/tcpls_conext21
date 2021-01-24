@@ -7,14 +7,67 @@
 %\tls 1.3's extensibility cannot compete with QUIC.
 %Gives an overview of \tls / \tcp and how they interact.
 
+%\begin{figure}[!t]
+%  \begin{center}
+%    \includegraphics[width=8cm]{figures/tcpls-fig2.pdf}
+%  \end{center}
+%  \caption{\tcpls in the stack.}
+%  \label{fig:arch}
+%\end{figure}
+
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=8cm]{figures/tcpls-fig2.pdf}
-  \end{center}
-  \caption{\tcpls in the stack.}
-  \label{fig:arch}
+\begin{tikzpicture}[node distance=0 cm,outer sep = 0pt,inner sep = 2pt, scale=0.80, transform shape]
+        \tikzset{application/.style={align=center,minimum height=0.3cm,minimum width=10mm}}
+        \tikzset{tcpls/.style={align=center,shape=rectangle,fill=green!70!red!100,minimum height=0.7cm,minimum width=22mm,rounded corners, draw}}
+        \tikzset{api/.style={align=center,shape=rectangle,fill=purple!30,minimum height=0.7cm,minimum width=22mm,rounded corners,draw}}
+        \tikzset{tcp/.style={align=center,shape=rectangle,fill=yellow, minimum height=0.5cm,minimum width=5mm,rounded corners,draw}}
+        \tikzset{label/.style={align=center,minimum height=0.5cm,minimum width=5mm}}
+        \draw(-3,-0.3) rectangle (-0.5,0.3);
+        \draw(-3,-3.2) rectangle (-0.5,0.3);
+        \draw [red, ultra thick] (-3,-2) -- (-0.5,-2);
+        \draw(-3,-4) rectangle (-0.5,-3.2);
+        \draw[fill=red!50] (-1.75,-0.3) ellipse (9pt and 4pt); 
+        \node[application, xshift=-18mm](application){Application};
+        \node[api, name=API, below= 3.0mm and 0mm of application, yshift=0mm ](api1){API};
+        \node[tcpls, below= 0mm and 0mm of api1](tcpls1){TCPLS};
+        \node[tcp, below= 3mm and 0mm of tcpls1, xshift=-6mm](tcpx1){TCPx};
+        \node[tcp, right=5mm and 0mm of tcpx1, yshift=-4mm, xshift=2mm](tcpy1){TCPy};
+        \node[label,  below=7mm and 0mm of tcpx1](ip11){IPV4};
+        \node[label,  below=4mm and 0mm of tcpy1](ip12){IPV6};
+        
+        
+        \draw(2.3,-0.2) rectangle (4.8,0.4);
+        \draw(2.3,-3.2) rectangle (4.8,0.4);
+        \draw [red, ultra thick] (2.3,-2) -- (4.8,-2);
+        \draw(2.3,-4) rectangle (4.8,-3.2);
+        \draw[fill=red!50] (3.6,-0.2) ellipse (9pt and 4pt); 
+        \node[application, right= 0mm and 43mm of application, xshift=-9mm](application2){Application};
+        \node[api, name=API, below= 3.0mm and 0mm of application2](api2){API};
+        \node[tcpls, name=TCPLS, below=of api2](tcpls2){TCPLS};
+        \node[tcp, below= 3mm and 0mm of tcpls2, xshift=-6mm](tcpx2){TCPx};
+        \node[tcp, right=5mm and 0mm of tcpx2, yshift=-4mm, xshift=2.3mm](tcpy2){TCPy};
+        \node[label,  below=7mm and 0mm of tcpx2](ip21){IPV4};
+        \node[label,  below=4mm and 0mm of tcpy2](ip22){IPV6};
+        
+        \node[label,  below=5mm and 0mm of application2, xshift=15mm,rotate=90 ](user1){user space};
+        \node[label,  below=28mm and 0mm of application2, xshift=15mm, rotate=90 ](user1){kernel space};
+        
+        \node[label,  left=of api2, xshift=-5mm, yshift=-5mm, green!70!red!100 ](user1){TLS records};
+        \node[label,  left=of ip22, xshift=-18mm, yshift=11mm ](user1){TCP segments};
+        
+        \draw[<->,dotted,green!70!red!100,ultra thick] (tcpls1.east) -- node (line) {} (tcpls2.west);
+        \draw[<->,dotted, ultra thick] (tcpx1.east) -- node (line) {} (tcpx2.west);
+        \draw[<->,dotted, ultra thick] (tcpy1.east) -- node (line) {} (tcpy2.west);
+        \draw[<->, ultra thick] (tcpx1.south) -- node (line) {}(ip11.north);
+        \draw[<->, ultra thick] (tcpy1.south) -- node (line) {}(ip12.north);
+        \draw[<->, ultra thick] (tcpx2.south) -- node (line) {}(ip21.north);
+        \draw[<->, ultra thick] (tcpy2.south) -- node (line) {}(ip22.north);
+\end{tikzpicture}
+\end{center}
+\caption{\tcpls in the stack.}
+\label{fig:arch}
 \end{figure}
-
 \tcpls (illustrated in Fig.~\ref{fig:arch}) offers a cross-layer interface to \tls and \tcp with the motivation to do more than securing the transport layer. Merging the stacks benefits both protocols and the application using this new approach. First, \tcp suffers from a lack of extensibility due to size restrictions in its header and due to potential middlebox interferences~\cite{honda2011still}. \tcpls aims to solve \tcp extensibility issue in the long run by offering a secure control channel to exchange \tcp options without suffering from middlebox interferences and size restrictions in \tcp headers. Second, \tls does not have a clear view of the transport protocol, and offering one with \tcpls brings opportunity for performance improvement (e.g., avoiding records fragmentation with dynamic receive buffer auto-tuning and/or with dynamic control of the record length), and for connection reliability (e.g., failover).  Third, applications are becoming more complex, which appeals to exposing transport-level functionalities and letting them tune the underlying transport to their use case. Essentially, this last motivation discusses a novel manner to expose transport-level functionalities that are encrypted, authenticated, reliable, extensible, and adapted to complex application-level requirements.
 
 \subsection{Overview}
