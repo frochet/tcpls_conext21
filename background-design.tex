@@ -7,23 +7,16 @@
 %\tls 1.3's extensibility cannot compete with QUIC.
 %Gives an overview of \tls / \tcp and how they interact.
 
-\tcpls offers a cross-layer interface to \tls and \tcp with the motivation to do
-more than securing the transport layer. Merging the stacks benefits both
-protocols and the application using this new approach. First, \tcp suffers from
-a lack of extensibility due to size restrictions in its header and due to
-potential middlebox interferences~\cite{honda2011still}. \tcpls aims to solve
-\tcp extensibility issue in the long run by offering a secure control channel to
-exchange \tcp options without suffering from middlebox interferences and size
-restrictions in \tcp headers. Second, \tls does not have a clear view of the
-transport protocol, and offering one with \tcpls brings opportunity for
-performance improvement (e.g., avoiding records fragmentation with dynamic
-receive buffer auto-tuning and/or with dynamic control of the record length),
-and for connection reliability (e.g., failover).  Third, applications are
-becoming more complex, which appeals to exposing transport-level functionalities
-and letting them tune the underlying transport to their use case. Essentially,
-this last motivation discusses a novel manner to expose transport-level
-functionalities that are encrypted, authenticated, reliable, extensible, and
-adapted to complex application-level requirements.
+\begin{figure}[!t]
+  \begin{center}
+    \includegraphics[width=8cm]{figures/tcpls-fig2.pdf}
+  \end{center}
+  \caption{\tcpls in the stack.}
+  \label{fig:arch}
+\end{figure}
+
+\tcpls (illustrated in Fig.~\ref{fig:arch}) offers a cross-layer interface to \tls and \tcp with the motivation to do more than securing the transport layer. Merging the stacks benefits both protocols and the application using this new approach. First, \tcp suffers from a lack of extensibility due to size restrictions in its header and due to potential middlebox interferences~\cite{honda2011still}. \tcpls aims to solve \tcp extensibility issue in the long run by offering a secure control channel to exchange \tcp options without suffering from middlebox interferences and size restrictions in \tcp headers. Second, \tls does not have a clear view of the transport protocol, and offering one with \tcpls brings opportunity for performance improvement (e.g., avoiding records fragmentation with dynamic receive buffer auto-tuning and/or with dynamic control of the record length), and for connection reliability (e.g., failover).  Third, applications are becoming more complex, which appeals to exposing transport-level functionalities and letting them tune the underlying transport to their use case. Essentially, this last motivation discusses a novel manner to expose transport-level functionalities that are encrypted, authenticated, reliable, extensible, and adapted to complex application-level requirements.
+
 \subsection{Overview}
 
 \tcp separates control information and data by placing the control information
@@ -40,20 +33,14 @@ nutshell, \tcpls leverages the extensibility of \tls 1.3 to place control
 information such as \tcp options inside the \tls handshake messages and new \tls
 records. Since this information is encrypted and authenticated, the
 communicating hosts can exchange new control information without encountering
-middlebox interference. 
+middlebox interference.
 %We describe several examples of these new types of
 %control information in Sec.~\ref{sec:extending} and Sec.~\ref{sec:connmigr}.
 
 Once the \tcpls session has been established, \tcpls requires the upper layer to
 open streams and attach them to the session. A stream is an independant
-cryptographic context derived from the \tcpls handshake. They must be attached to a
-\textit{Connected} \tcp bytestream exported as a \texttt{transportid} to the
-application. To manipulate streams, \tcpls offers an API to open, attach
-and close streams to any available \texttt{transportid} in the \textit{Connected} state,
-while offering the Stream as the only bytestream abstraction to the upper layer.
-Streams can only be attached to one \texttt{transportid}, but they can be moved,
-several streams can be attached to a given \texttt{transportid}, and multiple
-streams can be attached to multiple \texttt{transportid}s.
+cryptographic context derived from the \tcpls handshake. They must be attached to a \textit{Connected} \tcp bytestream exported as a \texttt{transportid} to the application. To manipulate streams, \tcpls offers an API to open, attach
+and close streams to any available \texttt{transportid} in the \textit{Connected} state, while offering the Stream as the only bytestream abstraction to the upper layer. Streams can only be attached to one \texttt{transportid}, but they can be moved, several streams can be attached to a given \texttt{transportid}, and multiple streams can be attached to multiple \texttt{transportid}s.
 
 \tcpls can attach streams using the Secure Control Channel and send TLS records
 within them in a zero-rtt fashion. That is, when the peer receives a
@@ -94,8 +81,7 @@ clients and servers to securely terminate the \tcpls session.
 That is, with the Secure Control Channel, we offer a flexible bytestream
 abstraction to the upper layer that supports various new features such as
 Streams, Connection reliability, various secure multipath modes, secure
-connection closing,  encrypted \tcp options and benefit from \tcp's state of performance
-and \tls's state of deployment.
+connection closing,  encrypted \tcp options and benefit from \tcp's state of performance and \tls's state of deployment.
 
 %Todo explain that the transport abstraction level failed to offera versatile
 %usage
