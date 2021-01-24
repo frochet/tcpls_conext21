@@ -1,5 +1,7 @@
 % !TEX root = ./paper.tex
 \label{sec:content}
+\fr{I think we'll need to merge this whole section directly into the evaluation,
+and explain how the implementation works alongside the results}
 
 In this section, we describe our \tcpls implementation.  In a nutshell, our implementation offers the following benefits:
 ($i$) The support of parallel streams and multiplexing over \tcp connections
@@ -190,13 +192,13 @@ application can make such a migration in 4 API calls.
 
 \subsection{QUIC-like roundtrips}
 
-One argument for QUIC's usage on the web was a quicker handshake roundtrip.
+One argument for QUIC's usage on the web was a quickee.
 Compared to TLS/TCP, QUIC has only one handshake and can then proceed with the
 application data. $TLS/TCP$ has two: First, the \tcp three-way handshake, and
 then the \tls handshake. \tcpls can use \tcp's TFO~\cite{radhakrishnan2011tcp}
 and send the \texttt{ClientHello} message within the \tcp SYN's payload,
 achieving the same roundtrips than QUIC. However, TFO suffers from privacy
-issues~\cite{sy2020enhanced}, thus we did not enabled it by default. In the
+issues~\cite{sy2020enhanced}, thus we did not enable it by default. In the
 future, we may expect to revise our choice if a solution similar to \tcp
 FOP~\cite{sy2020enhanced} gets implemented in the Linux kernel.
 
