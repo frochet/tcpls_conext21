@@ -285,8 +285,28 @@ around $\approx 1$ second to recover from the outage.
 \begin{figure}[!t] \begin{center}
     \includegraphics[width=\columnwidth]{figures/tcpls_mptcp.png} \end{center}
   \caption{Connection reliability: influence of the path manager and congestion
-    control.} \end{figure}
+    control.}
+  \label{fig:failover}
+\end{figure}
 
+The second experiment consists into observing how different multipath
+implementations behave in case of several failures during a data transfer. We
+tested several multipath implementations: \mptcp, PQUIC with the multipath
+plugin~\cite{pquic} and MPQUIC~\cite{}. The results with PQUIC and MPQUIC were
+poor. We digged into their implementations and observed that they were not programmed
+to detect network failures and correctly switch the network path, thus we
+preferred to ignore those results. However, \mptcp has a longer development
+background, is used in production and maintained. Figure~\ref{fig:failover}
+shows how \mptcp and \tcpls performs when 3 paths out of 4 get blackholled every
+5 seconds. The path manager has first to find the healthy path and recover the
+session over it. We observe that \mptcp performs well on the first
+failure. For the next ones, the path manager seems to require several seconds to
+recover the right path. Besides, \mptcp remembers that something wrong happened,
+and stays inside a congestion avoidance state until the end of the transfer. We
+may question this design choice.
+
+\tcpls however, finds the right path and recovers the session as fast as
+expected, similarly to the $drop$ outage studied in Figure~\ref{fig:recovery}.
 
 \subsection{Application-Level Migration}
 
