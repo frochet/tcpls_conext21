@@ -181,12 +181,15 @@ TLS 1.3 or some of its features \cite{lee2019matls,Bock_China,raman2020measuring
 
 When faced with middleboxes that intercept TLS 1.3
 \cite{Bock_China,raman2020measuring}, we need to consider the \tcpls handshake
-TLS extensions: \tcpls, \join, \texttt{Connid}, and \texttt{Cookies}. If a clients attempts to open a \tcpls session
-through a \tls termination
-proxy, it sends a \textsc{ClientHello} with the \tcpls extension.
-If the proxy does not support \tcpls, it replies with a \textsc{ServerHello}
-message that does not include the \tcpls extension. From this point, the client
-implicitely fallback to \tls, and continues with the handshake.
+TLS extensions: \tcpls, \join, \texttt{Connid}, and \texttt{Cookies}. The other
+\tcpls messages through the Secure Control Channel are indistinguishable from
+classical APPDATA TLS messages (i.e., they look like encrypted application data
+for the middlebox). If a clients attempts to open a \tcpls session
+through a \tls termination proxy, it sends a \textsc{ClientHello} with the
+\tcpls extension.  If the proxy does not support \tcpls, it replies with a
+\textsc{ServerHello} message that does not include the \tcpls extension. From
+this point, the client implicitely fallback to \tls, and continues with the
+handshake.
 
 Certain legacy \tls server implementations are known not to implement the \tls
 specification properly and might abort connections when receiving unknown \tls
