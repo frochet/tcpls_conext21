@@ -169,17 +169,18 @@ which still performs more than twice faster at 100\% CPU peak with similar confi
 %and quicly meet these criteria.
 
 
+\subsection{Middlebox Interference}
 
-\subsection{Middlebox Interferences}
+A full evaluation of middlebox interference would require measurements in various operational networks that include such devices \cite{honda2011still,raman2020measuring,o2016tls}. This is outside the scope of this paper and left for further work.
+We tested \tcpls against different opensource and commercial stateful
+firewalls and proxy implementations and (i.e., pfSense, IPFire, Cisco ASAv, mitmproxy) and found no interference. Still, the security appliances that block
+TLS 1.3 or some of its features \cite{lee2019matls,Bock_China,raman2020measuring} would also block \tcpls.
+%pervasive monitoring allows for configurable TLS extensions blocking
+%\cite{rfc7258}. This is handled properly by \tcpls fallback mechanism.
 
-When deploying a novel protocol, different middlebox interferences may arise
-depending on the changes introduced in the packets wire image. In this
-regard, \tcpls comes with two novel \tls extensions: \tcpls and \join.
-We discuss the potential issues and countermeasures below.
 
-If a clients attempts to open a \tcpls to in the presence of a \tls termination
-proxy or bridging proxy, it sends a \textsc{ClientHello} that includes
-the \tcpls extension.
+When faced with middleboxes that intercept TLS 1.3 \cite{Bock_China,raman2020measuring}, we need to consider the two TLS extensions used by \tcpls: \tcpls and \join. If a clients attempts to open a \tcpls session through a \tls termination
+proxy, it sends a \textsc{ClientHello} with the \tcpls extension.
 If the proxy does not support \tcpls, it replies with a \textsc{ServerHello}
 message that does not include the \tcpls extension. From this point, the client
 implicitely fallback to \tls, and continues with the handshake.
@@ -187,20 +188,20 @@ implicitely fallback to \tls, and continues with the handshake.
 Certain legacy \tls server implementations are known not to implement the \tls
 specification properly and might abort connections when receiving unknown \tls
 extensions. Analogous behavior has been observed in overly restrictive stateful
-firewalls.  To ensure connectivity in the presence of such policies, \tcpls
-implements an explicit fallback mechanism. If a device sends a \tcp \rst in
-response to the \tcpls-setup \textsc{ClientHello}, or silently discards it,
-the client attempts at negotiating a second non-\tcpls \tls connection, either
+firewalls. To ensure connectivity in the presence of such policies, \tcpls
+implements an explicit fallback mechanism. If a client receives a \tcp \rst in
+response to the \tcpls-setup \textsc{ClientHello}, or no response, it
+tries negotiating a second non-\tcpls \tls connection, either
 immediately or after a timeout. Similarly, a \tcpls \join extension might be
-blocked on the path. In this case, the subflow attachment is canceled, and
+blocked on a path. In this case, the subflow attachment is canceled, and
 the application is directly notified to be able to react appropriatly (e.g.,
 to cancel a migration attempt).
 
-We tested \tcpls against opensource and commercial stateful firewalls and proxy
-implementations and (i.e., pfSense, IPFire, Cisco ASAv, mitmproxy) and found no
-interferences. Still, certain middlebox security appliances that implement
-pervasive monitoring allows for configurable TLS extensions blocking
-\cite{rfc7258}. This is handled properly by \tcpls fallback mechanism.
+%We tested \tcpls against opensource and commercial stateful firewalls and proxy
+%implementations and (i.e., pfSense, IPFire, Cisco ASAv, mitmproxy) and found no
+%interferences. Still, certain middlebox security appliances that implement
+%pervasive monitoring allows for configurable TLS extensions blocking
+%\cite{rfc7258}. This is handled properly by \tcpls fallback mechanism.
 
 
 \subsection{Bandwidth Aggregation}
