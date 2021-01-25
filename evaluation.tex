@@ -282,8 +282,10 @@ this steps have succeeded, the transfer can continue. In our experiments, it too
 around $\approx 1$ second to recover from the outage.
 
 
-\begin{figure}[!t] \begin{center}
-    \includegraphics[width=\columnwidth]{figures/tcpls_mptcp.png} \end{center}
+\begin{figure}[!t] 
+  \begin{center}
+    \includegraphics[width=\columnwidth]{figures/tcpls_mptcp.png} 
+  \end{center}
   \caption{Connection reliability: influence of the path manager and congestion
     control.}
   \label{fig:failover}
@@ -303,10 +305,14 @@ session over it. We observe that \mptcp performs well on the first
 failure. For the next ones, the path manager seems to require several seconds to
 recover the right path. Besides, \mptcp remembers that something wrong happened,
 and stays inside a congestion avoidance state until the end of the transfer. We
-may question this design choice.
+may question this design choice, since many \tcp connections on the Internet have
+a shorter lifespan than 10 seconds (i.e., the time after which \mptcp should
+re-use a previously used path in this experiment).
 
 \tcpls however, finds the right path and recovers the session as fast as
 expected, similarly to the $drop$ outage studied in Figure~\ref{fig:recovery}.
+Moreover, since those connections are fresh, the we do not suffer from the same
+congestion avoidance than \mptcp.
 
 \subsection{Application-Level Migration}
 
