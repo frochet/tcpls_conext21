@@ -28,39 +28,39 @@
         \draw(-3,-3.8) rectangle (-0.5,0.3);
         \draw [red, ultra thick] (-3,-2.5) -- (-0.5,-2.5);
         \draw(-3,-4.5) rectangle (-0.5,-3.8);
-        \draw[fill=red!50] (-1.75,-0.3) ellipse (9pt and 4pt); 
+        \draw[fill=red!50] (-1.75,-0.3) ellipse (9pt and 4pt);
         \node[application, xshift=-18mm](application){Application};
-        \node[tcpls, below= 6.3mm and 0mm of application](tcpls1){TCPLS};
+        \node[tcpls, below= 6.3mm and 0mm of application](tcpls1){\tcpls};
         \node[api, name=API, below= 3.0mm and 0mm of application, yshift=0mm ](api1){API};
         \node[conman, name=CM, below= 17mm and 0mm of application](cm1){CM};
         \node[conman, name=CM, below= 7.5mm and 0mm of application](crypto){Crypto};
-        \node[tcp, below= 4.5mm and 0mm of tcpls1, xshift=-6mm](tcpx1){TCP1};
-        \node[tcp, right=5mm and 0mm of tcpx1, yshift=-4mm, xshift=2mm](tcpy1){TCP2};
+        \node[tcp, below= 4.5mm and 0mm of tcpls1, xshift=-6mm](tcpx1){\texttt{TCP}$_1$};
+        \node[tcp, right=5mm and 0mm of tcpx1, yshift=-4mm, xshift=2mm](tcpy1){\texttt{TCP}$_2$};
         \node[label,  below=8mm and 0mm of tcpx1](ip11){IPV4};
         \node[label,  below=4mm and 0mm of tcpy1](ip12){IPV6};
-        
-        
+
+
         \draw(2.3,-0.2) rectangle (4.8,0.4);
         \draw(2.3,-3.8) rectangle (4.8,0.4);
         \draw [red, ultra thick] (2.3,-2.5) -- (4.8,-2.5);
         \draw(2.3,-4.5) rectangle (4.8,-3.8);
-        \draw[fill=red!50] (3.6,-0.2) ellipse (9pt and 4pt); 
+        \draw[fill=red!50] (3.6,-0.2) ellipse (9pt and 4pt);
         \node[application, right= 0mm and 43mm of application, xshift=-9mm](application2){Application};
-        \node[tcpls, name=TCPLS, below= 6.3mm and 0mm of application2](tcpls2){TCPLS};
+        \node[tcpls, name=TCPLS, below= 6.3mm and 0mm of application2](tcpls2){\tcpls};
         \node[api, name=API, below= 3.0mm and 0mm of application2](api2){API};
         \node[conman, name=CM, below= 17mm and 0mm of application2](cm2){CM};
         \node[conman, name=CM, below= 7.5mm and 0mm of application2](crypto){Crypto};
-        \node[tcp, below= 4.5mm and 0mm of tcpls2, xshift=6mm](tcpx2){TCPx};
-        \node[tcp, left=5mm and 0mm of tcpx2, yshift=-4mm, xshift=-0.3mm](tcpy2){TCPy};
+        \node[tcp, below= 4.5mm and 0mm of tcpls2, xshift=6mm](tcpx2){\texttt{TCP}$_x$};
+        \node[tcp, left=5mm and 0mm of tcpx2, yshift=-4mm, xshift=-0.3mm](tcpy2){\texttt{TCP}$_y$};
         \node[label,  below=8mm and 0mm of tcpx2](ip21){IPV4};
         \node[label,  below=4mm and 0mm of tcpy2](ip22){IPV6};
-        
+
         \node[label,  below=8mm and 0mm of application2, xshift=15mm,rotate=90 ](user1){user space};
         \node[label,  below=33mm and 0mm of application2, xshift=15mm, rotate=90 ](user1){kernel space};
-        
-        \node[label,  left=of api2, xshift=-5mm, yshift=-5mm, green!70!red!100 ](user1){TLS records};
-        \node[label,  left=of ip22, xshift=-5mm, yshift=10.6mm ](user1){TCP segments};
-        
+
+        \node[label,  left=of api2, xshift=-5mm, yshift=-5mm, green!70!red!100 ](user1){\tls records};
+        \node[label,  left=of ip22, xshift=-5mm, yshift=10.6mm ](user1){\tcp segments};
+
         \draw[<->,dotted,green!70!red!100,ultra thick] (tcpls1.east) -- node (line) {} (tcpls2.west);
         \draw[<->,dotted, ultra thick] (tcpx1.east) -- node (line) {} (tcpx2.west);
         \draw[<->,dotted, ultra thick] (tcpy1.east) -- node (line) {} (tcpy2.west);
@@ -74,7 +74,7 @@
         \draw[<->,   thick] (cm2.south) -- node (line) {}(tcpy2.north);
 \end{tikzpicture}
 \end{center}
-\caption{\tcpls in the stack.}
+\caption{\tcpls in the stack.  CM stands for ``Connection Manager''.}
  \label{fig:arch}
 \end{figure}
 
