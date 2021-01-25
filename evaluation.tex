@@ -211,30 +211,31 @@ offering 25 mbps and a latency of 10 ms. The experiment consists to transfering
 a file over a single path and then enabling the second one at $5$ seconds. For
 \mptcp, the new path is detected after we up the client's second interface. For
 \tcpls, managing paths is easier: the application can use the API to add local
-or peer-related addresses at any point of the connection. In that case, we add
+or peer-related addresses at any point of the session. In that case, we add
 the information at $5$ seconds, connect to the peer and attach a new stream to
 this new connection. Our results are displayed in
 Figure~\ref{fig:multipath_aggregation}. Both stacks enable the aggregation of the
-goodput to ~50 mbps. There are two major differences displayed by the stacks.
+goodput to  $\approx$ 50 mbps. There are two major differences displayed by the stacks.
 First, upping the interface, adding the routes and detecting the new path in
 the case of \mptcp is time consuming. It leads \mptcp to react slower than
 \tcpls regarding the availability of the new path. Second, \tcpls's aggregated
 goodput seems less stable than \mptcp. This discrepency is explained by the
 difference of chunk size manipulated by the reordering algorithm: \mptcp
-reorders packets with a payload of $1,460$ bytes, while \tcpls is this experiment
-reorders records with the maximum payload size of $16,384$ bytes. That means
+reorders packets with a payload of $1460$ bytes, while \tcpls is this experiment
+reorders records with the maximum payload size of $16384$ bytes. That means
 that \tcpls, upon unordered records, would need to reorder and deliver much
 larger chunks of data, leading to larger goodput irregularities than \mptcp.
 However, \tcpls might  negotiate the record size to smooth out this
-irregularity. Setting a record size around $1,500$ bytes would make them lookalike,
-but would be more CPU costly.
+irregularity. Setting a record size around $1500$ bytes would make \mptcp and
+\tcpls' results lookalike, but would be slightly more CPU costly.
+\fr{Do I link a figure with 1500 bytes records in the appendix?}
 
 \begin{figure}[!t]
   \begin{center}
     \includegraphics[width=\columnwidth]{figures/aggregate_dual.png}
   \end{center} 
   \caption{Bandwidth aggregation comparison between \mptcp and
-    \tcpls.}
+    \tcpls with a record payload size of 16384 bytes}
   \label{fig:multipath_aggregation}
 \end{figure}
 
