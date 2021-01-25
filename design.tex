@@ -127,21 +127,23 @@ successful forgery may be considered as a non-negligeable probability.
 %connections to transport the different data streams.
 
 
-\subsection{Multipath in a M}
+\subsection{Connection Management}
 \label{sec:multipath}
 
-In our design mindset, Multipath in a modern transport protocol is about
-offering all the performance and usability opportunities we can imagine from
-multiple interfaces and network paths, in a fully flexible manner with a clear
-justification for what is internal to the stack, and what is fully configurable
-and exposed to application developers.
-First of all, \tcpls enables the client or the server to associate new \tcp connections to an
-existing \tcpls connection. This is similar to what \mptcp
-does~\cite{raiciu2012hard,rfc6824}, but with some differences. First, \tcpls
-does not suffer from the same security limitations as \mptcp.
-Second, \tcpls offers several mode of multipathing.
-Third, in \tcpls Multipath is not only about aggregating bandwidth, we also
-believe that the connection migration is an important multipath capability.
+\tcpls includes a Connection Manager (CM) that controls the underlying \tcp
+connections. 
+%In our design mindset, Multipath in a modern transport protocol is about
+%offering all the performance and usability opportunities we can imagine from
+%multiple interfaces and network paths, in a fully flexible manner with a clear
+%justification for what is internal to the stack, and
+The CM is fully configurable and exposed to application developers.
+\tcpls enables the client or the server to associate new \tcp connections to an
+existing \tcpls connection. This is similar to \mptcp's path managers
+does~\cite{raiciu2012hard,rfc6824,hesmans2015smapp,hesmans2016enhanced},
+but with some differences. First, \tcpls does not suffer from the same
+security limitations as \mptcp. Second, \tcpls supports several modes
+of multipathing including connection failover and bandwidth aggregation. 
+
 
 
 \begin{figure}[!t]
@@ -173,89 +175,104 @@ believe that the connection migration is an important multipath capability.
 \end{figure}
 
 \paragraph*{1) Better Security Than \mptcp}
-To secure the attachment of additional subflows, \mptcp hosts exchange keys in plaintext
-during the handshake~\cite{rfc6824, rfc8684}. These keys are then used later to
+A \mptcp connection gathers several underlying connections that are called subflows. To ``secure'' the attachment of additional subflows,
+\mptcp hosts exchange short keys in plaintext inside \tcp options during the
+\tcp handshake~\cite{rfc6824, rfc8684}. These keys are then used later to
 authenticate the attachment of subflows to a connection. An attacker that has
 observed the initial handshake can attach any subflow to an existing \mptcp
-connection~\cite{rfc6181}. \tcpls securely solves this \texttt{``connection join''} problem. For example,
-consider a client connecting to a dual-stack server. Fig.~\ref{fig:join-example}
-depicts the \tls messages exchanged.  The client starts with a
-\textsc{ClientHello}. This includes the \tcpls extension to negotiate \tcpls.
-The server replies with a \textsc{ServerHello} containing several important and
-encrypted control information $\alpha$. First, the server announces its IPv4 and
-IPv6 addresses. Second, it associates one connection identifier.  This
-identifier uniquely identifies the connection on the server. Third, the server
-provides a list of cookies that enables the client to attach additional \tcp
-connections to the \tcpls connection. To attach a new connection, e.g., using
-the server's IPv6 address, the client opens a \tcp connection and sends a
-\textsc{ClientHello} message containing the connection identifier ($CONNID$) and
-one of the cookies supplied ($COOKIE$) by the server.
-The Connection identifier allows the server to attach the new \tcp connection to
-the right \tcpls session, assuming the received cookie is valid. The Connection
-identifier and the cookie play that same role as \mptcp's token. However, the
-cookie is longer, encrypted in the initial \textsc{ServerHello} message, and
-one-time use (i.e., when the server receives a valid cookie, it accepts the
-connection, attaches it to the right \tcpls session, and discard the cookie).
-Thanks to the cookies, the server can limit the number of \tcp connections that
-a client can attach to a \tcpls connection. Apart from preventing on-path
-attackers to join the connection like in \mptcp, this also prevents some
-denial-of-service attacks. \fr{Which ones?}
+connection~\cite{rfc6181}.
+\tcpls solves this \texttt{``connection join''} problem in a much more secure mmanner. Consider a client connecting to a dual-stack server. Fig.~\ref{fig:join-example} depicts the \tls messages exchanged. The client sends a
+\textsc{ClientHello} containing the \tcpls extension to negotiate \tcpls.
+The server replies with a \textsc{ServerHello} with three types en encrypted extensions. \todo{$alpha$ adapter}. First, the server announces its IPv4 and
+IPv6 addresses. Second, it associates one identifier to the \tcpls session.
+This identifier uniquely identifies the \tcpls session on the server.
+Third, the server provides a list of \tcpls session cookies. Each of these session cookies enables
+the client to attach one additional \tcp connection to the \tcpls session. By sending $n$ cookies, the server indicates that it currently accepts the attachment of only $n$ \tcp connections to this session. This prevents resources
+exhaustion attacks that are difficult to counter with \mptcp. \todo{OB:voir mpquic} The server can send additional cookies later and update its list of
+addresses. \tcpls is symmetrical and the client can also announce its addresses and send cookies. 
 
-\paragraph*{2) Several Multipath Mode}
-An aggregation mode is an option to take advantage of multiple network
-interfaces and safely splitting an application-level object over them. However,
-\tcpls also offers multiple paths without bandwidth aggregation.
-This is a choice left to the application using the API, and it has several
+To attach a new connection, e.g., using
+the server's IPv6 address, the client sends a \textsc{ClientHello} message containing the session identifier ($SESSID$) and one of the server's cookies ($COOKIE$). The server checks the validity of the cookie and then
+uses the session identifier to attach the new
+\tcp connection to the right \tcpls session. The session identifier and
+cookie play that same role as \mptcp's token. From a security viewpoint,
+the session cookie is longer than \mptcp's token. Furthermore it is sent
+encrypted in the initial \textsc{ServerHello} message, and can only be used
+once (i.e., when the server receives a valid cookie, it accepts the
+connection, attaches it to the right \tcpls session, and discard the cookie).
+
+%Thanks to the cookies, the server can limit the number of \tcp connections that
+%a client can attach to a \tcpls connection. Apart from preventing on-path
+%attackers to join the connection like in \mptcp, this also prevents some
+%denial-of-service attacks. \fr{Which ones?}
+
+\paragraph*{2) Flexible Connection Migration}
+\tcpls supports two mode of connection migration. First, the Failover mode.
+This Failover is fully internal to \tcpls and similar to \quic's connection
+migration and \mptcp's failover: upon network outage, \tcpls can continue
+the affected session another \tcp connection. When the failover mode is
+enabled, \tcpls sends stream-level record acknowledgments that announce to the peer the records that have been received over each stream. 
+Upon network outage, \tcpls \textbf{\textit{moves}} the active streams out of
+the broken \tcp connection to an active one. Furthermore, the
+unacknowledged data records that were sent over
+a failed \tcp connection are \textbf{\textit{sent again}} on a functional \tcp connection.
+%\todo{FR OB ne comprend pas la phrase qui suit}
+%Moving the streams involves playing a protocol that we designed to
+%re-synchronize the implicit stream-level sequence number that is used to
+%encrypt and decrypt records.
+\tcpls' Failover mode is optionnal. It needs to be activated by both peers.
+We discuss in Sec.~\ref{sec:perf} measurements that quantify the performance impact of this mode. 
+
+Second, \tcpls also supports \textit{Application-level Connection
+ Migration}. Essentialy, it means that \tcpls provides a
+simple API that enables an application to migrate when it wishes to do
+so (e.g., a smartphone could migrate from LTE to Wi-Fi when the Wi-Fi appears healthy, a client using privacy compliant IPv6 addresses \cite{rfc4941} could restart the underlying \tcp connection after the expiration of a temporary address, \ldots). The host that wishes to carry such a migration first creates a
+new \tcp connection. Then, it attaches all the existing streams to the new connection by sending one \texttt{STREAM\_ATTACH} message per stream. At this point, the stream is attached to both the old and the new \tcp connection. If the client sends a new record, it will be sent over both connections but the receiver will discard the second copy. Then, the migrating host sends a \texttt{STREAM\_CLOSE} message over the old \tcp connection. At this point, the migrating host cannot send new data anymore for this stream over the old connection. Once the remote host has received \texttt{STREAM\_CLOSE} message over the old \tcp
+connection, it knows that the stream has migrated over the new \tcp connection.
+It then sends a \texttt{STREAM\_CLOSE\_ACK} message. The migrating host can close the old connection upon reception of this message. Note that since these messages are TLS records, they are sent reliably by the underlying \tcp connection. During such a migration, some data is sent over two connections.
+
+This second type of migration does not require application-level
+acknowledgements, but it cannot survive from the failure of one of the
+underlying connections.
+
+%Compared to \quic's connection migration and \tcpls's failover,
+%this migration does not has no goodput loss. It even temporaly increases the goodput by aggregating the
+%bandwidth of both interfaces until the first stream has flushed all its data
+%(depending on the data left in \tcp's sending buffer and the path bandwidth and
+%latency when the migration starts).  That is, in this specific use case,
+%bandwidth aggregation is only used during the migration to ensure a smooth
+%transition, and once \tcpls has migrated, we are back to one path. In comparison
+%to the Failover mode, this mode does not require acks to be exchanged, neither
+%both peers must agree on the functionality. However, it cannot survive a network
+%outage.
+
+
+\paragraph*{3) Different Multipath Modes}
+Like \mptcp \cite{raiciu2012hard,rfc6824} or Multipath QUIC \cite{viernickel2018multipath,de2017multipath,draft-deconinck-quic-multipath-06,draft-liu-multipath-quic-02}, \tcpls supports an aggregation mode that maps data over two or more \tcp connections. On multihomed hosts, this can increase the total throughput of a \tcpls session by spreading the data over different network interfaces. In this case, one or more data streams are mapped to two or more underlying \tcp
+connections and \tcpls schedules different records over different connections.
+
+In addition, \tcpls allows the application to control how its streams are
+attached to the underlying \tcp connection. 
+This is a choice left to the application using the API. It has several
 advantages and inconvenients compared to the aggregation mode. For example, the
-aggregation mode is simple to use and can potentially saturate all available
-network paths but creates HOL blocking, since packets sent over different TCP
-connections need to be eventually re-ordered. The aggregation mode is also more CPU
+aggregation mode is simple to use and can potentially saturate the available
+network paths but can lead to Head-Of-Line (HOL) blocking,
+since packets sent over different \tcp connections need to be eventually
+re-ordered. The aggregation mode is also more CPU
 costly, since a zero-copy codepath is technically possible only when the packets
 arrive in order. In the non-aggregated multipath mode, the application needs to
 take care to fully send an application-level object over the same stream, since
-the ordering is only guaranteed per-stream in this mode. However, \tcpls
-guarantees this mode to offer zero-copy of the decrypted application data, which
+the ordering is only guaranteed per-stream in this mode. However, our \tcpls
+implementation guarantees that this mode will benefit from zero-copy of the decrypted application data, which
 makes this mode potentially quite interesting for application protocol such as
 HTTP that needs to fetch multiple application objects at the same time.
 
-\paragraph*{3) A More Flexible Connection Migration}
-Conceptually, we define two mode of migrations with again, different advantages
-and incovenients. First, the Failover mode. The Failover is fully internal to
-TCPLS and similar to QUIC connection migration: upon network outage, \tcpls is
-able to recover the lost \tcp connections over another network path. To do so, if
-the failover mode is activated, \tcpls exchanges Stream-level record
-acknowledgments to announce to the peer the records that have been received in
-each stream. Upon network outage, streams attached to the broken transport are
-\textbf{\textit{moved}} to a functional \tcp connection and  the records that have not been acked
-by the peer are replayed within the new path, achieving the recovery of the session.
-Moving the streams involves playing a protocol that we designed to
-re-synchronize the implicit stream-level sequence number that is used to
-encrypt and decrypt records. This mode needs to be activated by both peers and
-is expected to offer connection reliability, at the cost of maintaining sending
-buffers for unacknowledged records and exchanging acks.
 
-Second, \tcpls also offers what we call the \textit{Application-level Connection
-  Migration}. Essentialy, it means that the \tcpls protocol semantic can offer a
-simplistic API to give a migration capability to the application when there is
-no networking outage on both the initial path and the path in which the
-application wants to migrate its traffic. There are obvious mobility use cases
-for such a functiality, e.g., a smartphone handing over the trafic between LTE
-and wifi when its owner returns home (both networks are available and healthy).
-Compared to QUIC's connection migration and \tcpls's failover, this migration
-has no goodput loss. It even temporaly increases the goodput by aggregating the
-bandwidth of both interfaces until the first stream has flushed all its data
-(depending on the data left in \tcp's sending buffer and the path bandwidth and
-latency when the migration starts).  That is, in this specific use case,
-bandwidth aggregation is only used during the migration to ensure a smooth
-transition, and once \tcpls has migrated, we are back to one path. In comparison
-to the Failover mode, this mode does not require acks to be exchanged, neither
-both peers must agree on the functionality. However, it cannot survive a network
-outage.
 
 
 
 \subsection{On \tcp Extensibility}
-
+\todo{move to appendix ?}
 \label{sec:tcpoptions}
 % Discussing the lack of extensibility of TLS 1.3;
 \begin{figure}[!t]
