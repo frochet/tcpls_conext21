@@ -234,7 +234,8 @@ that \tcpls, upon unordered records, would need to reorder and deliver much
 larger chunks of data, leading to larger goodput irregularities than \mptcp.
 However, \tcpls might  negotiate the record size to smooth out this
 irregularity. Setting a record size around $1500$ bytes would make \mptcp and
-\tcpls' results lookalike, but would be slightly more CPU costly.
+\tcpls' results lookalike, but would be slightly more CPU costly since we need
+to use encryption/decryption code path more often.
 \fr{Do I link a figure with 1500 bytes records in the appendix?}
 
 \begin{figure}[!t]

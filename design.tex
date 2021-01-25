@@ -54,8 +54,9 @@ cryptographic properties to support several streams.
 
 \paragraph*{Cryptographic Details and Tricks}
 In \tcpls, each stream has its own cryptographic context. All streams use
-the same key but derive a specific Initial Vecotor (IV - also called cryptographic nonce) blockcipher IV (Initial Vector, also called cryptographic nonce)
-such that nonce-misuse cannot happen. Furthermore, the \tcpls record sequence number starts at $0$ within each stream.
+the same key but derive a specific Initial Vector (IV - also called cryptographic nonce)
+such that nonce-misuse cannot happen. Furthermore, we derive the IV such that
+\tcpls record sequence number can securly start at $0$ within each stream.
 
 \tcpls uses only one application-level key for $N$ streams,
 for each direction. We selected this approach is to avoid security
@@ -115,9 +116,9 @@ performed once each time the application writes to another stream over the same
 Note that, security-wise, each failed decryption is considered as a
 forgery attempt. However, we have large limits on the confidentiality and
 integrity with all AEAD ciphers~\cite{luykx2015limits, aeadlimits} before a
-successful forgery may be considered as a non-negligeable probability.
-
-\todo{chiffrer la limite}
+successful forgery may be considered as a non-negligeable probability. For
+example, in the case of ChaCha20+Poly1305, an adversary making $2^{60}$ forgery
+attempts succeeds with probability $2^{-33}$.
 
 %Streams are an interesting abstraction for applications. Experience with HTTP/2
 %has shown that head-of-line blocking was an important factor in web performance.
@@ -174,66 +175,92 @@ of multipathing including connection failover and bandwidth aggregation.
   \label{fig:join-example}
 \end{figure}
 
-\paragraph*{1) Better Security Than \mptcp}
-A \mptcp connection gathers several underlying connections that are called subflows. To ``secure'' the attachment of additional subflows,
-\mptcp hosts exchange short keys in plaintext inside \tcp options during the
-\tcp handshake~\cite{rfc6824, rfc8684}. These keys are then used later to
-authenticate the attachment of subflows to a connection. An attacker that has
-observed the initial handshake can attach any subflow to an existing \mptcp
-connection~\cite{rfc6181}.
-\tcpls solves this \texttt{``connection join''} problem in a much more secure mmanner. Consider a client connecting to a dual-stack server. Fig.~\ref{fig:join-example} depicts the \tls messages exchanged. The client sends a
-\textsc{ClientHello} containing the \tcpls extension to negotiate \tcpls.
-The server replies with a \textsc{ServerHello} with three types en encrypted extensions. \todo{$alpha$ adapter}. First, the server announces its IPv4 and
-IPv6 addresses. Second, it associates one identifier to the \tcpls session.
-This identifier uniquely identifies the \tcpls session on the server.
-Third, the server provides a list of \tcpls session cookies. Each of these session cookies enables
-the client to attach one additional \tcp connection to the \tcpls session. By sending $n$ cookies, the server indicates that it currently accepts the attachment of only $n$ \tcp connections to this session. This prevents resources
-exhaustion attacks that are difficult to counter with \mptcp. \todo{OB:voir mpquic} The server can send additional cookies later and update its list of
-addresses. \tcpls is symmetrical and the client can also announce its addresses and send cookies. 
+\paragraph*{1) Better Security Than \mptcp} A \mptcp connection gathers several
+underlying connections that are called subflows. To ``secure'' the attachment of
+additional subflows, \mptcp hosts exchange short keys in plaintext inside \tcp
+options during the \tcp handshake~\cite{rfc6824, rfc8684}. These keys are then
+used later to authenticate the attachment of subflows to a connection. An
+attacker that has observed the initial handshake can attach any subflow to an
+existing \mptcp connection~\cite{rfc6181}.  \tcpls solves this
+\texttt{``connection join''} problem in a much more secure mmanner. Consider a
+client connecting to a dual-stack server. Fig.~\ref{fig:join-example} depicts
+the \tls messages exchanged. The client sends a \textsc{ClientHello} containing
+the \tcpls extension to negotiate \tcpls.  The server replies with a
+\textsc{ServerHello} with three types en encrypted extensions. \todo{$alpha$
+  adapter}. First, the server announces its IPv4 and IPv6 addresses. Second, it
+associates one identifier to the \tcpls session.  This identifier uniquely
+identifies the \tcpls session on the server.  Third, the server provides a list
+of \tcpls session cookies. Each of these session cookies enables the client to
+attach one additional \tcp connection to the \tcpls session. By sending $n$
+cookies, the server indicates that it currently accepts the attachment of only
+$n$ \tcp connections to this session. This prevents resources exhaustion attacks
+that are difficult to counter with \mptcp. \todo{OB:voir mpquic} The server can
+send additional cookies later and update its list of addresses. \tcpls is
+symmetrical and the client can also announce its addresses and send cookies. 
 
-To attach a new connection, e.g., using
-the server's IPv6 address, the client sends a \textsc{ClientHello} message containing the session identifier ($SESSID$) and one of the server's cookies ($COOKIE$). The server checks the validity of the cookie and then
-uses the session identifier to attach the new
-\tcp connection to the right \tcpls session. The session identifier and
-cookie play that same role as \mptcp's token. From a security viewpoint,
-the session cookie is longer than \mptcp's token. Furthermore it is sent
-encrypted in the initial \textsc{ServerHello} message, and can only be used
-once (i.e., when the server receives a valid cookie, it accepts the
-connection, attaches it to the right \tcpls session, and discard the cookie).
+To attach a new connection, e.g., using the server's IPv6 address, the client
+sends a \textsc{ClientHello} message containing the session identifier
+($SESSID$) and one of the server's cookies ($COOKIE$). The server checks the
+validity of the cookie and then uses the session identifier to attach the new
+\tcp connection to the right \tcpls session. The session identifier and cookie
+play that same role as \mptcp's token. From a security viewpoint, the session
+cookie is longer than \mptcp's token. Furthermore it is sent encrypted in the
+initial \textsc{ServerHello} message, and can only be used once (i.e., when the
+server receives a valid cookie, it accepts the connection, attaches it to the
+right \tcpls session, and discard the cookie).
 
 %Thanks to the cookies, the server can limit the number of \tcp connections that
 %a client can attach to a \tcpls connection. Apart from preventing on-path
 %attackers to join the connection like in \mptcp, this also prevents some
 %denial-of-service attacks. \fr{Which ones?}
 
-\paragraph*{2) Flexible Connection Migration}
-\tcpls supports two mode of connection migration. First, the Failover mode.
-This Failover is fully internal to \tcpls and similar to \quic's connection
-migration and \mptcp's failover: upon network outage, \tcpls can continue
-the affected session another \tcp connection. When the failover mode is
-enabled, \tcpls sends stream-level record acknowledgments that announce to the peer the records that have been received over each stream. 
-Upon network outage, \tcpls \textbf{\textit{moves}} the active streams out of
-the broken \tcp connection to an active one. Furthermore, the
-unacknowledged data records that were sent over
-a failed \tcp connection are \textbf{\textit{sent again}} on a functional \tcp connection.
-%\todo{FR OB ne comprend pas la phrase qui suit}
-%Moving the streams involves playing a protocol that we designed to
-%re-synchronize the implicit stream-level sequence number that is used to
-%encrypt and decrypt records.
-\tcpls' Failover mode is optionnal. It needs to be activated by both peers.
-We discuss in Sec.~\ref{sec:perf} measurements that quantify the performance impact of this mode. 
+\paragraph*{2) Flexible Connection Migration} \tcpls supports two mode of
+connection migration. First, the Failover mode.  This Failover is fully internal
+to \tcpls and similar to \quic's connection migration and \mptcp's failover:
+upon network outage, \tcpls can recover the session over another \tcp
+connection. When the failover mode is enabled, \tcpls sends stream-level record
+acknowledgments that announce to the peer the records that have been received
+over each stream.  Upon network outage, \tcpls \textbf{\textit{moves}} the
+active streams out of the broken \tcp connection to an active one. Furthermore,
+the unacknowledged data records that were sent over a failed \tcp connection are
+\textbf{\textit{sent again}} on a functional \tcp connection.
+%\todo{FR OB ne comprend pas la phrase qui suit} Moving the streams involves
+%playing a protocol that we designed to re-synchronize the implicit stream-level
+%sequence number that is used to encrypt and decrypt records.
+\tcpls' Failover mode is optionnal. It needs to be activated by both peers.  We
+discuss in Sec.~\ref{sec:perf} measurements that quantify the performance impact
+of this mode. 
 
-Second, \tcpls also supports \textit{Application-level Connection
- Migration}. Essentialy, it means that \tcpls provides a
-simple API that enables an application to migrate when it wishes to do
-so (e.g., a smartphone could migrate from LTE to Wi-Fi when the Wi-Fi appears healthy, a client using privacy compliant IPv6 addresses \cite{rfc4941} could restart the underlying \tcp connection after the expiration of a temporary address, \ldots). The host that wishes to carry such a migration first creates a
-new \tcp connection. Then, it attaches all the existing streams to the new connection by sending one \texttt{STREAM\_ATTACH} message per stream. At this point, the stream is attached to both the old and the new \tcp connection. If the client sends a new record, it will be sent over both connections but the receiver will discard the second copy. Then, the migrating host sends a \texttt{STREAM\_CLOSE} message over the old \tcp connection. At this point, the migrating host cannot send new data anymore for this stream over the old connection. Once the remote host has received \texttt{STREAM\_CLOSE} message over the old \tcp
-connection, it knows that the stream has migrated over the new \tcp connection.
-It then sends a \texttt{STREAM\_CLOSE\_ACK} message. The migrating host can close the old connection upon reception of this message. Note that since these messages are TLS records, they are sent reliably by the underlying \tcp connection. During such a migration, some data is sent over two connections.
+Second, \tcpls also supports \textit{Application-level Connection Migration}.
+Essentialy, it means that \tcpls provides a simple API that enables an
+application to migrate when it wishes to do so (e.g., a smartphone could migrate
+from LTE to Wi-Fi when the Wi-Fi appears healthy, a client using privacy
+compliant IPv6 addresses \cite{rfc4941} could restart the underlying \tcp
+connection after the expiration of a temporary address, \ldots). The semantic of
+the application-level connection migration is built from attaching and
+closing streams in the multipath bandwidth aggregation mode.
+The host that wishes to carry such a migration first creates a new \tcp
+connection and join the \tcpls session over this connection. Then, it
+attaches new streams to the new connection by sending one
+\texttt{STREAM\_ATTACH} message per stream that needs to be migrated. At that
+moment, the client and the server have potentially multiple streams opened over
+the two network paths. Then, after attaching its streams to the new path, the
+migrating host sends a \texttt{STREAM\_CLOSE} message over the old \tcp
+connection for all old streams. At this point, the migrating host cannot send new data anymore for
+the streams over the old connection. Once the remote host has received a
+\texttt{STREAM\_CLOSE} message over the old \tcp connection, it knows that the
+stream is not available anymore, and needs to find a (potentially fresh) stream to send its
+data (i.e., the ones that just opened over the new path). It first sends a
+\texttt{STREAM\_CLOSE\_ACK} message for each received \texttt{STREAM\_CLOSE}.
+The migrating host can close the old connection upon reception of the last
+\texttt{STREAM\_CLOSE\_ACK}, indicating that no more data would be received over
+this connection. Note that since these messages are TLS records, they are sent
+reliably by the underlying \tcp connection. 
 
 This second type of migration does not require application-level
 acknowledgements, but it cannot survive from the failure of one of the
-underlying connections.
+underlying connections. During such a migration, some data is sent over two
+connections, which brings us to explain how multipath is designed
 
 %Compared to \quic's connection migration and \tcpls's failover,
 %this migration does not has no goodput loss. It even temporaly increases the goodput by aggregating the
@@ -251,8 +278,8 @@ underlying connections.
 Like \mptcp \cite{raiciu2012hard,rfc6824} or Multipath QUIC \cite{viernickel2018multipath,de2017multipath,draft-deconinck-quic-multipath-06,draft-liu-multipath-quic-02}, \tcpls supports an aggregation mode that maps data over two or more \tcp connections. On multihomed hosts, this can increase the total throughput of a \tcpls session by spreading the data over different network interfaces. In this case, one or more data streams are mapped to two or more underlying \tcp
 connections and \tcpls schedules different records over different connections.
 
-In addition, \tcpls allows the application to control how its streams are
-attached to the underlying \tcp connection. 
+In addition, \tcpls allows the application to attach its streams to the
+underlying \tcp connections in a non-aggegated bandwidth mode.
 This is a choice left to the application using the API. It has several
 advantages and inconvenients compared to the aggregation mode. For example, the
 aggregation mode is simple to use and can potentially saturate the available
@@ -266,10 +293,6 @@ the ordering is only guaranteed per-stream in this mode. However, our \tcpls
 implementation guarantees that this mode will benefit from zero-copy of the decrypted application data, which
 makes this mode potentially quite interesting for application protocol such as
 HTTP that needs to fetch multiple application objects at the same time.
-
-
-
-
 
 \subsection{Improving \tcp's Extensibility}
 \todo{move to appendix ?}
