@@ -205,12 +205,37 @@ pervasive monitoring allows for configurable TLS extensions blocking
 
 \subsection{Bandwidth Aggregation}
 
+We compare the capability of \tcpls to the state of the art \mptcp. Both
+protocols run in the same Mininet topology with two IP paths available, each
+offering 25 mbps and a latency of 10 ms. The experiment consists to transfering
+a file over a single path and then enabling the second one at $5$ seconds. For
+\mptcp, the new path is detected after we up the client's second interface. For
+\tcpls, managing paths is easier: the application can use the API to add local
+or peer-related addresses at any point of the connection. In that case, we add
+the information at $5$ seconds, connect to the peer and attach a new stream to
+this new connection. Our results are displayed in
+Figure~\ref{fig:multipath_aggregation}. Both stacks enable the aggregation of the
+goodput to ~50 mbps. There are two major differences displayed by the stacks.
+First, upping the interface, adding the routes and detecting the new path in
+the case of \mptcp is time consuming. It leads \mptcp to react slower than
+\tcpls regarding the availability of the new path. Second, \tcpls's aggregated
+goodput seems less stable than \mptcp. This discrepency is explained by the
+difference of chunk size manipulated by the reordering algorithm: \mptcp
+reorders packets with a payload of $1,460$ bytes, while \tcpls is this experiment
+reorders records with the maximum payload size of $16,384$ bytes. That means
+that \tcpls, upon unordered records, would need to reorder and deliver much
+larger chunks of data, leading to larger goodput irregularities than \mptcp.
+However, \tcpls might  negotiate the record size to smooth out this
+irregularity. Setting a record size around $1,500$ bytes would make them lookalike,
+but would be more CPU costly.
+
 \begin{figure}[!t]
   \begin{center}
     \includegraphics[width=\columnwidth]{figures/aggregate_dual.png}
-  \end{center} \
-  caption{Bandwidth aggregation comparison between \mptcp and
+  \end{center} 
+  \caption{Bandwidth aggregation comparison between \mptcp and
     \tcpls.}
+  \label{fig:multipath_aggregation}
 \end{figure}
 
 \subsection{Application-Level Migration}
@@ -285,10 +310,22 @@ for congestion controllers \cite{narayan2018restructuring}.
 During the last years, the Linux kernel developpers have relied on eBPF
 to make the Linux TCP/IP stack \cite{brakmo2017tcp,tran2020beyond} easier
 to extend. Since Linux kernel version 5.6, an application can inject
-a different congestion control scheme entirely implemented using eBPF. A similar approach was proposed in Pluginizing \quic~\cite{de2019pluginizing}.
-We leverage these new eBPF capabilities to demonstrate the feasibility of injecting and updating a congestion control scheme during a \tcpls session.
+a different congestion control scheme entirely implemented using eBPF. A similar
+approach was proposed in Pluginizing \quic~\cite{de2019pluginizing}.  We
+leverage these new eBPF capabilities to demonstrate the feasibility of injecting
+and updating a congestion control scheme during a \tcpls session.
 
-We perform our experiment using Mininet \todo{BD: same remark as above.  Mininet or IPMininet} over a 100 Mbps emulated link that has a 60 msec delay. Fig.~\ref{fig:vegasCubic} shows a client that uses the TCP Vegas~\cite{10.1145/190314.190317} congestion control scheme to upload a file. This \tcpls session fully uses the bottleneck link. After some time, another client starts an upload, but using the CUBIC congestion controller~\cite{rfc8312}. This results in an unfair distribution of the bandwidth. The server then sends the eBPF bytecode of the CUBIC congestion control scheme to the \tcp Vegas client that injects it in its kernel and the unfairness disappears.  We performed the same experiment for different delay, varying from 10ms to 100ms.
+We perform our experiment using Mininet \todo{BD: same remark as above.  Mininet
+  or IPMininet} over a 100 Mbps emulated link that has a 60 msec delay.
+Fig.~\ref{fig:vegasCubic} shows a client that uses the TCP
+Vegas~\cite{10.1145/190314.190317} congestion control scheme to upload a file.
+This \tcpls session fully uses the bottleneck link. After some time, another
+client starts an upload, but using the CUBIC congestion
+controller~\cite{rfc8312}. This results in an unfair distribution of the
+bandwidth. The server then sends the eBPF bytecode of the CUBIC congestion
+control scheme to the \tcp Vegas client that injects it in its kernel and the
+unfairness disappears.  We performed the same experiment for different delay,
+varying from 10ms to 100ms.
 
 \begin{figure}[!t]
   \begin{center}
