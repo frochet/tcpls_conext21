@@ -77,7 +77,7 @@ def main():
     # * o x d v
     markers=["v","o","*","*","v","o","o","v","P","x","P","o","v","P"]
     for i in range(len(colors)):
-        ax.plot(0, y_pos[i], marker=markers[i], linestyle="", color=scale_lightness(colors[i], .65), 
+        ax.plot(0, y_pos[i], marker=markers[i], linestyle="", color="black",#scale_lightness(colors[i], .65), 
         clip_on=False)
         
     for i, p in enumerate(ax.patches):
