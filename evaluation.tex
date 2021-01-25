@@ -179,7 +179,10 @@ TLS 1.3 or some of its features \cite{lee2019matls,Bock_China,raman2020measuring
 %\cite{rfc7258}. This is handled properly by \tcpls fallback mechanism.
 
 
-When faced with middleboxes that intercept TLS 1.3 \cite{Bock_China,raman2020measuring}, we need to consider the two TLS extensions used by \tcpls: \tcpls and \join. If a clients attempts to open a \tcpls session through a \tls termination
+When faced with middleboxes that intercept TLS 1.3
+\cite{Bock_China,raman2020measuring}, we need to consider the \tcpls handshake
+TLS extensions: \tcpls, \join, \texttt{Connid}, and \texttt{Cookies}. If a clients attempts to open a \tcpls session
+through a \tls termination
 proxy, it sends a \textsc{ClientHello} with the \tcpls extension.
 If the proxy does not support \tcpls, it replies with a \textsc{ServerHello}
 message that does not include the \tcpls extension. From this point, the client
@@ -248,17 +251,27 @@ quels cas du monde réels ils s'appliquent
 
 
 Fig.~\ref{fig:conn_migration} shows the result of an Application-level
-connection migration demo using the API (i.e., it is left to the
-application to decide when to migrate, and we expose a simplistic code flow to
-perform it). In this experiment, we use an IPMininet network~\cite{ipmininet, jadin2020educational} \todo{BD: Mininet above, IPMininet here with different refs.  Make sure to be consistent}
-composed of a client and a server, both dual-stacks. One path within the
-network is composed of OSPF routers with IPv4 only, and one path is composed of
-OSPF6 routers IPv6 only. We configure the bandwidth to 30Mbps, the lowest delay
-to the v4 link. Our application downloads a 60 MB file from a server and migrates to the v6 connection in the middle of the download.
+connection migration demo using the API (i.e., it is left to the application to
+decide when to migrate, and we expose a simplistic code flow to perform it). In
+this experiment, we use an IPMininet network~\cite{ipmininet,
+  jadin2020educational} \todo{BD: Mininet above, IPMininet here with different
+  refs.  Make sure to be consistent} composed of a client and a server, both
+dual-stacks. One path within the network is composed of OSPF routers with IPv4
+only, and one path is composed of OSPF6 routers IPv6 only. We configure the
+bandwidth to 30Mbps, the lowest delay to the v4 link. Our application downloads
+a 60 MB file from a server and migrates to the v6 connection in the middle of
+the download.
 
-Triggering the connection migration involves chaining 5 API calls:
-first, \texttt{tcpls\_handshake()} configured with handshake properties announcing a \join over the v6 connection id. Then, the creation of a new stream
-\texttt{tcpls\_stream\_new()} for the v6 connection id, finally followed by the attachment of this new stream \texttt{tcpls\_streams\_attach()} and the secure closing of the v4 \tcp connection using \texttt{tcpls\_stream\_close()}. Following these events, the server seamlessly switches the path while looping over \texttt{tcpls\_send} to send the file content. Note that all the events trigger callbacks on the server side, to let the server react appropriately if other requirements need to be fulfilled.
+Triggering the connection migration involves chaining 5 API calls: first,
+\texttt{tcpls\_handshake()} configured with handshake properties announcing a
+\join over the v6 connection id. Then, the creation of a new stream
+\texttt{tcpls\_stream\_new()} for the v6 connection id, finally followed by the
+attachment of this new stream \texttt{tcpls\_streams\_attach()} and the secure
+closing of the v4 \tcp connection using \texttt{tcpls\_stream\_close()}.
+Following these events, the server seamlessly switches the path while looping
+over \texttt{tcpls\_send} to send the file content. Note that all the events
+trigger callbacks on the server side, to let the server react appropriately if
+other requirements need to be fulfilled.
 
 \tcpls's application connection migration takes advantage of multipath to offer
 a smooth handover to applications, which \tcpls cannot do at the moment.
