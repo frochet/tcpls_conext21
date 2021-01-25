@@ -64,18 +64,18 @@ def main():
     fig, ax = plt.subplots(figsize=(8,6))
 
     cmap = plt.get_cmap('RdYlGn')(
-        np.linspace(0.15, 0.85, 5))
-    colors = [cmap[4],cmap[1], cmap[3],cmap[3],
-             cmap[4],cmap[1],
-             cmap[1],cmap[4],cmap[0],
+        np.linspace(0.1, 0.9, 6))
+    colors = [cmap[5],cmap[1], cmap[4],cmap[4],
+             cmap[5], cmap[4],cmap[1],
+             cmap[1],cmap[5],cmap[0],
              cmap[2],cmap[0],
-             cmap[1],cmap[4],cmap[0]]
+             cmap[1],cmap[5],cmap[0]]
     
     plt.barh(y_pos, [8*height[1]/1000000 for height in bar_height_bw],
-             color = colors, alpha=0.7)
+             color = colors, alpha=0.8)
     plt.yticks(y_pos)
     # * o x d v
-    markers=["v","o","*","*","v","o","o","v","P","x","P","o","v","P"]
+    markers=["v","o","*","*", "v", "*", "o","o","v","P","x","P","o","v","P"]
     for i in range(len(colors)):
         ax.plot(0, y_pos[i], marker=markers[i], linestyle="", color="black",#scale_lightness(colors[i], .65), 
         clip_on=False)
