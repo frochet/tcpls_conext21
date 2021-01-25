@@ -1,6 +1,6 @@
 % !TEX root = ./paper.tex
 
-In this section, we evaluate \tcpls using two different types of experiments. First, analyze the raw performance of our \tcpls prototype and the interactions with real middleboxes in a lab with a few servers. We then emulate more complex network scenarios that include failover and multipathing using Mininet~\cite{handigol2012reproducible}. \todo{BD: is it the same ref as the next one (broken)?}
+In this section, we evaluate \tcpls using two different types of experiments. First, analyze the raw performance of our \tcpls prototype and the interactions with real middleboxes in a lab with a few servers. We then emulate more complex network scenarios that include failover and multipathing using Mininet~\cite{handigol2012reproducible}. 
 
 
 %Our objective is to evaluate whether our design and implementation are indeed
@@ -14,10 +14,10 @@ In this section, we evaluate \tcpls using two different types of experiments. Fi
 
 %TODO do we also evelatuate security? with a simple proof and discussion?
 
-To evaluate \tcpls's functionalities, we rely on reproducible network
-experimentations with Mininet~\cite{mininet}. Our objective is to compare the
-behaviour of \tcpls with the state of the art, and to make it easily
-reproducible for future works, as the quic implementations continue to evolve.
+%To evaluate \tcpls's functionalities, we rely on reproducible network
+%experimentations with Mininet~\cite{mininet}. Our objective is to compare the
+%behaviour of \tcpls with the state of the art, and to make it easily
+%reproducible for future works, as the quic implementations continue to evolve.
 
 \subsection{Capability Comparison}
 
@@ -30,7 +30,7 @@ transport-layer functionalities on top of \tcp, while exposing a simple but
 powerful API to let the application composes the properties its transport should
 have.
 
-Note that several of the features suggested by \tcpls are also suggested on \tcp or \quic via research works such as a new socket API for explicit multipath for \tcp\cite{hesmans2016enhanced}, or eBPF plugins in
+Note that several of the features suggested by \tcpls are also suggested on \tcp or \quic via research works such as a new socket API for explicit \mptcp \cite{hesmans2016enhanced}, or eBPF plugins in
 \quic~\cite{de2019pluginizing}.
 
 \begin{table}
