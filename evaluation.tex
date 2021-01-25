@@ -225,7 +225,7 @@ the case of \mptcp is time consuming. It leads \mptcp to react slower than
 \tcpls regarding the availability of the new path. Second, \tcpls's aggregated
 goodput seems less stable than \mptcp. This discrepency is explained by the
 difference of chunk size manipulated by the reordering algorithm: \mptcp
-reorders packets with a payload of $1460$ bytes, while \tcpls is this experiment
+reorders packets with a payload of $1460$ bytes, while \tcpls in this experiment
 reorders records with the maximum payload size of $16384$ bytes. That means
 that \tcpls, upon unordered records, would need to reorder and deliver much
 larger chunks of data, leading to larger goodput irregularities than \mptcp.
@@ -243,26 +243,63 @@ irregularity. Setting a record size around $1500$ bytes would make \mptcp and
   \label{fig:multipath_aggregation}
 \end{figure}
 
+\subsection{Failover}
+
+The failover feature is designed to provide reliability to the \tcpls connection
+in case of network outage. From middlebox interferences to mobile client loosing
+their connection to the access point (LTE or WIFI), network outages may happen
+for various reasons. We first discuss and compare the recovery speed
+after a network outage, for different types of outage. Figure~\ref{fig:recovery}
+compares the goodput achieved by both \mptcp and \tcpls when they suffer an
+outage on their main path and fallback to their secondary path. Both client and
+server are configured with two interfaces, with one of them set to the backup
+mode in the case of \mptcp (no connections are made to the backup interface
+unless an issue is detected on the first path). We consider three types of
+outage: a middlebox blackholing all the traffic, the reception of a spurious
+$RST$ and the loss of the interface for \mptcp.
+
+\begin{figure}[!t] \begin{center}
+    \includegraphics[width=\columnwidth]{figures/breakage_analysis.png}
+  \end{center} \caption{Recovery speed analysis.} \label{fig:recovery}
+\end{figure}
+
+Our results show a range of different behaviours: an explicit issue such as the
+reception of a $RST$ makes both \tcpls and \mptcp react fast. A network outage
+is more difficult to handle: both stacks configure timers and base their
+decision to switch the path on their expiration. In the case of \tcpls, we
+configure a timer using the \tcp Option $TCP\_USER\_TIMEOUT$. The scenario is as
+follow: when the server sends its data with the failover feature enabled, it
+sends a $USER\_TIMEOUT$ to protect the transfer. This option is sent through
+the secure control channel to indicate to the client \tcpls's stack that it should
+not have to wait more than $X ms$ between successful read of data, with $X$ a
+parameter of this option. For this experiment, the $USER\_TIMEOUT$ value is set
+to $250ms$. After the timer expiration, \tcpls needs to connect and join the
+session through another path, and then replay the unacknowledged records. Once
+this steps have succeeded, the transfer can continue. In our experiments, it took
+around $\approx 1$ second to recover from the outage.
+
+
+\begin{figure}[!t] \begin{center}
+    \includegraphics[width=\columnwidth]{figures/tcpls_mptcp.png} \end{center}
+  \caption{Connection reliability: influence of the path manager and congestion
+    control.} \end{figure}
+
+
 \subsection{Application-Level Migration}
-
-
-Detailler pourquoi on a besoin du controle applicatif pour la migration, et à
-quels cas du monde réels ils s'appliquent
-
 
 Fig.~\ref{fig:conn_migration} shows the result of an Application-level
 connection migration demo using the API (i.e., it is left to the application to
 decide when to migrate, and we expose a simplistic code flow to perform it). In
-this experiment, we use an IPMininet network~\cite{ipmininet,
-  jadin2020educational} \todo{BD: Mininet above, IPMininet here with different
-  refs.  Make sure to be consistent} composed of a client and a server, both
+this experiment, we use a IPMininet network~\cite{ipmininet,
+  jadin2020educational} composed of a client and a server, both
 dual-stacks. One path within the network is composed of OSPF routers with IPv4
 only, and one path is composed of OSPF6 routers IPv6 only. We configure the
-bandwidth to 30Mbps, the lowest delay to the v4 link. Our application downloads
-a 60 MB file from a server and migrates to the v6 connection in the middle of
-the download.
+bandwidth on each path to be 30mbps, a round-trip-time of 40ms for the v4 link,
+and a round-trip-time of 80ms for the v6 link. Our application downloads
+a 60 MB file from a server and migrates twice (i.e., from the v4 to the v6 path
+and once again to the v4 path).
 
-Triggering the connection migration involves chaining 5 API calls: first,
+Triggering the first connection migration involves chaining 5 API calls: first,
 \texttt{tcpls\_handshake()} configured with handshake properties announcing a
 \join over the v6 connection id. Then, the creation of a new stream
 \texttt{tcpls\_stream\_new()} for the v6 connection id, finally followed by the
@@ -273,41 +310,20 @@ over \texttt{tcpls\_send} to send the file content. Note that all the events
 trigger callbacks on the server side, to let the server react appropriately if
 other requirements need to be fulfilled.
 
-\tcpls's application connection migration takes advantage of multipath to offer
-a smooth handover to applications, which \tcpls cannot do at the moment.
+Figure~\ref{fig:conn_migration} further shows a peak of goodput at each
+migration. During the migration window (marked with virtual black bars
+indicating the attachment of the new stream and the closing of the initial
+stream), the client is taking advantage of both paths to receive its data: the
+first path finishes the flush its data while the second path already started to
+send. Once the last record of the first path is sent, \tcpls can reorder the
+data and deliver it to the client, which gives this goodput peak matching the
+accumulated bandwidth of the new path over the migration time window.
 
 \begin{figure}[!t]
   \centering
   \includegraphics[width=\columnwidth]{figures/migration.png}
   \caption{Application-level connection migration during a 60MB file download.}
   \label{fig:conn_migration}
-\end{figure}
-
-\subsection{Failover}
-
-1) analyse du temps de recovery pour different type de cassure, et comparaison avec mptcp
-2) discuter une propriété de "connection reliability" => ca casse, on restabilise le plus vite possible
-3) montrer que le path manager est important pour cette propriété, et que ce n'est pas encore au point pour mptcp, mpquic, etc
-
-Mptcp overhead: 1.0744997978210449
-TCPLS overhead: 1.0994282363439873
-MPTCP overhead/TCPLS overhead:              0.9773259975513828
-
-
-\begin{figure}[!t]
-  \begin{center}
-    \includegraphics[width=\columnwidth]{figures/breakage_analysis.png}
-  \end{center}
-  \caption{Recovery speed analysis.}
-\end{figure}
-
-
-\begin{figure}[!t]
-  \begin{center}
-    \includegraphics[width=\columnwidth]{figures/tcpls_mptcp.png}
-  \end{center}
-  \caption{Connection reliability: influence of the path manager and congestion
-  control.}
 \end{figure}
 
 
