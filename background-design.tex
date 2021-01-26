@@ -119,7 +119,7 @@ supports one or more streams over a single \tcpls session. An application
 can open, attach and close streams to an existing \tcpls session. Each
 stream is an independent cryptographic context derived from the \tcpls
 security context. The \tcpls streams can be used to carry application data
-or control information. 
+or control information.
 
 %They must be attached to a \textit{Connected} \tcp bytestream exported as a \texttt{transportid} to the application. To manipulate streams, \tcpls offers an API to open, attach
 %and close streams to any available \texttt{transportid} in the \textit{Connected} state, while offering the Stream as the only bytestream abstraction to the upper layer. Streams can only be attached to one \texttt{transportid}, but they can be moved, several streams can be attached to a given \texttt{transportid}, and multiple streams can be attached to multiple \texttt{transportid}s.
@@ -152,7 +152,7 @@ To attach a new stream, a host simply needs to send the \texttt{STREAM\_ATTACH} 
 the connections that compose a \tcpls session is identified by a \emph{transport identifier}. By default, the data from a stream attached to a \tcpls session can be sent over any of the underlying TCP connections. The applications that
 require finer control over the utilization of the underlying TCP connections can
 use the \tcpls API to map a stream on a specific underlying connection. In this case, all the data of this stream is exchanged over this specific connection.
-By placing two streams on different connections, an application can prevent Head-Of-Line (HOL) blocking among these streams. 
+By placing two streams on different connections, an application can prevent Head-Of-Line (HOL) blocking among these streams.
 
 \tcpls also supports failover and multipath. To support these features, it
 must be possible to send data from a given stream over different \tcp connections. In this case, the \tcp level sequence numbers and acknowledgements are not sufficient anymore to enable the receiver to reorder the data. When this feature
@@ -167,7 +167,7 @@ packets~\cite{rfc3360,weaver2009detecting}. \tcpls can preserve established
 connections by automatically restarting the underlying \tcp connection upon
 reception of a spurious reset. \tcpls defines the connection termination at the
 stream level: a \tcpls session is closed one the last stream attached to a
-\tcp connection is securely closed. 
+\tcp connection is securely closed.
 
 That is, \tcpls' Secure Control Channel provides a flexible abstraction
 to the upper layer that supports various new features such as
