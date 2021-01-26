@@ -227,7 +227,7 @@ to cancel a migration attempt).
 
 
 \subsection{Bandwidth Aggregation}
-
+\label{sec:bwaggr}
 We compare the capability of \tcpls to the state of the art \mptcp. Both
 protocols run in the same Mininet topology with two IP paths available, 
 \todo{KE: Description of mininet topology comes after this reference}
@@ -244,7 +244,7 @@ goodput to  $\approx$ 50 mbps. There are two major differences displayed by the 
 First, upping the interface, adding the routes and detecting the new path in
 the case of \mptcp is time consuming. It leads \mptcp to react slower than
 \tcpls regarding the availability of the new path. Second, \tcpls's aggregated
-goodput seems less stable than \mptcp. This discrepency is explained by the
+goodput seems less stable than \mptcp. This discrepency might explained by the
 difference of chunk size manipulated by the reordering algorithm: \mptcp
 reorders packets with a payload of $1460$ bytes, while \tcpls in this experiment
 reorders records with the maximum payload size of $16384$ bytes. That means
@@ -254,7 +254,8 @@ However, \tcpls might  negotiate the record size to smooth out this
 irregularity. Setting a record size around $1500$ bytes would make \mptcp and
 \tcpls' results lookalike, but would be slightly more CPU costly since we need
 to use encryption/decryption code path more often.
-\fr{Do I link a figure with 1500 bytes records in the appendix?}
+Appendix~\ref{appendix:aggr} shows the results of the same experiment but using
+a \tls record size of $1500$ bytes instead.
 
 \begin{figure}[!t]
   \begin{center}
