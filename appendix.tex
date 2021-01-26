@@ -118,34 +118,33 @@ have.
 Note that several of the features suggested by \tcpls are also suggested on \tcp or \quic via research works such as a new socket API for explicit \mptcp \cite{hesmans2016enhanced}, or eBPF plugins in
 \quic~\cite{de2019pluginizing}.
 
-\begin{table}[!t]
+\begin{table*}[!t]
   \small
-  \begin{tabular}{lcccc}
+  \begin{tabular}{lccccc}
     \toprule
-    & \tcp & \tls/\tcp & \quic & \tcpls \\
+    & \tcp & \mptcp & \tls/\tcp & \quic & \tcpls \\
     \midrule
-    Transport reliability & \checkmark & \checkmark &
-    \checkmark & \checkmark \\
-    Message conf. and auth.&  \xmark & \checkmark & \checkmark & \checkmark \\
-    Connection reliability (failover) &  \xmark & \xmark & (\checkmark) & \checkmark \\
-    0-RTT & \checkmark & (\xmark) & \checkmark  & \checkmark \\
-    Session Resumption & \xmark & \checkmark & \checkmark & \checkmark \\
-    Connection Migration & \xmark & \xmark & \checkmark & \checkmark \\
+    Transport reliability & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+    Message conf. and auth.&  \xmark & \xmark & \checkmark & \checkmark & \checkmark \\
+    Connection reliability (failover) &  \xmark & \checkmark &\xmark & (\checkmark) & \checkmark \\
+    0-RTT & \checkmark & \xmark & (\xmark) & \checkmark  & \checkmark \\
+    Session Resumption & \xmark & \xmark & \checkmark & \checkmark & \checkmark \\
+    Connection Migration & \xmark & \xmark &\xmark & \checkmark & \checkmark \\
     \multicolumn{5}{l}{Application-exposed features} \\
-    \hspace{2em} Streams & \xmark & \xmark & \checkmark & \checkmark \\
-    \hspace{2em} Happy eyeballs & \xmark & \xmark & \xmark & \checkmark \\
-    \hspace{2em} Explicit Multipath & \xmark & \xmark & \xmark & \checkmark \\
-    \hspace{2em} App-level Con. migration & \xmark & \xmark & \xmark & \checkmark \\
-    \hspace{2em} Pluginization & \xmark & \xmark & \xmark & (\checkmark) \\
-    Resilience to HOL blocking & \xmark & \xmark & \checkmark  & \checkmark \\
-    Secure Connection Closing & \xmark &  \xmark & \checkmark & \checkmark \\
+    \hspace{2em} Streams & \xmark &  \xmark & \xmark & \checkmark & \checkmark \\
+    \hspace{2em} Happy eyeballs & \xmark & \xmark & \xmark & \xmark & \checkmark \\
+    \hspace{2em} Explicit Multipath & \xmark & \xmark & \xmark & \xmark & \checkmark \\
+    \hspace{2em} App-level Con. migration & \xmark & \xmark & \xmark & \xmark & \checkmark \\
+    \hspace{2em} kernel eBPF Pluginization & \xmark & \xmark & \xmark & \xmark & \checkmark \\
+    Resilience to HOL blocking & \xmark & \xmark & \xmark & \checkmark  & \checkmark \\
+    Secure Connection Closing & \xmark &  \xmark & \xmark & \checkmark & \checkmark \\
     \bottomrule
   \end{tabular}
   \caption{Protocol features comparison. (\xmark) means that the feature is
     available, but not straightforward to use. (\checkmark) means that the
   feature is partially available and under development.}
   \label{table:tcplsvsquic}
-\end{table}
+\end{table*}
 
 \section{Failover Protocol}
 % Agents
@@ -155,7 +154,7 @@ Note that several of the features suggested by \tcpls are also suggested on \tcp
 \def\Event{Event}
 
 
-\begin{figure}[!t]
+\begin{figure*}[!t]
  \begin{center}
 \begin{tikzpicture}[every node/.style={font=\tiny, minimum height=0.03cm,minimum width=0.03cm},scale=0.90, transform shape]
 \tikzset{label/.style={align=center,minimum height=0.5cm,minimum width=5mm}}
@@ -439,4 +438,4 @@ Note that several of the features suggested by \tcpls are also suggested on \tcp
 
 \end{tikzpicture}
 \end{center}
-\end{figure}
+\end{figure*}
