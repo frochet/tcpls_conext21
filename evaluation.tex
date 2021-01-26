@@ -166,16 +166,16 @@ Although \quic~\cite{draft-ietf-quic-transport} is a young protocol, there are
 already more than a dozen
 implementations~\cite{marx2020same,quicimplem,yang2020making} under active
 development. We compiled and installed three representative \quic
-implementations in our testbed: Facebook's mvfst~\cite{} from Facebook,
-Microsoft's msquic~\cite{} Fastly's quicly~\cite{}. They are all developed by
-large companies that (plan to) use them in production and include their own
-benchmarking application to perform throughput measurements. Furhtermore, mvfast
-and quicly support Generic Segmentation Offload (GSO), which should improve
-performance by offloading \udp segmentation and checksum computation available
-on our NICs. We use the implementation's bechmarking application as is,
-exploiting the optional arguments provided by their interface to increase the
-throughput but drawing the line there. That is, we do not modify the QUIC
-implementations.
+implementations in our testbed: Facebook's mvfst~\cite{mvfst-github,
+  Joras_mvfst} from Facebook, Microsoft's msquic~\cite{msquic-github} Fastly's
+quicly~\cite{quicly-github}. They are all developed by large companies that (plan to) use
+them in production and include their own benchmarking application to perform
+throughput measurements. Furhtermore, mvfast and quicly support Generic
+Segmentation Offload (GSO), which should improve performance by offloading \udp
+segmentation and checksum computation available on our NICs. We use the
+implementation's bechmarking application as is, exploiting the optional
+arguments provided by their interface to increase the throughput but drawing the
+line there. That is, we do not modify the QUIC implementations.
 
 The results shown in Fig.~\ref{fig:perf} show that \tcpls compares favorably
 with the tested \quic implementations. The fastest \quic implementation is
