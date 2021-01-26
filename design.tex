@@ -6,17 +6,16 @@
 \subsection{The Secure Control Channel}\label{sec:extending}
 
 \tls 1.3~\cite{rfc8446} has been designed with careful consideration for
-potential extensions and to prevent middlebox interference. 
-A \tcpls client indicates its willingness to use \tcpls with a
-transport parameter in the \textsc{ClientHello} message. Upon reception of this
-parameter, the server replies with a \textsc{ServerHello} messages. It
-can opportunistically as lightweight \tcpls data and
-\tcp options as \textsc{EncryptedExtensions}. Any extension sent with the
-\textsc{ServerHello} message is encrypted with the handshake key, and is not
-part of the context used to derive the eventual application key.
-If the client does not support
-some extension, it echoes back an alert with the value of the option it does not
-recognize, but the connection continues.
+potential extensions and to prevent middlebox interference.  A \tcpls client
+indicates its willingness to use \tcpls with a transport parameter in the
+\textsc{ClientHello} message. Upon reception of this parameter, the server
+replies with a \textsc{ServerHello} messages. It can opportunistically as
+lightweight \tcpls data and \tcp options as \textsc{EncryptedExtensions}. Any
+extension sent with the \textsc{ServerHello} message is encrypted with the
+handshake key, and is not part of the context used to derive the eventual
+application key. If the client does not support some extension, it echoes back
+an alert with the value of the option it does not recognize, but the connection
+continues.
 
 A reasonable approach to designing extensibility mechanisms in today's Internet
 is to avoid leaking any information that could help an on-path attacker
@@ -28,88 +27,90 @@ considers those problems by avoiding unencrypted data within the
 \textsc{ClientHello}.
 
 Once the secure handshake has succeeded, the hosts can exchange \tls records.
-To prevent middlebox interference, the \tls 1.3
-Record Protocol ensures that any new message appears as an \textsc{AppData}
-message type while the true content type (TType) is stored at the end of the
-encrypted payload. \tcpls uses this feature of \tls 1.3 to encode the
-control messages that are sent over the secure channel as new \tls record types. 
+To prevent middlebox interference, the \tls 1.3 Record Protocol ensures that any
+new message appears as an \textsc{AppData} message type while the true content
+type (TType) is stored at the end of the encrypted payload. \tcpls uses this
+feature of \tls 1.3 to encode the control messages that are sent over the secure
+channel as new \tls record types.
 
 %It supports the \textsc{EncryptedExtensions} message sent
-%by the server alongside the \textsc{ServerHello}. 
+%by the server alongside the \textsc{ServerHello}.
 %Such a design choice eases dealing with implementations
 %not supporting a particular option since an opportunistic transmission
 %of an option will not affect the handshake outcome.
 
 
 %\tls 1.3~\cite{rfc8446} defines several types of \tls messages.
-%\tcpls relies on several of them. 
+%\tcpls relies on several of them.
 %A \tcpls client indicates its willingness to use \tcpls with a
-%transport parameter in the \textsc{ClientHello} message. 
+%transport parameter in the \textsc{ClientHello} message.
 
-\subsection{The \tcpls streams}
-\label{sec:datastreams}
+\subsection{The \tcpls Streams}\label{sec:datastreams}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The classical solution to support streams in a transport protocol is to assign
+an identifier to each stream and send the data from stream $x$ as a tuple
+$x,seq,data$ where $seq$ is a sequence number. This is the solution chosen by
+\sctp~\cite{rfc4960} and \quic~\cite{draft-ietf-quic-transport}. \tcpls relies
+on cryptographic properties to support several streams.
 
-The classical solution to support streams in a transport protocol is to assign an identifier to each stream and send the data from stream $x$ as a tuple $x,seq,data$ where $seq$ is a sequence number. This is the solution chosen by SCTP\cite{rfc4960} and QUIC\cite{draft-ietf-quic-transport}. \tcpls relies on
-cryptographic properties to support several streams.
+\paragraph*{Cryptographic Details and Tricks} In \tcpls, each stream has its own
+cryptographic context. All streams use the same key but derive a specific
+Initial Vector (IV - also called cryptographic nonce) such that nonce-misuse
+cannot happen. Furthermore, we derive the IV such that \tcpls record sequence
+number can securly start at $0$ within each stream.
 
-\paragraph*{Cryptographic Details and Tricks}
-In \tcpls, each stream has its own cryptographic context. All streams use
-the same key but derive a specific Initial Vector (IV - also called cryptographic nonce)
-such that nonce-misuse cannot happen. Furthermore, we derive the IV such that
-\tcpls record sequence number can securly start at $0$ within each stream.
+\tcpls uses only one application-level key for $N$ streams, for each direction.
+We selected this approach is to avoid security degradation with the usage of
+multiple keys (by a factor $k$ with $k$ keys)~\cite{chatterjee2011another}.
 
-\tcpls uses only one application-level key for $N$ streams,
-for each direction. We selected this approach is to avoid security
-degradation with the usage of multiple keys (by a factor $k$ with $k$
-keys)~\cite{chatterjee2011another}.
-
-To enable all stream sequence numbers to start at 0, we rely on some properties of the Authenticated Encryption with Associated Data (AEAD) schemes used
-by \tls 1.3. To preserve the security of AEAD, the AEAD nonce used by \tcpls
-must be of unique use when encrypting and decrypting a record. The
-initial nonce must also be unpredictable for an adversary observing the
-handshake. \tcpls derives it from the \tls handshake session secret in
-a similar fashion as the \tls keys~\cite{rfc8446}.
-The nonce size must range from $96$ bits to $128$ bits depending on the
-underlying cipher used. In all cases,
-for a nonce of size $N$ bits, \tls computes the cryptographic nonce given to the underlying by concatenating the $N-64$ leftmost bits with the 64 lower
-bits xored with the record's implicit sequence number encoded in 64 bits.
-The lower 64 bits xoring provides more unpredictability to the nonce when
-the same plaintext is encrypted multiple times with the same
-key~\cite{bellare2016multi,hoang2018multi}. This design implies that we give to
-the underlying cipher the 32 upper bits untouched. The resulting value is then
-incremented at most 1024 times starting from the leftmost bits to encrypt a \tls
-record of maximum size (16384 bytes, i.e, 1024 times 128 bits for the the
+To enable all stream sequence numbers to start at 0, we rely on some properties
+of the Authenticated Encryption with Associated Data (AEAD) schemes used by \tls
+1.3. To preserve AEAD security, the AEAD nonce used by \tcpls must be of unique
+use when encrypting and decrypting a record. The initial nonce must also be
+unpredictable for an adversary observing the handshake. \tcpls derives it from
+the \tls handshake session secret in a similar fashion as the \tls
+keys~\cite{rfc8446}. The nonce size must range from $96$ bits to $128$ bits
+depending on the underlying cipher used. In all cases, for a nonce of size $N$
+bits, \tls computes the cryptographic nonce given to the underlying by
+concatenating the $N-64$ leftmost bits with the 64 lower bits xored with the
+record's implicit sequence number encoded in 64 bits.  The lower 64 bits xoring
+provides more unpredictability to the nonce when the same plaintext is encrypted
+multiple times with the same key~\cite{bellare2016multi,hoang2018multi}. This
+design implies that we give to the underlying cipher the 32 upper bits
+untouched. The resulting value is then incremented at most 1024 times starting
+from the leftmost bits to encrypt a \tls record of maximum size (16384 bytes,
+i.e, 1024 times 128 bits for the the
 minimum block size). We thus observe that 7 bits among those 32 bits are
-untouchable, leading to at least 25 bits that are available
-to encode a unique stream number.
-By encoding such a unique number in this part of the cryptographic nonce we enable each stream to start its sequence number at 0 while encrypting its records
-with the same key. This observation means that we can create independant
-cryptographic contexts based on a tweak of the cryptographic nonce. This implies that stream records can be encrypted and decrypted independently of each other, with the same key value.
-This technique maintains AEAD's core assumption (uniqueness of nonce), which
-means that the state of art AEAD's security proof starting from that assumption
-applies to our design~\cite{chatterjee2011another} and guarantees the security
-of our scheme.
+untouchable, leading to at least 25 bits that are available to encode a unique
+stream number. By encoding such a unique number in this part of the
+cryptographic nonce, we enable each stream to start its sequence number at 0
+while encrypting its records with the same key. This observation means that we
+can create independant cryptographic contexts based on a tweak of the
+cryptographic nonce. This implies that stream records can be encrypted and
+decrypted independently of each other, with the same key value. This technique
+maintains AEAD's core assumption (uniqueness of nonce), which means that the
+state of art AEAD's security proof starting from that assumption applies to our
+design~\cite{chatterjee2011another} and guarantees the security of our scheme.
 
 \paragraph*{Carrying Multiple Streams over the Same Transport}
-Thanks to this a separate cryptographic context, \tcpls can perform concurrent
+Thanks to those separate cryptographic contexts, \tcpls can perform concurrent
 encryption and decryption between streams while maintaining decryption
 correctness and security, and potentially also use this capability to process
 streams over multiple cores. Finally, if different streams are carried
 over the same \tcp connection, \tcpls does not explicitely know which
 received record belongs to which stream. To retrieve this information,
-we also we
+we also
 %either require to modify the
 %associated information within \tls records to add a stream id (this associated
 %data is not encrypted but the AEAD cipher authenticates them). This choice
 %means potential middlebox interference, which we chose to avoid. The other
 %option is to
-leverage the AEAD cipher and check the authentication tag of the
-incoming record until we find the stream that properly verifies this tag. This
-operation is lightweight: it does not require full decryption of the record
-because the AEAD ciphers used by \tls 1.3 do Encrypt then MAC (and MAC then
-Decrypt). This implies that they first check the tag and only decrypt
-if the tag is correct. Looking for the right stream that succeeds
-the tag verification needs to be
+leverage the AEAD cipher and check the authentication tag of the incoming record
+until we find the stream that properly verifies this tag. This operation is
+lightweight: it does not require full decryption of the record because the AEAD
+ciphers used by \tls 1.3 do Encrypt then MAC (and MAC then Decrypt). This
+implies that they first check the tag and only decrypt if the tag is correct.
+Looking for the right stream that succeeds the tag verification needs to be
 performed once each time the application writes to another stream over the same
 \tcp connection.
 
@@ -132,7 +133,7 @@ attempts succeeds with probability $2^{-33}$.
 \label{sec:multipath}
 
 \tcpls includes a Connection Manager (CM) that controls the underlying \tcp
-connections. 
+connections.
 %In our design mindset, Multipath in a modern transport protocol is about
 %offering all the performance and usability opportunities we can imagine from
 %multiple interfaces and network paths, in a fully flexible manner with a clear
@@ -143,7 +144,7 @@ existing \tcpls connection. This is similar to \mptcp's path managers
 does~\cite{raiciu2012hard,rfc6824,hesmans2015smapp,hesmans2016enhanced},
 but with some differences. First, \tcpls does not suffer from the same
 security limitations as \mptcp. Second, \tcpls supports several modes
-of multipathing including connection failover and bandwidth aggregation. 
+of multipathing including connection failover and bandwidth aggregation.
 
 
 
@@ -196,7 +197,7 @@ cookies, the server indicates that it currently accepts the attachment of only
 $n$ \tcp connections to this session. This prevents resources exhaustion attacks
 that are difficult to counter with \mptcp. \todo{OB:voir mpquic} The server can
 send additional cookies later and update its list of addresses. \tcpls is
-symmetrical and the client can also announce its addresses and send cookies. 
+symmetrical and the client can also announce its addresses and send cookies.
 
 To attach a new connection, e.g., using the server's IPv6 address, the client
 sends a \textsc{ClientHello} message containing the session identifier
@@ -229,7 +230,7 @@ the unacknowledged data records that were sent over a failed \tcp connection are
 %sequence number that is used to encrypt and decrypt records.
 \tcpls' Failover mode is optionnal. It needs to be activated by both peers.  We
 discuss in Sec.~\ref{sec:perf} measurements that quantify the performance impact
-of this mode. 
+of this mode.
 
 Second, \tcpls also supports \textit{Application-level Connection Migration}.
 Essentialy, it means that \tcpls provides a simple API that enables an
@@ -255,7 +256,7 @@ data (i.e., the ones that just opened over the new path). It first sends a
 The migrating host can close the old connection upon reception of the last
 \texttt{STREAM\_CLOSE\_ACK}, indicating that no more data would be received over
 this connection. Note that since these messages are TLS records, they are sent
-reliably by the underlying \tcp connection. 
+reliably by the underlying \tcp connection.
 
 This second type of migration does not require application-level
 acknowledgements, but it cannot survive from the failure of one of the
@@ -333,7 +334,7 @@ but could also prevent \tcpls from correctly working through some types of
 transparent \tcp proxies.
 
 Second, \tcpls can also carry \tcp options inside \tls records. \tcpls includes
-one record type to carry TCP options. This new type of records can be used to carry TCP options that need to be exchanged reliably such as the \tcp User Timeout option \cite{rfc5482} or \mptcp's \texttt{ADD\_ADDR} and \texttt{REMOVE\_ADDR} option or experimental TCP options \cite{rfc6994}. 
+one record type to carry TCP options. This new type of records can be used to carry TCP options that need to be exchanged reliably such as the \tcp User Timeout option \cite{rfc5482} or \mptcp's \texttt{ADD\_ADDR} and \texttt{REMOVE\_ADDR} option or experimental TCP options \cite{rfc6994}.
 
 %For example, we used
 %this feature to implement the Linux \tcp User Time Out option

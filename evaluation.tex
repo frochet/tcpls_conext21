@@ -91,13 +91,13 @@ Fig.~\ref{fig:perf} provides the goodput measured in our
 testbed. We report both the bandwidth in megabits per second and packets per
 second.  Each bar in this figure is the median bandwidth over 10 seconds of stable
 throughput. The bottom bar is the highest median goodput that we measured with \tcpls:
-12,4 Gbps. This result was obtained with jumbo frames (i.e. 9000 bytes MTU)
+12.4 Gbps. This result was obtained with jumbo frames (i.e. 9000 bytes MTU)
 and using TCP Segmentation Offload (TSO) on the NICs. TSO is a standard feature
 that is enabled by all high-speed NICS. The next bar shows that with TSO and a
-standard frame size (1500 bytes MTU), the goodput is still 10,84 Gbps. These
+standard frame size (1500 bytes MTU), the goodput is still 10.84 Gbps. These
 results should be compared with the 22~Gbps that TCP reaches in the same
 environment using \texttt{iperf} but without any encryption. We measured that
-AES128-GCM-SHA256 peaks at 13,1 Gbps when doing in-memory encrytion/decryption on our
+AES128-GCM-SHA256 peaks at 13.1 Gbps when doing in-memory encrytion/decryption on our
 testbed's servers.
 
 %the shows several interesting results. First, while offering similar (and more)
@@ -133,17 +133,28 @@ the number of system calls. Our prototype currently sends a \tcpls-ack for every
 
 \paragraph*{\tcpls vs. \tls/\tcp} We now compare the performance of \tcpls with
 the traditional \tls over \tcp stack. To have a fair comparison, we use
-\texttt{picotls}'s client/server
+\texttt{picotls}'s perf client/server
 implementation with the same commit as our initial fork for \tcpls.
-\todo{test client pour TLS/TCP}
 Fig.~\ref{fig:perf} shows that \tls/\tcp provides a lower performance than
 \tcpls with regular and jumbo frames. This can be explained by the receiving
 buffer size provided to \texttt{read()}, which is hardcoded to 16,384 bytes
-\todo{in \texttt{picotls}}. This implementation results in fragmentation on the
+in \texttt{picotls}'s perf client. This implementation results in fragmentation on the
 receiver and prevents it from using the zero-copy code path provided by the
-library. \tcpls uses a larger read buffer and benefits from zero-copy. At first, one may consider this as an unfair comparison, however the devil is in the details. In \tcpls implementation, the application developers cannot touch \texttt{read()}'s interface. This implies that an application developer cannot missuse the relationship between \tls and \tcp by creating fragmented records and doing unecessary copies to handle those fragments. \tcpls's design and implementation try to prevent fragmentation by first, having a sufficiently large read buffer size. Second, \tcpls only starts deciphering a record it has received the entire record. \tls/\tcp record fragmentation is provided by TLS libraries as a usability feature that spares the application developers from taking into account all \tls details, at the cost of lower performance.
-With \tcpls application developers can ignore \tls details without missusing the interface, which is the reason why this comparison is interesting.\tcpls constrains the application developer to use the buffer type provided
-by the API, but offers zero-copy deciphered records in return.
+library. \tcpls uses a larger read buffer and benefits from zero-copy. At first,
+one may consider this as an unfair comparison, however the devil is in the
+details. In \tcpls implementation, the application developers cannot touch
+\texttt{read()}'s interface. This implies that an application developer cannot
+missuse the relationship between \tls and \tcp by creating fragmented records
+and doing unecessary copies to handle those fragments. \tcpls's design and
+implementation try to prevent fragmentation by first, having a sufficiently
+large read buffer size. Second, \tcpls only starts deciphering a record it has
+received the entire record. \tls/\tcp record fragmentation is provided by TLS
+libraries as a usability feature that spares the application developers from
+taking into account all \tls details, at the cost of lower performance.  With
+\tcpls application developers can ignore \tls details without missusing the
+interface, which is the reason why this comparison is interesting.\tcpls
+constrains the application developer to use the buffer type provided by the API,
+but offers zero-copy deciphered records in return.
 
 %\todo{OB: pas sur que la suite est nécessaire} Moreover, but this has not
 %yet been implemented, it could be interesting to match the TLS record size to
@@ -152,15 +163,28 @@ by the API, but offers zero-copy deciphered records in return.
 
 \paragraph{\tcpls vs. \quic}
 Although \quic~\cite{draft-ietf-quic-transport} is a young protocol, there are
-already more than a dozen implementations~\cite{marx2020same,quicimplem,yang2020making} under active development. We compiled and installed three representative \quic implementations in our testbed: Facebook's mvfst~\cite{} from Facebook, Microsoft's msquic~\cite{} Fastly's quicly~\cite{}. They are all developed by
-large companies that (plan to) use them in production and include their own
-benchmarking application to perform throughput measurements. Furhtermore,
-mvfast and quicly support Generic Segmentation Offload (GSO), which should improve performance by offloading \udp segmentation and checksum computation available on our NICs. We use the implementation's bechmarking application
-as is, exploiting the optional arguments provided by their interface to increase the throughput but drawing the line there. That is, we do not modify the QUIC implementations.
+already more than a dozen
+implementations~\cite{marx2020same,quicimplem,yang2020making} under active
+development. We compiled and installed three representative \quic
+implementations in our testbed: Facebook's mvfst~\cite{mvfst-github,
+  Joras_mvfst} from Facebook, Microsoft's msquic~\cite{msquic-github} Fastly's
+quicly~\cite{quicly-github}. They are all developed by large companies that (plan to) use
+them in production and include their own benchmarking application to perform
+throughput measurements. Furhtermore, mvfast and quicly support Generic
+Segmentation Offload (GSO), which should improve performance by offloading \udp
+segmentation and checksum computation available on our NICs. We use the
+implementation's bechmarking application as is, exploiting the optional
+arguments provided by their interface to increase the throughput but drawing the
+line there. That is, we do not modify the QUIC implementations.
 
 The results shown in Fig.~\ref{fig:perf} show that \tcpls compares favorably
-with the tested \quic implementations. The fastest \quic implementation is quicly. Thanks to GSO, it reaches \todo{4 Gbps} in our testbed with a 1500 bytes MTU. This result is directly comparable to \tcpls with TSO enabled,
-which still performs more than twice faster at 100\% CPU peak with similar configurations for the transport parameters. Suprisingly, quicly's performance decreases with jumbo frames but is still faster than when GSO is disabled. In our testbed, msquic could only reach \todo{2 Gbps} and mvfst was slower.
+with the tested \quic implementations. The fastest \quic implementation is
+quicly. Thanks to GSO, it reaches 4.4 Gbps in our testbed with a 1500 bytes
+MTU. This result is directly comparable to \tcpls with TSO enabled, which still
+performs more than twice faster at 100\% CPU peak with similar configurations
+for the transport parameters. Suprisingly, quicly's performance decreases with
+jumbo frames but is still faster than when GSO is disabled. In our testbed,
+msquic could only reach 1,96 Gbps and mvfst was slower.
 
 
 %QUIC is young protocol, and all implementations are in active development, with
