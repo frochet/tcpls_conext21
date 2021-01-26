@@ -1,6 +1,79 @@
 
 % !TEX root = ./paper.tex
 
+\section{The \tcpls API}
+\label{appendix:api}
+
+To illustrate \tcpls API's flexibility, we consider a simple
+use case inspired by Happy Eyeballs~\cite{rfc8305}. This technique is
+used by web browsers when interacting with dual-stack servers. They
+try to establish \tcp connections using IPv4 and IPv6 and prefer the
+one that offers the lowest latency. This avoids problems when an address
+family is broken on a path but not the other and sometimes results in
+lower latency~\cite{bajpai2019longitudinal}.
+
+\begin{figure}[!t]
+  \resizebox{0.49\textwidth}{!}{%
+\begin{tikzpicture}
+   \colorlet{lightgray}{black!20}
+   \tikzstyle{arrow} = [thick,->,>=stealth]
+   \tikzset{state/.style={rectangle, dashed, draw, fill=white} }
+   \node[black, fill=white] at (0.5,10) {Sender};
+   \node[black, fill=white] at (4,10) {Receiver};
+   \draw[very thick,->] (0.5,9.5) -- (0.5,-1.2);
+   \draw[very thick,->] (4,9.5) -- (4,-1.2);
+   \node at (-1,9) {tcpls\_new()};
+   \node at (5, 9) {listen()};
+   \node[align=left, fill=white] at (-0.8,7.8) {tcpls\_add\_v4(addr,
+     primary)\\*tcpls\_add\_v6(addr6)};
+   \node[fill=white, align=left] at (-0.4,6.5) {[ if (tcpls\_connect(addr,
+     NULL)<0)*\\
+     \indent~~tcpls\_connect(addr6, timeout)*]};
+   \draw[black, thick, <->] (0.5,5.8) -- (4,5.8) node [midway, fill=white] {\tcp Handshake};
+   \node[fill=white] at (0,5) (Callback) {Callback ev.};
+   \node at (1,4.8) (here) {};
+   \draw [->] (Callback) to[out=-80, in=-90,looseness=1.3] (here)
+   to[out=90,in=80,looseness=1.5] (Callback);
+   \node at (5, 5.8) {accept()};
+   \node[align=right] at (5, 5) {tcpls\_new()\\tcpls\_accept()};
+   \node at (-1,4.1) {tcpls\_handshake()};
+   \node[fill=white] at (4.6,4.1) {tcpls\_handshake()};
+   \draw[black, thick, <->] (0.5,3.6) -- (4,3.6) node [midway, fill=white] {\tcpls Handshake};
+   \node[fill=white] at (0,3) (CB2) {Callback ev.};
+   \node at (1,2.8) (here2) {};
+   \draw [->] (CB2) to[out=-80, in=-90,looseness=1.3] (here2)
+   to[out=90,in=80,looseness=1.5] (CB2);
+   \node[fill=white] at (4.5,3) (CB3) {Callback ev.};
+   \node at (5.5,2.8) (here3) {};
+   \draw [->] (CB3) to[out=-80, in=-90,looseness=1.3] (here3)
+   to[out=90,in=80,looseness=1.5] (CB3);
+   \node[fill=white, align=left] at (-1, 1.2)
+   {[tcpls\_handshake(addr6)*\\tcpls\_send()*\\tcpls\_stream\_new()*\\tcpls\_streams\_attach()*\\tcpls\_send\_tcpoption()*]};
+   \draw[black, thick, <->] (0.5,-0.5) -- (4,-0.5) node [midway, fill=white,
+   above, text width=2.4cm]
+   {\{\tcpls Data\} \{APPDATA\}};
+   \node[fill=white] at (4.7,-0.85) {tcpls\_receive()};
+\end{tikzpicture}
+}
+\caption{API Workflow example. * means optional call, [ ] means optional call flow, and \{ \} means encrypted.}
+  \label{fig:api}
+\end{figure}
+
+Fig.~\ref{fig:api} shows an example of our current API workflow. The API can
+handle explicit multipath techniques such as Happy Eyeball by chaining
+\texttt{tcpls\_connect()} with an appropriate timeout of 50ms, as shown in the
+Figure. \tcpls lets the application explicitly choose the multipath mesh by
+calling several times \texttt{tcpls\_connect(src, dest,timeout)};. The
+application may configure callbacks to connection events that would occur within
+\tcpls, such as a connection establishment, a stream attachment, a multipath
+join, the reception of a \tcp option to tune \tcp, and more. When multiple
+streams are attached to multiple \tcp connections, the application may configure
+various \tcpls behaviours. Among them, we support HOL-blocking avoidance,
+aggregation of bandwidth with multipathing, connection failover, and connection
+migration. Note that, HOL-blocking avoidance is incompatible with the
+aggregation of bandwidth with multipathing (the application can do either one
+but not both at the same time).
+
 \section{Capability Comparison}
 
 Table~\ref{table:tcplsvsquic} compares the features supported by

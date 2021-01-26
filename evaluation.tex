@@ -29,7 +29,7 @@ while the third one is used as a router or a middlebox. Each machine is equipped
 
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=6cm]{figures/testbed.png}
+    \includegraphics[width=\columnwidth]{figures/testbed.png}
   \end{center}
   \vspace{-0.5cm}
   \caption{Performance Measurements Setups. C = Client. S = Server. R = Router/Middlebox.}
@@ -74,7 +74,7 @@ the number of system calls. Our prototype currently sends a \tcpls-ack for every
 
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=6cm]{figures/perf_analysis.png}
+    \includegraphics[width=\columnwidth]{figures/perf_analysis.png}
   \end{center}
 \vspace{-0.5cm}
   \caption{The \tcpls prototype is faster than \tls over \tcp and different \quic implementations.}
@@ -238,7 +238,7 @@ to use encryption/decryption code path more often.
 
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=6cm]{figures/aggregate_dual.png}
+    \includegraphics[width=\columnwidth]{figures/aggregate_dual.png}
   \end{center}
 \vspace{-0.5cm}
   \caption{Bandwidth aggregation comparison between \mptcp and
@@ -263,7 +263,7 @@ $RST$ and the loss of the interface for \mptcp.
 
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=6cm]{figures/breakage_analysis.png}
+    \includegraphics[width=\columnwidth]{figures/breakage_analysis.png}
   \end{center}
 \vspace{-0.5cm}
   \caption{Recovery speed analysis.}
@@ -288,7 +288,7 @@ around $\approx 1$ second to recover from the outage.
 
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=6cm]{figures/tcpls_mptcp.png}
+    \includegraphics[width=\columnwidth]{figures/tcpls_mptcp.png}
   \end{center}
 \vspace{-0.5cm}
   \caption{Connection reliability: influence of the path manager and congestion
@@ -322,6 +322,10 @@ congestion avoidance than \mptcp.
 
 \subsection{Application-Level Migration}
 
+Given the availability of multiple IP paths, connection migration might be a
+powerful tool to improve the application network's reliability. Applications
+can take advantage of the \tcpls API to migrate their traffic from one network
+path to another. 
 Fig.~\ref{fig:conn_migration} shows the result of an Application-level
 connection migration demo using the API (i.e., it is left to the application to
 decide when to migrate, and we expose a simplistic code flow to perform it). In
@@ -352,14 +356,16 @@ stream), the client is taking advantage of both paths to receive its data: the
 first path finishes the flush its data while the second path already started to
 send. Once the last record of the first path is sent, \tcpls can reorder the
 data and deliver it to the client, which gives this goodput peak matching the
-accumulated bandwidth of the new path over the migration time window.
+accumulated bandwidth of both paths over the migration time window.
 
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=6cm]{figures/migration.png}
+    \includegraphics[width=\columnwidth]{figures/migration.png}
   \end{center}
 \vspace{-0.5cm}
-  \caption{Application-level connection migration during a 60MB file download.}
+  \caption{Application-level connection migration during a 60MB file download.
+    Showing smooth path handover without goodput loss thanks to a temporary
+    bandwidth aggregation.}
   \label{fig:conn_migration}
 \end{figure}
 
@@ -397,7 +403,7 @@ varying from 10ms to 100ms.
 
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=6cm]{pretty_plotify/plots/vegas_cubic.png}
+    \includegraphics[width=\columnwidth]{pretty_plotify/plots/vegas_cubic.png}
   \end{center}
 \vspace{-0.5cm}
   \caption{\tcpls hosts can exchange congestion control schemes and activate them during a \tcpls session.}
