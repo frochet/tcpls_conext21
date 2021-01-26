@@ -138,11 +138,10 @@ if __name__ == "__main__":
     x_max = 0
     for ax in axs:
         x_g, y_g, min_timing_g = parse_goodput(args.goodput[elem], args.i*1000000)
-        min_timing = min(min_timing, min_timing_g)
-        x_max = max(x_max, (x_g[-1]-min_timing)/1000000)
+        x_max = max(x_max, (x_g[-1]-min_timing_g)/1000000)
         #print("goodput tot : {0} bytes".format(sum(y_g)))
 
-        ax.plot([(x-min_timing)/1000000 for x in x_g[:-1]],
+        ax.plot([(x-min_timing_g)/1000000 for x in x_g[:-1]],
                 [(y*8/1000000)/(2*args.i) for y in y_g[:-1]], label=legend_label("Goodput"), lw=2)
         paths, x_t, y_t, min_timing_t = parse_tcpdump(args.tcpdump[elem], args.i*1000000)
         counter = 0
@@ -159,7 +158,7 @@ if __name__ == "__main__":
         #ax.text((event-min_timing)/1000000, args.event_pos[elem], args.event_text[elem],
         #         color="k")
         ax.annotate(legend_label(args.event_text[elem]),
-                    xy=((event-min_timing)/1000000, args.event_pos[elem]),
+                    xy=((event-min_timing_t)/1000000, args.event_pos[elem]),
                     xytext=(1, (args.event_pos[elem])),
                     arrowprops=dict(arrowstyle="<|-", color='dimgray'), fontsize=17,
                     color='dimgray')

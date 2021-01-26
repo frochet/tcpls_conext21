@@ -107,7 +107,7 @@ but not both at the same time).
 
 
 Table~\ref{table:tcplsvsquic} compares the features supported by
-\tcp, \tls/\tcp, \quic and \tcpls. \quic and \tcpls are very similar in their
+\tcp, \mptcp, \tls/\tcp, \quic and \tcpls. \quic and \tcpls are very similar in their
 capabilities. They mainly differ in their semantic. \tcpls's semantic is to let
 the applications make the decision, and we design its API to fulfill this goal.
 That is, the meaning of \tcpls is to offer advanced, extensible and secure
@@ -147,6 +147,9 @@ Note that several of the features suggested by \tcpls are also suggested on \tcp
 \end{table*}
 
 \section{Failover Protocol}
+
+\todo{Describe the protocol}
+
 % Agents
 \def\Client{Client}
 \def\Server{Server}
@@ -156,6 +159,7 @@ Note that several of the features suggested by \tcpls are also suggested on \tcp
 
 \begin{figure*}[!t]
  \begin{center}
+   \begin{tiny}
 \begin{tikzpicture}[every node/.style={font=\tiny, minimum height=0.03cm,minimum width=0.03cm},scale=0.90, transform shape]
 \tikzset{label/.style={align=center,minimum height=0.5cm,minimum width=5mm}}
 \node [matrix, very thin,column sep=2.2cm,row sep=0.05cm] (matrix) at (0,0) {
@@ -437,5 +441,33 @@ Note that several of the features suggested by \tcpls are also suggested on \tcp
     node[font=\footnotesize, below] {};
 
 \end{tikzpicture}
+\end{tiny}
 \end{center}
+  \caption{Example of record messages exchanged covering the attachment of a
+    new stream, the reception of DATA\_RECORD containing application payload, the exchange of DATA\_ACK, a Failover
+    event in which the stream is recovered and finally a secure closing the
+    connection. Real trace captured with qlog and pruned to only show
+    interesting messages}
+  \label{fig:protocol_example}
 \end{figure*}
+
+\section{Multipath Aggregation}
+\label{appendix:aggr}
+
+Figure~\ref{fig:aggregation_1500bytes_records} shows the same experiment than
+the one provided in our evaluation Section~\ref{sec:bwaggr}. However, we use
+1500 bytes record size for \tcpls in order to demonstrate that the
+irregularities are mainly due to the payload chunk size that the reordering
+algorithm has to manipulate. The larger the records are, the bigger
+the payload chunk size is, and higher irregularities should be observed. We
+observe here a steady goodput with several large irregularities, which is a
+progress compared to Figure~\ref{fig:multipath_aggregation}. However, large
+peaks remain, which are probably linked to the state of advancement of our
+research prototype: several bugs might remain.
+
+\begin{figure}
+  \includegraphics[width=\columnwidth]{figures/aggregate_1500bytes_records_dual.png}
+  \caption{\tcpls path aggregation with $1500$ bytes record size, compared to
+    \tls over \mptcp with 16384 bytes record size}
+  \label{fig:aggregation_1500bytes_records}
+\end{figure}
