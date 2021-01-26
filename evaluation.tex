@@ -19,59 +19,23 @@ In this section, we evaluate \tcpls using two different types of experiments. Fi
 %behaviour of \tcpls with the state of the art, and to make it easily
 %reproducible for future works, as the quic implementations continue to evolve.
 
-\subsection{Capability Comparison}
-
-Table~\ref{table:tcplsvsquic} compares the features supported by
-\tcp, \tls/\tcp, \quic and \tcpls. \quic and \tcpls are very similar in their
-capabilities. They mainly differ in their semantic. \tcpls's semantic is to let
-the applications make the decision, and we design its API to fulfill this goal.
-That is, the meaning of \tcpls is to offer advanced, extensible and secure
-transport-layer functionalities on top of \tcp, while exposing a simple but
-powerful API to let the application composes the properties its transport should
-have.
-
-Note that several of the features suggested by \tcpls are also suggested on \tcp or \quic via research works such as a new socket API for explicit \mptcp \cite{hesmans2016enhanced}, or eBPF plugins in
-\quic~\cite{de2019pluginizing}.
-
-\begin{table}[!t]
-  \small
-  \begin{tabular}{lcccc}
-    \toprule
-    & \tcp & \tls/\tcp & \quic & \tcpls \\
-    \midrule
-    Transport reliability & \checkmark & \checkmark &
-    \checkmark & \checkmark \\
-    Message conf. and auth.&  \xmark & \checkmark & \checkmark & \checkmark \\
-    Connection reliability (failover) &  \xmark & \xmark & (\checkmark) & \checkmark \\
-    0-RTT & \checkmark & (\xmark) & \checkmark  & \checkmark \\
-    Session Resumption & \xmark & \checkmark & \checkmark & \checkmark \\
-    Connection Migration & \xmark & \xmark & \checkmark & \checkmark \\
-    \multicolumn{5}{l}{Application-exposed features} \\
-    \hspace{2em} Streams & \xmark & \xmark & \checkmark & \checkmark \\
-    \hspace{2em} Happy eyeballs & \xmark & \xmark & \xmark & \checkmark \\
-    \hspace{2em} Explicit Multipath & \xmark & \xmark & \xmark & \checkmark \\
-    \hspace{2em} App-level Con. migration & \xmark & \xmark & \xmark & \checkmark \\
-    \hspace{2em} Pluginization & \xmark & \xmark & \xmark & (\checkmark) \\
-    Resilience to HOL blocking & \xmark & \xmark & \checkmark  & \checkmark \\
-    Secure Connection Closing & \xmark &  \xmark & \checkmark & \checkmark \\
-    \bottomrule
-  \end{tabular}
-  \caption{Protocol features comparison. (\xmark) means that the feature is
-    available, but not straightforward to use. (\checkmark) means that the
-  feature is partially available and under development.}
-  \label{table:tcplsvsquic}
-\end{table}
 
 \subsection{Raw Performance}
 \label{sec:perf}
 
 To evaluate the raw performance (Sec.~\ref{sec:perf}) and middlebox traversal
-(Sec.~\ref{sec:middlebox}) of our \tcpls prototype, we use the testbed shown in Fig.~\ref{fig:perf_testbed}. It contains three servers equipped with Intel Xeon CPU E5-2630 2.40GHz, 16 Threads, at least 16GB RAM, running Debian with Linux 5.9 and 5.7 kernels. Two of these machines are used as Client and Server,
-while the third one is used as a router or a middlebox. Each machine is equipped with an Intel XL710 2x40GB NIC. With Jumbo frames, a single \tcp connection can saturate the 40 Gbps path. With a 1500 bytes MTU, a single connection reaches 22 Gbps.
+(Sec.~\ref{sec:middlebox}) of our \tcpls prototype, we use the testbed shown in
+Fig.~\ref{fig:perf_testbed}. It contains three servers equipped with Intel Xeon
+CPU E5-2630 2.40GHz, 16 Threads, at least 16GB RAM, running Debian with Linux
+5.9 and 5.7 kernels. Two of these machines are used as Client and Server, while
+the third one is used as a router or a middlebox. Each machine is equipped with
+an Intel XL710 2x40GB NIC. With Jumbo frames, a single \tcp connection can
+saturate the 40 Gbps path. With a 1500 bytes MTU, a single connection reaches 22
+Gbps.
 
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=6cm]{figures/testbed.png}
+    \includegraphics[width=\columnwidth]{figures/testbed.png}
   \end{center}
   \vspace{-0.5cm}
   \caption{Performance Measurements Setups. C = Client. S = Server. R = Router/Middlebox.}
@@ -116,7 +80,7 @@ the number of system calls. Our prototype currently sends a \tcpls-ack for every
 
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=6cm]{figures/perf_analysis.png}
+    \includegraphics[width=\columnwidth]{figures/perf_analysis.png}
   \end{center}
 \vspace{-0.5cm}
   \caption{The \tcpls prototype is faster than \tls over \tcp and different \quic implementations.}
@@ -170,21 +134,26 @@ implementations in our testbed: Facebook's mvfst~\cite{mvfst-github,
   Joras_mvfst} from Facebook, Microsoft's msquic~\cite{msquic-github} Fastly's
 quicly~\cite{quicly-github}. They are all developed by large companies that (plan to) use
 them in production and include their own benchmarking application to perform
-throughput measurements. Furhtermore, mvfast and quicly support Generic
+throughput measurements. Furthermore, mvfast and quicly support Generic
 Segmentation Offload (GSO), which should improve performance by offloading \udp
 segmentation and checksum computation available on our NICs. We use the
 implementation's bechmarking application as is, exploiting the optional
 arguments provided by their interface to increase the throughput but drawing the
-line there. That is, we do not modify the QUIC implementations.
+line there. That is, we do not modify the QUIC implementations. Note that, we
+tried to match the transport parameters to the same ones used by \tcpls when they did not
+adversaly affect QUIC's performance too much. For example, several congestion
+algorithms were implemented in the different QUIC implementations, but the a
+different value than the suggested default lead to lower performance or unstable
+throughput.
 
 The results shown in Fig.~\ref{fig:perf} show that \tcpls compares favorably
 with the tested \quic implementations. The fastest \quic implementation is
 quicly. Thanks to GSO, it reaches 4.4 Gbps in our testbed with a 1500 bytes
 MTU. This result is directly comparable to \tcpls with TSO enabled, which still
 performs more than twice faster at 100\% CPU peak with similar configurations
-for the transport parameters. Suprisingly, quicly's performance decreases with
+for the receiving buffer size. Suprisingly, quicly's performance decreases with
 jumbo frames but is still faster than when GSO is disabled. In our testbed,
-msquic could only reach 1,96 Gbps and mvfst was slower.
+msquic could only reach 1,96 Gbps and mvfst was slower despite GSO availability.
 
 
 %QUIC is young protocol, and all implementations are in active development, with
@@ -210,11 +179,18 @@ msquic could only reach 1,96 Gbps and mvfst was slower.
 
 
 \subsection{Middlebox Interference}
+\label{sec:middlebox}
 
-A full evaluation of middlebox interference would require measurements in various operational networks that include such devices \cite{honda2011still,raman2020measuring,o2016tls}. This is outside the scope of this paper and left for further work.
+A full evaluation of middlebox interference would require measurements in various operational 
+networks that include such devices \cite{honda2011still,raman2020measuring,o2016tls}. This is 
+outside the scope of this paper and left for further work.
 We tested \tcpls against different opensource and commercial stateful
-firewalls and proxy implementations and (i.e., pfSense, IPFire, Cisco ASAv, mitmproxy) and found no interference. Still, the security appliances that block
-TLS 1.3 or some of its features \cite{lee2019matls,Bock_China,raman2020measuring} would also block \tcpls.
+firewalls and proxy implementations (i.e., pfSense, IPFire, Cisco ASAv,
+mitmproxy) and found no unexpected interference. Stateful filtering and stateful
+packet inspection policies did not impact connecivity, and transparent TLS proxy
+successfully succesfuly triggered \tcpls fallback to \tcp \tls. Still, the security
+appliances that block TLS 1.3 or some of its features 
+\cite{lee2019matls,Bock_China,raman2020measuring} would also block \tcpls.
 %pervasive monitoring allows for configurable TLS extensions blocking
 %\cite{rfc7258}. This is handled properly by \tcpls fallback mechanism.
 
@@ -251,10 +227,12 @@ to cancel a migration attempt).
 
 
 \subsection{Bandwidth Aggregation}
-
+\label{sec:bwaggr}
 We compare the capability of \tcpls to the state of the art \mptcp. Both
-protocols run in the same Mininet topology with two IP paths available, each
-offering 25 mbps and a latency of 10 ms. The experiment consists to transfering
+protocols run in the same Mininet topology with two IP paths available, 
+\todo{KE: Description of mininet topology comes after this reference}
+each 
+offering 25 Mbps and a latency of 10 ms. The experiment consists to transfering
 a file over a single path and then enabling the second one at $5$ seconds. For
 \mptcp, the new path is detected after we up the client's second interface. For
 \tcpls, managing paths is easier: the application can use the API to add local
@@ -262,11 +240,11 @@ or peer-related addresses at any point of the session. In that case, we add
 the information at $5$ seconds, connect to the peer and attach a new stream to
 this new connection. Our results are displayed in
 Fig.~\ref{fig:multipath_aggregation}. Both stacks enable the aggregation of the
-goodput to  $\approx$ 50 mbps. There are two major differences displayed by the stacks.
+goodput to  $\approx$ 50 Mbps. There are two major differences displayed by the stacks.
 First, upping the interface, adding the routes and detecting the new path in
 the case of \mptcp is time consuming. It leads \mptcp to react slower than
 \tcpls regarding the availability of the new path. Second, \tcpls's aggregated
-goodput seems less stable than \mptcp. This discrepency is explained by the
+goodput seems less stable than \mptcp. This discrepency might explained by the
 difference of chunk size manipulated by the reordering algorithm: \mptcp
 reorders packets with a payload of $1460$ bytes, while \tcpls in this experiment
 reorders records with the maximum payload size of $16384$ bytes. That means
@@ -276,11 +254,12 @@ However, \tcpls might  negotiate the record size to smooth out this
 irregularity. Setting a record size around $1500$ bytes would make \mptcp and
 \tcpls' results lookalike, but would be slightly more CPU costly since we need
 to use encryption/decryption code path more often.
-\fr{Do I link a figure with 1500 bytes records in the appendix?}
+Appendix~\ref{appendix:aggr} shows the results of the same experiment but using
+a \tls record size of $1500$ bytes instead.
 
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=6cm]{figures/aggregate_dual.png}
+    \includegraphics[width=\columnwidth]{figures/aggregate_dual.png}
   \end{center}
 \vspace{-0.5cm}
   \caption{Bandwidth aggregation comparison between \mptcp and
@@ -289,6 +268,7 @@ to use encryption/decryption code path more often.
 \end{figure}
 
 \subsection{Failover}
+\label{sec:eval_failover}
 
 The failover feature is designed to provide reliability to the \tcpls connection
 in case of network outage. From middlebox interferences to mobile client loosing
@@ -305,7 +285,7 @@ $RST$ and the loss of the interface for \mptcp.
 
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=6cm]{figures/breakage_analysis.png}
+    \includegraphics[width=\columnwidth]{figures/breakage_analysis.png}
   \end{center}
 \vspace{-0.5cm}
   \caption{Recovery speed analysis.}
@@ -330,7 +310,7 @@ around $\approx 1$ second to recover from the outage.
 
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=6cm]{figures/tcpls_mptcp.png}
+    \includegraphics[width=\columnwidth]{figures/tcpls_mptcp.png}
   \end{center}
 \vspace{-0.5cm}
   \caption{Connection reliability: influence of the path manager and congestion
@@ -364,14 +344,18 @@ congestion avoidance than \mptcp.
 
 \subsection{Application-Level Migration}
 
+Given the availability of multiple IP paths, connection migration might be a
+powerful tool to improve the application network's reliability. Applications
+can take advantage of the \tcpls API to migrate their traffic from one network
+path to another. 
 Fig.~\ref{fig:conn_migration} shows the result of an Application-level
 connection migration demo using the API (i.e., it is left to the application to
 decide when to migrate, and we expose a simplistic code flow to perform it). In
-this experiment, we use a IPMininet network~\cite{ipmininet,
-  jadin2020educational} composed of a client and a server, both
-dual-stacks. One path within the network is composed of OSPF routers with IPv4
-only, and one path is composed of OSPF6 routers IPv6 only. We configure the
-bandwidth on each path to be 30mbps, a round-trip-time of 40ms for the v4 link,
+this experiment, we use a Mininet network~\cite{handigol2012reproducible} composed of a client and a server, both
+dual-stacks. The IPv4 and IPv6 paths are completely disjoint in this emulated
+network. 
+We configure the
+bandwidth on each path to be 30~Mbps, a round-trip-time of 40ms for the v4 link,
 and a round-trip-time of 80ms for the v6 link. Our application downloads
 a 60 MB file from a server and migrates twice (i.e., from the v4 to the v6 path
 and once again to the v4 path).
@@ -394,14 +378,16 @@ stream), the client is taking advantage of both paths to receive its data: the
 first path finishes the flush its data while the second path already started to
 send. Once the last record of the first path is sent, \tcpls can reorder the
 data and deliver it to the client, which gives this goodput peak matching the
-accumulated bandwidth of the new path over the migration time window.
+accumulated bandwidth of both paths over the migration time window.
 
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=6cm]{figures/migration.png}
+    \includegraphics[width=\columnwidth]{figures/migration.png}
   \end{center}
 \vspace{-0.5cm}
-  \caption{Application-level connection migration during a 60MB file download.}
+  \caption{Application-level connection migration during a 60MB file download.
+    Showing smooth path handover without goodput loss thanks to a temporary
+    bandwidth aggregation.}
   \label{fig:conn_migration}
 \end{figure}
 
@@ -439,7 +425,7 @@ varying from 10ms to 100ms.
 
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=6cm]{pretty_plotify/plots/vegas_cubic.png}
+    \includegraphics[width=\columnwidth]{pretty_plotify/plots/vegas_cubic.png}
   \end{center}
 \vspace{-0.5cm}
   \caption{\tcpls hosts can exchange congestion control schemes and activate them during a \tcpls session.}

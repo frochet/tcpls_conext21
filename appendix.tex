@@ -1,7 +1,154 @@
 
 % !TEX root = ./paper.tex
 
-\section{?}
+
+%% \section{Sample \tcpls sessions}
+
+%% \tcpls defines several messages that \tcpls hosts can exchange during a \tcpls session. Each of these messages is placed inside an encrypted and authenticated \tls record with a dedicated True Type. The following \tcpls messages are defined in our prototype:
+
+%% \begin{itemize}
+
+%% \item BPF: this \tcpls message contains eBPF bytecode which can be injected in the TCP stack of the receiving host
+%% \item MULTIHOMING\_v6: this \tcpls message contains an IPv6 address
+%% \item MULTIHOMING\_v4: this \tcpls message contains an IPv4 address
+%% \item SESSID: this message contains a variable length identifier for the current \tcpls session
+%% \item COOKIE: this \tcpls message contains a cookie
+%% \item MPJOIN: this \tcpls message contains \tcpls session identifier and a cookir
+%% \item DATA\_ACK: this \tcpls message contains the sequence number of the last record  received over the session
+%% \item FAILOVER: \todo{explain}
+%% \item FAILOVER\_END: \todo{explain}
+%% \item STREAM\_ATTACH: this \tcpls message attaches the stream identifier provided as parameter to the \tcpls session
+%% \item STREAM\_CLOSE: this \tcpls message detaches the stream identifier provided as parameter from the \tcpls session
+%% \item STREAM\_CLOSE\_ACK: this \tcpls message confirms that the stream identifier provided as parameter has been detached from the \tcpls session
+%% \item USER\_TIMEOUT: this \tcpls message encodes the TCP User Timeout option defined \cite{rfc5482}
+%% \item TRANSPORT\_NEW: \todo{explain}
+%% \item TRANSPORT\_UPDATE: \todo{explain}
+
+%% \end{itemize}
+
+%% We now provide some sample \tcpls sessions to illustrate the operation of the protocol.
+
+
+\section{The \tcpls API}
+\label{appendix:api}
+
+To illustrate \tcpls API's flexibility, we consider a simple
+use case inspired by Happy Eyeballs~\cite{rfc8305}. This technique is
+used by web browsers when interacting with dual-stack servers. They
+try to establish \tcp connections using IPv4 and IPv6 and prefer the
+one that offers the lowest latency. This avoids problems when an address
+family is broken on a path but not the other and sometimes results in
+lower latency~\cite{bajpai2019longitudinal}.
+
+\begin{figure}[!t]
+  \resizebox{0.49\textwidth}{!}{%
+\begin{tikzpicture}
+   \colorlet{lightgray}{black!20}
+   \tikzstyle{arrow} = [thick,->,>=stealth]
+   \tikzset{state/.style={rectangle, dashed, draw, fill=white} }
+   \node[black, fill=white] at (0.5,10) {Sender};
+   \node[black, fill=white] at (4,10) {Receiver};
+   \draw[very thick,->] (0.5,9.5) -- (0.5,-1.2);
+   \draw[very thick,->] (4,9.5) -- (4,-1.2);
+   \node at (-1,9) {tcpls\_new()};
+   \node at (5, 9) {listen()};
+   \node[align=left, fill=white] at (-0.8,7.8) {tcpls\_add\_v4(addr,
+     primary)\\*tcpls\_add\_v6(addr6)};
+   \node[fill=white, align=left] at (-0.4,6.5) {[ if (tcpls\_connect(addr,
+     NULL)<0)*\\
+     \indent~~tcpls\_connect(addr6, timeout)*]};
+   \draw[black, thick, <->] (0.5,5.8) -- (4,5.8) node [midway, fill=white] {\tcp Handshake};
+   \node[fill=white] at (0,5) (Callback) {Callback ev.};
+   \node at (1,4.8) (here) {};
+   \draw [->] (Callback) to[out=-80, in=-90,looseness=1.3] (here)
+   to[out=90,in=80,looseness=1.5] (Callback);
+   \node at (5, 5.8) {accept()};
+   \node[align=right] at (5, 5) {tcpls\_new()\\tcpls\_accept()};
+   \node at (-1,4.1) {tcpls\_handshake()};
+   \node[fill=white] at (4.6,4.1) {tcpls\_handshake()};
+   \draw[black, thick, <->] (0.5,3.6) -- (4,3.6) node [midway, fill=white] {\tcpls Handshake};
+   \node[fill=white] at (0,3) (CB2) {Callback ev.};
+   \node at (1,2.8) (here2) {};
+   \draw [->] (CB2) to[out=-80, in=-90,looseness=1.3] (here2)
+   to[out=90,in=80,looseness=1.5] (CB2);
+   \node[fill=white] at (4.5,3) (CB3) {Callback ev.};
+   \node at (5.5,2.8) (here3) {};
+   \draw [->] (CB3) to[out=-80, in=-90,looseness=1.3] (here3)
+   to[out=90,in=80,looseness=1.5] (CB3);
+   \node[fill=white, align=left] at (-1, 1.2)
+   {[tcpls\_handshake(addr6)*\\tcpls\_send()*\\tcpls\_stream\_new()*\\tcpls\_streams\_attach()*\\tcpls\_send\_tcpoption()*]};
+   \draw[black, thick, <->] (0.5,-0.5) -- (4,-0.5) node [midway, fill=white,
+   above, text width=2.4cm]
+   {\{\tcpls Data\} \{APPDATA\}};
+   \node[fill=white] at (4.7,-0.85) {tcpls\_receive()};
+\end{tikzpicture}
+}
+\caption{API Workflow example. * means optional call, [ ] means optional call flow, and \{ \} means encrypted.}
+  \label{fig:api}
+\end{figure}
+
+Fig.~\ref{fig:api} shows an example of our current API workflow. The API can
+handle explicit multipath techniques such as Happy Eyeball by chaining
+\texttt{tcpls\_connect()} with an appropriate timeout of 50ms, as shown in the
+Figure. \tcpls lets the application explicitly choose the multipath mesh by
+calling several times \texttt{tcpls\_connect(src, dest,timeout)};. The
+application may configure callbacks to connection events that would occur within
+\tcpls, such as a connection establishment, a stream attachment, a multipath
+join, the reception of a \tcp option to tune \tcp, and more. When multiple
+streams are attached to multiple \tcp connections, the application may configure
+various \tcpls behaviours. Among them, we support HOL-blocking avoidance,
+aggregation of bandwidth with multipathing, connection failover, and connection
+migration. Note that, HOL-blocking avoidance is incompatible with the
+aggregation of bandwidth with multipathing (the application can do either one
+but not both at the same time).
+
+
+\section{Capability Comparison}
+
+
+Table~\ref{table:tcplsvsquic} compares the features supported by
+\tcp, \mptcp, \tls/\tcp, \quic and \tcpls. \quic and \tcpls are very similar in their
+capabilities. They mainly differ in their semantic. \tcpls's semantic is to let
+the applications make the decision, and we design its API to fulfill this goal.
+That is, the meaning of \tcpls is to offer advanced, extensible and secure
+transport-layer functionalities on top of \tcp, while exposing a simple but
+powerful API to let the application composes the properties its transport should
+have.
+
+Note that several of the features suggested by \tcpls are also suggested on \tcp or \quic via research works such as a new socket API for explicit \mptcp \cite{hesmans2016enhanced}, or eBPF plugins in
+\quic~\cite{de2019pluginizing}.
+
+\begin{table*}[!t]
+  \small
+  \begin{tabular}{lccccc}
+    \toprule
+    & \tcp & \mptcp & \tls/\tcp & \quic & \tcpls \\
+    \midrule
+    Transport reliability & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+    Message conf. and auth.&  \xmark & \xmark & \checkmark & \checkmark & \checkmark \\
+    Connection reliability (failover) &  \xmark & \checkmark &\xmark & (\checkmark) & \checkmark \\
+    0-RTT & \checkmark & \xmark & (\xmark) & \checkmark  & \checkmark \\
+    Session Resumption & \xmark & \xmark & \checkmark & \checkmark & \checkmark \\
+    Connection Migration & \xmark & \xmark &\xmark & \checkmark & \checkmark \\
+    \multicolumn{5}{l}{Application-exposed features} \\
+    \hspace{2em} Streams & \xmark &  \xmark & \xmark & \checkmark & \checkmark \\
+    \hspace{2em} Happy eyeballs & \xmark & \xmark & \xmark & \xmark & \checkmark \\
+    \hspace{2em} Explicit Multipath & \xmark & \xmark & \xmark & \xmark & \checkmark \\
+    \hspace{2em} App-level Con. migration & \xmark & \xmark & \xmark & \xmark & \checkmark \\
+    \hspace{2em} kernel eBPF Pluginization & \xmark & \xmark & \xmark & \xmark & \checkmark \\
+    Resilience to HOL blocking & \xmark & \xmark & \xmark & \checkmark  & \checkmark \\
+    Secure Connection Closing & \xmark &  \xmark & \xmark & \checkmark & \checkmark \\
+    \bottomrule
+  \end{tabular}
+  \caption{Protocol features comparison. (\xmark) means that the feature is
+    available, but not straightforward to use. (\checkmark) means that the
+  feature is partially available and under development.}
+  \label{table:tcplsvsquic}
+\end{table*}
+
+\section{Failover Protocol}
+
+\todo{Describe the protocol}
 
 % Agents
 \def\Client{Client}
@@ -10,8 +157,9 @@
 \def\Event{Event}
 
 
-\begin{figure}[!t]
+\begin{figure*}[!t]
  \begin{center}
+   \begin{tiny}
 \begin{tikzpicture}[every node/.style={font=\tiny, minimum height=0.03cm,minimum width=0.03cm},scale=0.90, transform shape]
 \tikzset{label/.style={align=center,minimum height=0.5cm,minimum width=5mm}}
 \node [matrix, very thin,column sep=2.2cm,row sep=0.05cm] (matrix) at (0,0) {
@@ -293,5 +441,33 @@
     node[font=\footnotesize, below] {};
 
 \end{tikzpicture}
+\end{tiny}
 \end{center}
+  \caption{Example of record messages exchanged covering the attachment of a
+    new stream, the reception of DATA\_RECORD containing application payload, the exchange of DATA\_ACK, a Failover
+    event in which the stream is recovered and finally a secure closing the
+    connection. Real trace captured with qlog and pruned to only show
+    interesting messages}
+  \label{fig:protocol_example}
+\end{figure*}
+
+\section{Multipath Aggregation}
+\label{appendix:aggr}
+
+Figure~\ref{fig:aggregation_1500bytes_records} shows the same experiment than
+the one provided in our evaluation Section~\ref{sec:bwaggr}. However, we use
+1500 bytes record size for \tcpls in order to demonstrate that the
+irregularities are mainly due to the payload chunk size that the reordering
+algorithm has to manipulate. The larger the records are, the bigger
+the payload chunk size is, and higher irregularities should be observed. We
+observe here a steady goodput with several large irregularities, which is a
+progress compared to Figure~\ref{fig:multipath_aggregation}. However, large
+peaks remain, which are probably linked to the state of advancement of our
+research prototype: several bugs might remain.
+
+\begin{figure}
+  \includegraphics[width=\columnwidth]{figures/aggregate_1500bytes_records_dual.png}
+  \caption{\tcpls path aggregation with $1500$ bytes record size, compared to
+    \tls over \mptcp with 16384 bytes record size}
+  \label{fig:aggregation_1500bytes_records}
 \end{figure}

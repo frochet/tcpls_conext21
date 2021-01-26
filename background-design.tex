@@ -75,7 +75,7 @@
 \end{tikzpicture}
 \end{center}
 \vspace{-0.5cm}
-\caption{\tcpls in the stack.  CM stands for ``Connection Manager''.}
+\caption{\tcpls is implemented as a user space library. The application controls the streams and the underlying \tcp connections through the API. The crypto module manages the security context and the Connetion Manager (CM) controls the utilization of one or more \tcp connections using the kernel stack.}
  \label{fig:arch}
 \end{figure}
 
