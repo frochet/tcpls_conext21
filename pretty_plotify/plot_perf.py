@@ -70,13 +70,13 @@ def main():
 #             cmap[1],cmap[5],cmap[0],
 #             cmap[2],cmap[0],
 #             cmap[1],cmap[5],cmap[0]]
-   
+
     colors = [cmap[5],cmap[5], cmap[5],cmap[5],
           cmap[4], cmap[4],
           cmap[3],cmap[3],cmap[3],
           cmap[2],cmap[2],
           cmap[1],cmap[1],cmap[1]]
-    
+
     bars=plt.barh(y_pos, [8*height[1]/1000000 for height in bar_height_bw],
              color = colors, alpha=0.6)
     plt.yticks(y_pos)
@@ -84,28 +84,28 @@ def main():
 #    markers=["v","o","*","*", "v", "o","o","v","P","x","P","o","v","P"]
 #    for i in range(len(colors)):
 #        ax.plot(0, y_pos[i], marker=markers[i],
-#        linestyle="", color="black",#scale_lightness(colors[i], .65), 
+#        linestyle="", color="black",#scale_lightness(colors[i], .65),
 #        clip_on=False)
-    # "-" "+" "x" "\\" "." 
+    # "-" "+" "x" "\\" "."
     #    ["v","o","*","*", "v", "o","o","v","P","x","P","o","v","P"]
-    hatches=['-', '+', '.', '.', '-', '+', '+', '-', 'x', '\\', 'x', '+', '-', 'x']
-    for bar,h in zip(bars,hatches):
-      bar.set_hatch(h)
-        
-        
+    #hatches=['-', '+', '.', '.', '-', '+', '+', '-', 'x', '\\', 'x', '+', '-', 'x']
+    #for bar,h in zip(bars,hatches):
+    #  bar.set_hatch(h)
+
+
     for i, p in enumerate(ax.patches):
         left, bottom, width, height = p.get_bbox().bounds
         ax.annotate(legend_label(r" $\textbf{"+str(bar_height_pps[i][1])+"}$ pps"), xy=(left+0.5+width/2, bottom+height/2),
                     ha='center', va='center', color='black', weight='bold', fontsize=12)
 
     axis_aesthetic(ax)
-    
+
     # align & pad labels
     ax.set_yticklabels([height[0] for height in bar_height_bw], ha="left")
     yax = ax.get_yaxis()
     yax.set_tick_params(pad=225)
 
-    plt.xlabel(latex_label("Throughput in Gbps"), fontsize=20)
+    plt.xlabel(latex_label("Throughput (Gbps)"), fontsize=20)
     #grid(True, color='gray', linestyle='dashed', which='major')
 
 #    axhline(y=3.5, lw=2, color='k')
@@ -114,5 +114,5 @@ def main():
 #    axhline(y=10.5, lw=2, color='k')
 
     savefig(args.oname+'.'+args.ext, bbox_inches='tight')
-    
+
 main()
