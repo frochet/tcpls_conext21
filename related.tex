@@ -24,7 +24,7 @@ comes with a large performance penalty.
 
 Another important related work is \quic. The initial design
 \cite{roskind2013quic} has evolved a lot and large companies have started to
-adopt it \cite{10.1145/3098822.3098842,Joras_mvfst,marx2020same}. The \quic
+adopt it \cite{langley2017quic,Joras_mvfst,marx2020same}. The \quic
 version 1 specification \cite{draft-ietf-quic-transport} supports connection
 migration like \tcpls, but we could not test it in our lab since none of the
 available open-source implementations have yet implemented it. Multipath
@@ -51,7 +51,7 @@ new features.
 %% protocol extensions \cite{rfc6709}. Several researchers have proposed
 %% solutions to simplify the implementation of extensions to transport
 %% protocols. The closest example include STP \cite{patel2003upgrading}, CTP
-%% \cite{bridges2007configurable} and 
+%% \cite{bridges2007configurable} and
 
 %% Patel et al. \cite{patel2003upgrading} propose to use a type-safe version of C to extend a TCP
 %% implementation by using bytecode. The implementation of TCPLS completely differs since it uses C to generate eBPF code. Furthemore, by leveraging the
