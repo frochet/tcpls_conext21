@@ -75,7 +75,7 @@
 \end{tikzpicture}
 \end{center}
 \vspace{-0.5cm}
-\caption{\tcpls in the stack.  CM stands for ``Connection Manager''.}
+\caption{\tcpls is implemented as a user space library. The application controls the streams and the underlying \tcp connections through the API. The crypto module manages the security context and the Connetion Manager (CM) controls the utilization of one or more \tcp connections using the kernel stack.}
  \label{fig:arch}
 \end{figure}
 
@@ -93,9 +93,7 @@ Today's applications expect more than a simple bytestream from the transport lay
 \tcp separates control information and data by placing the control information
 in the packet header and the data in the payload. This separation worked well
 until middleboxes started to interfere with \tcp~\cite{10.1145/1064413.1064418,
-  honda2011still, DHBVD13}.  On a fraction of Internet paths, including e.g.,
-some enterprise and cellular networks, some middleboxes interfere by adding,
-removing, or changing \tcp options~\cite{wang2011untold, honda2011still,xu2015investigating} and, in some cases, also transparently terminating \tcp connections. These middleboxes have slowed down the evolution of \tcp in recent years. \tcpls also uses the packet header to exchange \tcp control information, but it leverages the extensibility of \tls 1.3 to place control information including some \tcp options inside the \tls handshake messages and new \tls records. Since this information is encrypted and authenticated, the communicating hosts can exchange new control information without encountering middlebox interference. We refer to this exchange of control information as the secure channel between the two hosts.
+honda2011still, detal2013revealing}.  On a fraction of Internet paths, including e.g., some enterprise and cellular networks, some middleboxes interfere by adding, removing, or changing \tcp options~\cite{wang2011untold, honda2011still,xu2015investigating} and, in some cases, also transparently terminating \tcp connections. These middleboxes have slowed down the evolution of \tcp in recent years. \tcpls also uses the packet header to exchange \tcp control information, but it leverages the extensibility of \tls 1.3 to place control information including some \tcp options inside the \tls handshake messages and new \tls records. Since this information is encrypted and authenticated, the communicating hosts can exchange new control information without encountering middlebox interference. We refer to this exchange of control information as the secure channel between the two hosts.
 %We describe several examples of these new types of
 %control information in Sec.~\ref{sec:extending} and Sec.~\ref{sec:connmigr}.
 
