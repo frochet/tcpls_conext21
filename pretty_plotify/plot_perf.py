@@ -59,26 +59,39 @@ def main():
     bar_height_pps_sorted = [(x[0], mapping[x[0]]) for x in bar_height_bw]
     bar_height_pps = bar_height_pps_sorted
     y_pos = np.arange(len(bar_height_bw))
-
+    y_pos = [ 0,  1,  2,  3,  4.5,  5.5,  7,  8 , 9,  10.5, 11.5, 13, 14 ,15]
     #data plotting
     fig, ax = plt.subplots(figsize=(8,6))
 
     cmap = plt.get_cmap('RdYlGn')(
         np.linspace(0.1, 0.9, 6))
-    colors = [cmap[5],cmap[1], cmap[4],cmap[4],
-             cmap[5], cmap[4],cmap[1],
-             cmap[1],cmap[5],cmap[0],
-             cmap[2],cmap[0],
-             cmap[1],cmap[5],cmap[0]]
+#    colors = [cmap[5],cmap[1], cmap[4],cmap[4],
+#             cmap[5], cmap[1],
+#             cmap[1],cmap[5],cmap[0],
+#             cmap[2],cmap[0],
+#             cmap[1],cmap[5],cmap[0]]
+   
+    colors = [cmap[5],cmap[5], cmap[5],cmap[5],
+          cmap[4], cmap[4],
+          cmap[3],cmap[3],cmap[3],
+          cmap[2],cmap[2],
+          cmap[1],cmap[1],cmap[1]]
     
-    plt.barh(y_pos, [8*height[1]/1000000 for height in bar_height_bw],
-             color = colors, alpha=0.8)
+    bars=plt.barh(y_pos, [8*height[1]/1000000 for height in bar_height_bw],
+             color = colors, alpha=0.6)
     plt.yticks(y_pos)
     # * o x d v
-    markers=["v","o","*","*", "v", "*", "o","o","v","P","x","P","o","v","P"]
-    for i in range(len(colors)):
-        ax.plot(0, y_pos[i], marker=markers[i], linestyle="", color="black",#scale_lightness(colors[i], .65), 
-        clip_on=False)
+#    markers=["v","o","*","*", "v", "o","o","v","P","x","P","o","v","P"]
+#    for i in range(len(colors)):
+#        ax.plot(0, y_pos[i], marker=markers[i],
+#        linestyle="", color="black",#scale_lightness(colors[i], .65), 
+#        clip_on=False)
+    # "-" "+" "x" "\\" "." 
+    #    ["v","o","*","*", "v", "o","o","v","P","x","P","o","v","P"]
+    hatches=['-', '+', '.', '.', '-', '+', '+', '-', 'x', '\\', 'x', '+', '-', 'x']
+    for bar,h in zip(bars,hatches):
+      bar.set_hatch(h)
+        
         
     for i, p in enumerate(ax.patches):
         left, bottom, width, height = p.get_bbox().bounds
@@ -95,10 +108,10 @@ def main():
     plt.xlabel(latex_label("Throughput in Gbps"), fontsize=20)
     #grid(True, color='gray', linestyle='dashed', which='major')
 
-    #axhline(y=3.5, lw=2, color='k')
-    #axhline(y=5.5, lw=2, color='k')
-    #axhline(y=8.5, lw=2, color='k')
-    #axhline(y=10.5, lw=2, color='k')
+#    axhline(y=3.5, lw=2, color='k')
+#    axhline(y=5.5, lw=2, color='k')
+#    axhline(y=8.5, lw=2, color='k')
+#    axhline(y=10.5, lw=2, color='k')
 
     savefig(args.oname+'.'+args.ext, bbox_inches='tight')
     
