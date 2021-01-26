@@ -9,7 +9,7 @@ Given its security features, \tcpls must be compared with \tcpcrypt \cite{bittau
 
 Another important related work is \quic. The initial design \cite{roskind2013quic} has evolved a lot and large companies have started to adopt it \cite{10.1145/3098822.3098842,Joras_mvfst,marx2020same}. The \quic version 1 specification \cite{draft-ietf-quic-transport} supports connection migration like \tcpls, but we could not test it in our lab. Multipath extensions \cite{viernickel2018multipath,de2017multipath,draft-deconinck-quic-multipath-06,draft-liu-multipath-quic-02} to \quic have been discussed but not yet adopted within the IETF. Finally, PQUIC \cite{de2019pluginizing} proposed to carry eBPF code over \quic connections to deploy new protocol features. This goes beyond the exchange of congestion control scheme that we demonstrated with \tcpls.
 
-
+Finally, several solutions have been proposed to provide multipath capabilities in the application layer. Examples include MP-H2 \cite{nikravesh2019mp} that extends HTTP/2, MP-DASH \cite{han2016mp} for video streaming or mHTTP \cite{kim2014multi} that extends HTTP.
 
 
 
