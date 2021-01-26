@@ -1,7 +1,30 @@
 
 % !TEX root = ./paper.tex
 
-\section{?}
+\section{Sample \tcpls sessions}
+
+\tcpls defines several messages that \tcpls hosts can exchange during a \tcpls session. Each of these messages is placed inside an encrypted and authenticated \tls record with a dedicated True Type. The following \tcpls messages are defined in our prototype:
+
+\begin{itemize}
+\item BPF: this \tcpls message contains eBPF bytecode which can be injected in the TCP stack of the receiving host
+\item MULTIHOMING\_v6: this \tcpls message contains an IPv6 address
+\item MULTIHOMING\_v4: this \tcpls message contains an IPv4 address
+\item SESSID: this message contains a variable length identifier for the current \tcpls session
+\item COOKIE: this \tcpls message contains a cookie
+\item MPJOIN: this \tcpls message contains \tcpls session identifier and a cookir
+\item DATA\_ACK: this \tcpls message contains the sequence number of the last record  received over the session
+\item FAILOVER: \todo{explain}
+\item FAILOVER\_END: \todo{explain}
+\item STREAM\_ATTACH: this \tcpls message attaches the stream identifier provided as parameter to the \tcpls session
+\item STREAM\_CLOSE: this \tcpls message detaches the stream identifier provided as parameter from the \tcpls session
+\item STREAM\_CLOSE\_ACK: this \tcpls message confirms that the stream identifier provided as parameter has been detached from the \tcpls session
+\item USER\_TIMEOUT: this \tcpls message encodes the TCP User Timeout option defined \cite{rfc5482}
+\item TRANSPORT\_NEW: \todo{explain}
+  \item TRANSPORT\_UPDATE: \todo{explain}
+\end{itemize}
+
+We now provide some sample \tcpls sessions to illustrate the operation of the protocol.
+
 
 % Agents
 \def\Client{Client}
