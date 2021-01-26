@@ -232,7 +232,7 @@ We compare the capability of \tcpls to the state of the art \mptcp. Both
 protocols run in the same Mininet topology with two IP paths available, 
 \todo{KE: Description of mininet topology comes after this reference}
 each 
-offering 25 mbps and a latency of 10 ms. The experiment consists to transfering
+offering 25 Mbps and a latency of 10 ms. The experiment consists to transfering
 a file over a single path and then enabling the second one at $5$ seconds. For
 \mptcp, the new path is detected after we up the client's second interface. For
 \tcpls, managing paths is easier: the application can use the API to add local
@@ -240,7 +240,7 @@ or peer-related addresses at any point of the session. In that case, we add
 the information at $5$ seconds, connect to the peer and attach a new stream to
 this new connection. Our results are displayed in
 Fig.~\ref{fig:multipath_aggregation}. Both stacks enable the aggregation of the
-goodput to  $\approx$ 50 mbps. There are two major differences displayed by the stacks.
+goodput to  $\approx$ 50 Mbps. There are two major differences displayed by the stacks.
 First, upping the interface, adding the routes and detecting the new path in
 the case of \mptcp is time consuming. It leads \mptcp to react slower than
 \tcpls regarding the availability of the new path. Second, \tcpls's aggregated
@@ -350,11 +350,11 @@ path to another.
 Fig.~\ref{fig:conn_migration} shows the result of an Application-level
 connection migration demo using the API (i.e., it is left to the application to
 decide when to migrate, and we expose a simplistic code flow to perform it). In
-this experiment, we use a IPMininet network~\cite{ipmininet,
-  jadin2020educational} composed of a client and a server, both
-dual-stacks. One path within the network is composed of OSPF routers with IPv4
-only, and one path is composed of OSPF6 routers IPv6 only. We configure the
-bandwidth on each path to be 30mbps, a round-trip-time of 40ms for the v4 link,
+this experiment, we use a Mininet network~\cite{handigol2012reproducible} composed of a client and a server, both
+dual-stacks. The IPv4 and IPv6 paths are completely disjoint in this emulated
+network. 
+We configure the
+bandwidth on each path to be 30~Mbps, a round-trip-time of 40ms for the v4 link,
 and a round-trip-time of 80ms for the v6 link. Our application downloads
 a 60 MB file from a server and migrates twice (i.e., from the v4 to the v6 path
 and once again to the v4 path).

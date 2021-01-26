@@ -117,16 +117,30 @@ evaluated in Section~\ref{sec:eval_failover}
 
 %\subsection{TCP Options and Kernel extensibility}
 
-\subsection{QUIC-like roundtrips}
+\subsection{\tcpls Session Establishment}
 
-One argument for QUIC's usage on the web was its first 1-rtt secure connection.
-Compared to TLS/TCP, QUIC has only one handshake and can then proceed with the
-application data. $TLS/TCP$ has two: First, the \tcp three-way handshake, and
-then the \tls handshake. \tcpls can use \tcp's TFO~\cite{radhakrishnan2011tcp}
-and send the \texttt{ClientHello} message within the \tcp SYN's payload,
-achieving the same roundtrips than QUIC. However, TFO suffers from privacy
-issues~\cite{sy2020enhanced}, thus we did not enable it by default. In the
-future, we may expect to revise our choice if a solution similar to \tcp
-FOP~\cite{sy2020enhanced} gets implemented in the Linux kernel.
+One notable feature of \quic is its ability to establish a secure connection within
+one round-trip-time with a new server. For subsequent connections with the same server, \quic can
+even include data during the handshake.
+
+\tls 1.3 also includes a fast handshake for subsequent connections. When used with
+\tcp Fast Open (TFO)~\cite{radhakrishnan2011tcp}, the \tls handshake can be sent
+together with \tcp's three way handshake. However, TFO suffers from privacy
+issues~\cite{sy2020enhanced}. For this reason, we did not enable it by default
+in \tcpls. We could revise this decision if a solution similar to \tcp
+FOP~\cite{sy2020enhanced} is included in mainline TCP implementations.
+
+
+%One argument for QUIC's usage on the web was its first 1-rtt secure connection.
+%Compared to TLS/TCP, QUIC has only one handshake and can then proceed with the
+%application data. $TLS/TCP$ has two: First, the \tcp three-way handshake, and
+%then the \tls handshake.
+
+%\tcpls can use \tcp's TFO~\cite{radhakrishnan2011tcp}
+%and send the \texttt{ClientHello} message within the \tcp SYN's payload,
+%achieving the same roundtrips than QUIC. However, TFO suffers from privacy
+%issues~\cite{sy2020enhanced}, thus we did not enable it by default. In the
+%future, we may expect to revise our choice if a solution similar to \tcp
+%FOP~\cite{sy2020enhanced} gets implemented in the Linux kernel.
 
 
