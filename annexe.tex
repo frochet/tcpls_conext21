@@ -1,4 +1,6 @@
 
+% !TEX root = ./paper.tex
+
 % Agents
 \def\Client{Client}
 \def\Server{Server}
@@ -67,12 +69,12 @@
 };
 
 % Agents labels
-\fill 
+\fill
 	(\Client) node[draw,fill=white] {\Client}
 	(\Server) node[draw,fill=white] {\Server};
 
 % Horizontal time lines
-\draw [dotted] 
+\draw [dotted]
   (t0 left) -- (t0 right) node[right] {$72.18ms$}
   (t0 right) -- (t0 left) node[left] {$51.95ms$}
   (t1 left) -- (t1 right) node[right] {$72.87ms$}
@@ -112,7 +114,7 @@
   (t24 left) -- (t24 right) node[right] {$21468.34ms$}
   (t24 right) -- (t24 left) node[left] {$21408.06ms$};
 
-\draw 
+\draw
   (\Client 0)
     node[draw,rectangle,fill=yellow!20, rotate=-90]
       (\Client Timeline In) {}
@@ -122,11 +124,11 @@
       (\Server Timeline In) {}
     node[below right] {};
 
-% Vertical flows 
+% Vertical flows
 \draw [-latex] (\Client Timeline In.east) -- (\Client 1);
 \draw [-latex] (\Server Timeline In.east) -- (\Server 1);
 
-\draw [dashed] 
+\draw [dashed]
   (\Client) -- (\Client Timeline In.west)
   (\Client 1) -- (\Client 2)
   (\Server 1) -- (\Server 2)
@@ -149,7 +151,7 @@
   (\Server 12) -- (\Server 13)
   (\Client 12) -- (\Client 13)
   (\Server 12) -- (\Server 16)
-  (\Client 12) -- (\Client 16)  
+  (\Client 12) -- (\Client 16)
   (\Server 17) -- (\Server 21)
   (\Client 17) -- (\Client 21)
   (\Server 21) -- (\Server 22)
@@ -158,7 +160,7 @@
   (\Client 22) -- (\Client 23)
   (\Server 23) -- (\Server 25)
   (\Client 23) -- (\Client 25)
- 
+
   (\Event 9) -- (\Event 11)
   (\Event 12) -- (\Event 14)
   (\Event 18) -- (\Event 20);
@@ -227,63 +229,63 @@
 
 
 
-% Flows Labels 
+% Flows Labels
 \fill
-  (\Event 1) 
-    node[above,font=\footnotesize] {ClientHello}
+  (\Event 1)
+    node[above,font=\footnotesize] {\textsc{ClientHello}}
     node[font=\footnotesize, below] {}
-    (\Event 2) 
-    node[above,font=\footnotesize] {ServerHello}
-    node[font=\footnotesize, below] {} 
-    (\Event 3) 
+    (\Event 2)
+    node[above,font=\footnotesize] {\textsc{ServerHello}}
+    node[font=\footnotesize, below] {}
+    (\Event 3)
     node[above,font=\footnotesize] {cookies-connid-v6-v4-usertimeout}
     node[font=\footnotesize, below] {}
-    (\Event 4) 
+    (\Event 4)
     node[above,font=\footnotesize] {certificate}
     node[font=\footnotesize, below] {}
-    (\Event 5) 
+    (\Event 5)
     node[above,font=\footnotesize] {finished}
     node[font=\footnotesize, below] {}
-    (\Event 6) 
+    (\Event 6)
     node[above,font=\footnotesize] {finished}
     node[font=\footnotesize, below] {}
-    (\Event 7) 
+    (\Event 7)
     node[above,font=\footnotesize] {$STREAM\_ATTACH$}
     node[font=\footnotesize, below] {}
-     (\Event 8) 
+     (\Event 8)
     node[above,font=\footnotesize] {$DATA\_RECORD$:1}
     node[font=\footnotesize, below] {}
-    (\Event 9) 
+    (\Event 9)
     node[above,font=\footnotesize] {$DATA\_RECORD$:2}
     node[font=\footnotesize, below] {}
-     (\Event 12) 
+     (\Event 12)
     node[above,font=\footnotesize] {$DATA\_ACK$:1}
     node[font=\footnotesize, below] {}
-    (\Event 14) 
-    node[above,font=\footnotesize] {ClientHello+JOIN}
+    (\Event 14)
+    node[above,font=\footnotesize] {\textsc{ClientHello}+\textsc{Join}}
     node[font=\footnotesize, below] {}
-    (\Event 15) 
+    (\Event 15)
     node[above,font=\footnotesize] {$Transport\_NEW$}
     node[font=\footnotesize, below] {}
-    (\Event 16) 
+    (\Event 16)
     node[above,font=\footnotesize] {$USER\_TIMEOUT$}
     node[font=\footnotesize, below] {}
-    (\Event 17) 
+    (\Event 17)
     node[above,font=\footnotesize] {FAILOVER}
     node[font=\footnotesize, below] {}
-    (\Event 18) 
+    (\Event 18)
     node[above,font=\footnotesize] {FAILOVER}
     node[font=\footnotesize, below] {}
-    (\Event 21) 
+    (\Event 21)
     node[above,font=\footnotesize] {$FAILOVER\_END$}
     node[font=\footnotesize, below] {}
-    (\Event 22) 
+    (\Event 22)
     node[above,font=\footnotesize] {$FAILOVER\_END$}
     node[font=\footnotesize, below] {}
-    (\Event 23) 
+    (\Event 23)
     node[above,font=\footnotesize] {$STREAM\_CLOSE$}
     node[font=\footnotesize, below] {}
-    (\Event 24) 
+    (\Event 24)
     node[above,font=\footnotesize] {$STREAM\_CLOSE\_ACK$}
     node[font=\footnotesize, below] {};
 

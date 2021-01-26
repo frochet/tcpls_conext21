@@ -74,15 +74,14 @@
         \draw[<->,   thick] (cm2.south) -- node (line) {}(tcpy2.north);
 \end{tikzpicture}
 \end{center}
+\vspace{-0.5cm}
 \caption{\tcpls in the stack.  CM stands for ``Connection Manager''.}
  \label{fig:arch}
 \end{figure}
 
- Today's applications expect more than a simple bytestream from the transport layer. Security is not anymore a requirement for niche application. Applications expect secure transport by default. Similarly, applications are not restricted anymore on using only one network interface. They need to efficiently deal with IPv6 and IPv4 on dual stack hosts and manage the utilization of different network interfaces on mobile devices such as smartphones. \tcpls provides a fast
-flexible and secure transport protocol that is suited for these modern
-applications. \tcpls is more than the simple addition of the security features of \tls and the reliability features of \tcp. \tcpls leverages TLS 1.3 to negotiate a security context. \tcpls sends the user data authenticated and encrypted as TLS records. It leverages these records to establish a secure control channel between the client and server. This channel is used to manage the \tcpls session and exchange all control information without any possible middlebox interference. Finally, \tcpls manages the underlying \tcp connection. During its lifetime,  the TLS records of a \tcpls session can be transported over different \tcp
-connections. This brings several interesting failover and multipath capabilities. Fig.~\ref{fig:arch} illustrates the interactions between two \tcpls hosts.
-\tcpls can be implemented in userspace within a library like current \tls implementations. It interacts with the \tcp stack that in our prototype resides in the kernel. The crypto module of the \tcpls negotiates and manages the security context while the connection manager (CM) manages the utilization of the underlying \tcp connection(s). Closely coupling \tcp and \tls in \tcpls brings opportunities for performance improvement (e.g., avoiding records fragmentation with dynamic receive buffer auto-tuning and/or with dynamic control of the record length), and for connection reliability (e.g., failover).
+\subsection{Overview}
+%%%%%%%%%%%%%%%%%%%%%%
+Today's applications expect more than a simple bytestream from the transport layer. Security is not anymore a requirement for niche application. Applications expect secure transport by default. Similarly, applications are not restricted anymore on using only one network interface. They need to efficiently deal with IPv6 and IPv4 on dual stack hosts and manage the utilization of different network interfaces on mobile devices such as smartphones. \tcpls provides a fast, flexible, and secure transport protocol that is suited for these modern applications. \tcpls is more than the simple addition of the security features of \tls and the reliability features of \tcp. \tcpls leverages TLS 1.3 to negotiate a security context. \tcpls sends the user data authenticated and encrypted as TLS records. It leverages these records to establish a secure control channel between the client and server. This channel is used to manage the \tcpls session and exchange all control information without any possible middlebox interference. Finally, \tcpls manages the underlying \tcp connection. During its lifetime,  the TLS records of a \tcpls session can be transported over different \tcp connections. This brings several interesting failover and multipath capabilities. Fig.~\ref{fig:arch} illustrates the interactions between two \tcpls hosts. \tcpls can be implemented in userspace within a library like current \tls implementations. It interacts with the \tcp stack that in our prototype resides in the kernel. The crypto module of the \tcpls negotiates and manages the security context while the connection manager (CM) manages the utilization of the underlying \tcp connection(s). Closely coupling \tcp and \tls in \tcpls brings opportunities for performance improvement (e.g., avoiding records fragmentation with dynamic receive buffer auto-tuning and/or with dynamic control of the record length), and for connection reliability (e.g., failover).
 
 %\tcpls (illustrated in Fig.~\ref{fig:arch}) offers a cross-layer interface to \tls and \tcp with the motivation to do more than securing the transport layer. Merging the stacks benefits both protocols and the application using this new approach.
 %First, \tcp suffers from a lack of extensibility due to size restrictions in its header and due to potential middlebox interferences~\cite{honda2011still}. \tcpls aims to solve \tcp extensibility issue in the long run by offering a secure control channel to exchange \tcp options without suffering from middlebox interferences and size restrictions in \tcp headers.
@@ -96,27 +95,18 @@ in the packet header and the data in the payload. This separation worked well
 until middleboxes started to interfere with \tcp~\cite{10.1145/1064413.1064418,
   honda2011still, DHBVD13}.  On a fraction of Internet paths, including e.g.,
 some enterprise and cellular networks, some middleboxes interfere by adding,
-removing, or changing \tcp options~\cite{wang2011untold, honda2011still,xu2015investigating} and, in some cases, also transparently terminating \tcp
-connections. These middleboxes have slowed down the evolution of \tcp in recent
-years. \tcpls also uses the packet header to exchange \tcp control information,
-but it leverages the extensibility of \tls 1.3 to place control
-information including some \tcp options inside the \tls handshake messages
-and new \tls records. Since this information is encrypted and authenticated, the
-communicating hosts can exchange new control information without encountering
-middlebox interference. We refer to this exchange of control information as the
-secure channel between the two hosts.
+removing, or changing \tcp options~\cite{wang2011untold, honda2011still,xu2015investigating} and, in some cases, also transparently terminating \tcp connections. These middleboxes have slowed down the evolution of \tcp in recent years. \tcpls also uses the packet header to exchange \tcp control information, but it leverages the extensibility of \tls 1.3 to place control information including some \tcp options inside the \tls handshake messages and new \tls records. Since this information is encrypted and authenticated, the communicating hosts can exchange new control information without encountering middlebox interference. We refer to this exchange of control information as the secure channel between the two hosts.
 %We describe several examples of these new types of
 %control information in Sec.~\ref{sec:extending} and Sec.~\ref{sec:connmigr}.
 
 A \tcpls session starts with a secure \tls 1.3 handshake ~\cite{rfc8446}. The
-client adds a new \tcpls transport parameter in its \textsc{ClientHello} message. A \tcpls server replies with a \textsc{ServerHello} message that negotiate
-the security keys and may include additional \tcpls information as
+client adds a new \tcpls transport parameter in its \textsc{ClientHello} message. A \tcpls server replies with a \textsc{ServerHello} message that negotiates the security keys and may include additional \tcpls information as
 \textsc{EncryptedExtensions}. After this secure handshake, the client and the
 server have a shared security context.
 
 As \sctp~\cite{rfc4960} or \quic~\cite{draft-ietf-quic-transport}, \tcpls
 supports one or more streams over a single \tcpls session. An application
-can open, attach and close streams to an existing \tcpls session. Each
+can open, attach, and close streams to an existing \tcpls session. Each
 stream is an independent cryptographic context derived from the \tcpls
 security context. The \tcpls streams can be used to carry application data
 or control information.
@@ -124,7 +114,7 @@ or control information.
 %They must be attached to a \textit{Connected} \tcp bytestream exported as a \texttt{transportid} to the application. To manipulate streams, \tcpls offers an API to open, attach
 %and close streams to any available \texttt{transportid} in the \textit{Connected} state, while offering the Stream as the only bytestream abstraction to the upper layer. Streams can only be attached to one \texttt{transportid}, but they can be moved, several streams can be attached to a given \texttt{transportid}, and multiple streams can be attached to multiple \texttt{transportid}s.
 
-To attach a new stream, a host simply needs to send the \texttt{STREAM\_ATTACH} message as a special TLS record over the secure channel. Since each stream is an independent cryptographic context, the recipient can immediately start to decrypt and extract data from the new stream. No round-trip is wasted to attach a new stream.
+To attach a new stream, a host simply needs to send the \texttt{STREAM\_ATTACH} message as a special \tls record over the secure channel. Since each stream is an independent cryptographic context, the recipient can immediately start to decrypt and extract data from the new stream. No round-trip is wasted to attach a new stream.
 
 %\tcpls can attach streams using the Secure Control Channel and send TLS records
 %within them in a zero-rtt fashion. That is, when the peer receives a
@@ -148,11 +138,8 @@ To attach a new stream, a host simply needs to send the \texttt{STREAM\_ATTACH} 
 %\tcpls session can be composed of one or more \tcp connections similarly as a
 %\mptcp connection gathers subflows.
 
-\tcpls' Connection Manager controls the utilization of the underlying \tcp connections. It can open, close or reestablish failed \tcp connections. Each of
-the connections that compose a \tcpls session is identified by a \emph{transport identifier}. By default, the data from a stream attached to a \tcpls session can be sent over any of the underlying TCP connections. The applications that
-require finer control over the utilization of the underlying TCP connections can
-use the \tcpls API to map a stream on a specific underlying connection. In this case, all the data of this stream is exchanged over this specific connection.
-By placing two streams on different connections, an application can prevent Head-Of-Line (HOL) blocking among these streams.
+\tcpls' Connection Manager controls the utilization of the underlying \tcp connections. It can open, close, or reestablish failed \tcp connections. Each of
+the connections that composes a \tcpls session is identified by a \emph{transport identifier}. By default, the data from a stream attached to a \tcpls session can be sent over any of the underlying \tcp connections. The applications that require finer control over the utilization of the underlying \tcp connections can use the \tcpls API to map a stream on a specific underlying connection. In this case, all the data of this stream is exchanged over this specific connection. By placing two streams on different connections, an application can prevent Head-Of-Line (HOL) blocking among these streams.
 
 \tcpls also supports failover and multipath. To support these features, it
 must be possible to send data from a given stream over different \tcp connections. In this case, the \tcp level sequence numbers and acknowledgements are not sufficient anymore to enable the receiver to reorder the data. When this feature

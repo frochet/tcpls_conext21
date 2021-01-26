@@ -1,6 +1,6 @@
 % !TEX root = ./paper.tex
 
-In this section, we evaluate \tcpls using two different types of experiments. First, analyze the raw performance of our \tcpls prototype and the interactions with real middleboxes in a lab with a few servers. We then emulate more complex network scenarios that include failover and multipathing using Mininet~\cite{handigol2012reproducible}. 
+In this section, we evaluate \tcpls using two different types of experiments. First, analyze the raw performance of our \tcpls prototype and the interactions with real middleboxes in a lab with a few servers. We then emulate more complex network scenarios that include failover and multipathing using Mininet~\cite{handigol2012reproducible}.
 
 
 %Our objective is to evaluate whether our design and implementation are indeed
@@ -33,7 +33,7 @@ have.
 Note that several of the features suggested by \tcpls are also suggested on \tcp or \quic via research works such as a new socket API for explicit \mptcp \cite{hesmans2016enhanced}, or eBPF plugins in
 \quic~\cite{de2019pluginizing}.
 
-\begin{table}
+\begin{table}[!t]
   \small
   \begin{tabular}{lcccc}
     \toprule
@@ -74,10 +74,9 @@ while the third one is used as a router or a middlebox. Each machine is equipped
     \includegraphics[width=6cm]{figures/testbed.png}
   \end{center}
   \vspace{-0.5cm}
-  \caption{
-    Performance Measurements Setups. C = Client. S = Server. R = Router/Middlebox.}
+  \caption{Performance Measurements Setups. C = Client. S = Server. R = Router/Middlebox.}
   \label{fig:perf_testbed}
-    \vspace{-0.5cm}
+%    \vspace{-0.5cm}
 \end{figure}
 
 
@@ -102,8 +101,9 @@ From a performance viewpoint, they increase the number of control records and th
 
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=\columnwidth]{figures/perf_analysis.png}
+    \includegraphics[width=6cm]{figures/perf_analysis.png}
   \end{center}
+\vspace{-0.5cm}
   \caption{The \tcpls prototype is faster than \tls over \tcp and different \quic implementations.}
   \label{fig:perf}
 \end{figure}
@@ -221,7 +221,7 @@ a file over a single path and then enabling the second one at $5$ seconds. For
 or peer-related addresses at any point of the session. In that case, we add
 the information at $5$ seconds, connect to the peer and attach a new stream to
 this new connection. Our results are displayed in
-Figure~\ref{fig:multipath_aggregation}. Both stacks enable the aggregation of the
+Fig.~\ref{fig:multipath_aggregation}. Both stacks enable the aggregation of the
 goodput to  $\approx$ 50 mbps. There are two major differences displayed by the stacks.
 First, upping the interface, adding the routes and detecting the new path in
 the case of \mptcp is time consuming. It leads \mptcp to react slower than
@@ -240,10 +240,11 @@ to use encryption/decryption code path more often.
 
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=\columnwidth]{figures/aggregate_dual.png}
-  \end{center} 
+    \includegraphics[width=6cm]{figures/aggregate_dual.png}
+  \end{center}
+\vspace{-0.5cm}
   \caption{Bandwidth aggregation comparison between \mptcp and
-    \tcpls with a record payload size of 16384 bytes}
+    \tcpls with a record payload size of 16384 bytes.}
   \label{fig:multipath_aggregation}
 \end{figure}
 
@@ -253,7 +254,7 @@ The failover feature is designed to provide reliability to the \tcpls connection
 in case of network outage. From middlebox interferences to mobile client loosing
 their connection to the access point (LTE or WIFI), network outages may happen
 for various reasons. We first discuss and compare the recovery speed
-after a network outage, for different types of outage. Figure~\ref{fig:recovery}
+after a network outage, for different types of outage. Fig.~\ref{fig:recovery}
 compares the goodput achieved by both \mptcp and \tcpls when they suffer an
 outage on their main path and fallback to their secondary path. Both client and
 server are configured with two interfaces, with one of them set to the backup
@@ -262,9 +263,13 @@ unless an issue is detected on the first path). We consider three types of
 outage: a middlebox blackholing all the traffic, the reception of a spurious
 $RST$ and the loss of the interface for \mptcp.
 
-\begin{figure}[!t] \begin{center}
-    \includegraphics[width=\columnwidth]{figures/breakage_analysis.png}
-  \end{center} \caption{Recovery speed analysis.} \label{fig:recovery}
+\begin{figure}[!t]
+  \begin{center}
+    \includegraphics[width=6cm]{figures/breakage_analysis.png}
+  \end{center}
+\vspace{-0.5cm}
+  \caption{Recovery speed analysis.}
+  \label{fig:recovery}
 \end{figure}
 
 Our results show a range of different behaviours: an explicit issue such as the
@@ -283,10 +288,11 @@ this steps have succeeded, the transfer can continue. In our experiments, it too
 around $\approx 1$ second to recover from the outage.
 
 
-\begin{figure}[!t] 
+\begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=\columnwidth]{figures/tcpls_mptcp.png} 
+    \includegraphics[width=6cm]{figures/tcpls_mptcp.png}
   \end{center}
+\vspace{-0.5cm}
   \caption{Connection reliability: influence of the path manager and congestion
     control.}
   \label{fig:failover}
@@ -299,7 +305,7 @@ plugin~\cite{de2019pluginizing} and MPQUIC~\cite{de2017multipath}. The results w
 poor. We dug into their implementations and observed that they were not programmed
 to detect network failures and correctly switch the network path, thus we
 preferred to ignore those results. However, \mptcp has a longer development
-background, is used in production and maintained. Figure~\ref{fig:failover}
+background, is used in production and maintained. Fig.~\ref{fig:failover}
 shows how \mptcp and \tcpls performs when 3 paths out of 4 get blackholled every
 5 seconds. The path manager has first to find the healthy path and recover the
 session over it. We observe that \mptcp performs well on the first
@@ -351,8 +357,10 @@ data and deliver it to the client, which gives this goodput peak matching the
 accumulated bandwidth of the new path over the migration time window.
 
 \begin{figure}[!t]
-  \centering
-  \includegraphics[width=\columnwidth]{figures/migration.png}
+  \begin{center}
+    \includegraphics[width=6cm]{figures/migration.png}
+  \end{center}
+\vspace{-0.5cm}
   \caption{Application-level connection migration during a 60MB file download.}
   \label{fig:conn_migration}
 \end{figure}
@@ -391,8 +399,9 @@ varying from 10ms to 100ms.
 
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=\columnwidth]{pretty_plotify/plots/vegas_cubic.png}
+    \includegraphics[width=6cm]{pretty_plotify/plots/vegas_cubic.png}
   \end{center}
+\vspace{-0.5cm}
   \caption{\tcpls hosts can exchange congestion control schemes and activate them during a \tcpls session.}
   \label{fig:vegasCubic}
 \end{figure}
