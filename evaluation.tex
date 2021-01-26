@@ -87,8 +87,8 @@ The first question that we want to answer is whether \tcpls can compete with the
 \paragraph*{\tcpls}
 For all the \tcpls measurements, we used a custom application that performs
 large memory-to-memory transfers over a \tcpls session using a single stream.
-\tcpls was configured to use the AES-GCM with 128 bits block size and the hash
-function SHA256.  Fig.~\ref{fig:perf} provides the goodput measured in our
+\tcpls was configured to use the AES128-GCM-SHA256 cipher.
+Fig.~\ref{fig:perf} provides the goodput measured in our
 testbed. We report both the bandwidth in megabits per second and packets per
 second.  Each bar in this figure is the median bandwidth over 10 seconds of stable
 throughput. The bottom bar is the highest median goodput that we measured with \tcpls:
@@ -98,7 +98,7 @@ that is enabled by all high-speed NICS. The next bar shows that with TSO and a
 standard frame size (1500 bytes MTU), the goodput is still 10,84 Gbps. These
 results should be compared with the 22~Gbps that TCP reaches in the same
 environment using \texttt{iperf} but without any encryption. We measured that
-AES-GCM peaks at 13,1 Gbps when doing in-memory encrytion/decryption on our
+AES128-GCM-SHA256 peaks at 13,1 Gbps when doing in-memory encrytion/decryption on our
 testbed's servers.
 
 %the shows several interesting results. First, while offering similar (and more)
@@ -355,7 +355,7 @@ trigger callbacks on the server side, to let the server react appropriately if
 other requirements need to be fulfilled.
 
 Figure~\ref{fig:conn_migration} further shows a peak of goodput at each
-migration. During the migration window (marked with virtual black bars
+migration. During the migration window (marked with vertical black bars
 indicating the attachment of the new stream and the closing of the initial
 stream), the client is taking advantage of both paths to receive its data: the
 first path finishes the flush its data while the second path already started to
