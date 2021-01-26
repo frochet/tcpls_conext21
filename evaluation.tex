@@ -84,19 +84,34 @@ The first question that we want to answer is whether \tcpls can compete with the
 
 
 \paragraph*{\tcpls}
-For all the \tcpls measurements, we used a custom application that performs large memory-to-memory transfers over a \tcpls session using a single stream. \tcpls was configured to use the \todo{AES-...} encryption scheme.
-Fig.~\ref{fig:perf} provides the goodput measured in our testbed. We report both the bandwidth in megabits per second and packets per second.  Each bar in this figure is the average over \todo{x} runs. The bottom bar is the highest goodput that we measured with \tcpls: \todo{12 Gbps}. This result was obtained with jumbo frames (i.e. 9000 bytes MTU) and using TCP Segmentation Offload (TSO) on the NICs. TSO is a standard feature that is enabled by all high-speed NICS. The next bar shows that with TSO and a standard frame size (1500 bytes MTU), the goodput is still \todo{11 Gbps}. These results should be compared with the 22~Gbps that TCP reaches in the same environment using \texttt{iperf} but without any encryption. We measured that \todo{AES-...} peaks at \todo{xx} Gbps when doing in-memory encrytion/decryption on our testbed's servers.
+For all the \tcpls measurements, we used a custom application that performs
+large memory-to-memory transfers over a \tcpls session using a single stream.
+\tcpls was configured to use the AES-GCM with 128 bits block size and the hash
+function SHA256.  Fig.~\ref{fig:perf} provides the goodput measured in our
+testbed. We report both the bandwidth in megabits per second and packets per
+second.  Each bar in this figure is the median bandwidth over 10 seconds of stable
+throughput. The bottom bar is the highest median goodput that we measured with \tcpls:
+12,4 Gbps. This result was obtained with jumbo frames (i.e. 9000 bytes MTU)
+and using TCP Segmentation Offload (TSO) on the NICs. TSO is a standard feature
+that is enabled by all high-speed NICS. The next bar shows that with TSO and a
+standard frame size (1500 bytes MTU), the goodput is still 10,84 Gbps. These
+results should be compared with the 22~Gbps that TCP reaches in the same
+environment using \texttt{iperf} but without any encryption. We measured that
+AES-GCM peaks at 13,1 Gbps when doing in-memory encrytion/decryption on our
+testbed's servers.
 
-%the
-%shows several interesting results. First, while
-%offering similar (and more) capabilities than what QUIC is providing today,
+%the shows several interesting results. First, while offering similar (and more)
+%capabilities than what QUIC is providing today,
 %\tcpls is also more than twice faster than the strongest evaluated QUIC
 %implementation (quicly) over CPU limited experimentations. We evaluate \tcpls
 
 We then evaluated the impact of adding the \tcpls-level acknowledgements
 described in Sec.~\ref{failover} to support failover.
 % Thanks to these acknowledgements, \tcpls can support failover.
-From a performance viewpoint, they increase the number of control records and the number of system calls. Our prototype currently sends a \tcpls-ack for every 16 received records, or after having received 15 times the maximum \tls payload \todo{OB ne voit pas la différence}, or upon the expiration of \todo{xx msec} timer. Our measurements indicate that with this functionnality, \tcpls reaches \todo{9.5 Gbps}.
+From a performance viewpoint, they increase the number of control records and
+the number of system calls. Our prototype currently sends a \tcpls-ack for every
+16 received records. Our measurements indicate that with this functionnality,
+\tcpls reaches 9.65 Gbps.
 
 
 \begin{figure}[!t]
@@ -112,12 +127,13 @@ From a performance viewpoint, they increase the number of control records and th
 %in four different settings: with a path mtu of 1500 or 9000, and with failover
 %enabled or not. The failover functionality is an internal stack feature that
 %provides session reliability, which increases the number of syscalls that TCPLS
-%makes by exchanging TCPLS-level record acknowledgments. We currently send an ac%k
-%for
-%throughput at the price of a slower recovery in case of network failure.
+%makes by exchanging TCPLS-level record acknowledgments. We currently send an
+%ac%k for throughput at the price of a slower recovery in case of network
+%failure.
 
-\paragraph*{\tcpls vs. \tls/\tcp}
-We now compare the performance of \tcpls with the traditional \tls over \tcp stack. To have a fair comparison, we use \texttt{picotls}'s client/server
+\paragraph*{\tcpls vs. \tls/\tcp} We now compare the performance of \tcpls with
+the traditional \tls over \tcp stack. To have a fair comparison, we use
+\texttt{picotls}'s client/server
 implementation with the same commit as our initial fork for \tcpls.
 \todo{test client pour TLS/TCP}
 Fig.~\ref{fig:perf} shows that \tls/\tcp provides a lower performance than
