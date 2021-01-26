@@ -168,11 +168,18 @@ msquic could only reach 1,96 Gbps and mvfst was slower.
 
 
 \subsection{Middlebox Interference}
+\label{sec:middlebox}
 
-A full evaluation of middlebox interference would require measurements in various operational networks that include such devices \cite{honda2011still,raman2020measuring,o2016tls}. This is outside the scope of this paper and left for further work.
+A full evaluation of middlebox interference would require measurements in various operational 
+networks that include such devices \cite{honda2011still,raman2020measuring,o2016tls}. This is 
+outside the scope of this paper and left for further work.
 We tested \tcpls against different opensource and commercial stateful
-firewalls and proxy implementations and (i.e., pfSense, IPFire, Cisco ASAv, mitmproxy) and found no interference. Still, the security appliances that block
-TLS 1.3 or some of its features \cite{lee2019matls,Bock_China,raman2020measuring} would also block \tcpls.
+firewalls and proxy implementations (i.e., pfSense, IPFire, Cisco ASAv,
+mitmproxy) and found no unexpected interference. Stateful filtering and stateful
+packet inspection policies did not impact connecivity, and transparent TLS proxy
+successfully succesfuly triggered \tcpls fallback to \tcp \tls. Still, the security
+appliances that block TLS 1.3 or some of its features 
+\cite{lee2019matls,Bock_China,raman2020measuring} would also block \tcpls.
 %pervasive monitoring allows for configurable TLS extensions blocking
 %\cite{rfc7258}. This is handled properly by \tcpls fallback mechanism.
 
@@ -211,7 +218,9 @@ to cancel a migration attempt).
 \subsection{Bandwidth Aggregation}
 
 We compare the capability of \tcpls to the state of the art \mptcp. Both
-protocols run in the same Mininet topology with two IP paths available, each
+protocols run in the same Mininet topology with two IP paths available, 
+\todo{KE: Description of mininet topology comes after this reference}
+each 
 offering 25 mbps and a latency of 10 ms. The experiment consists to transfering
 a file over a single path and then enabling the second one at $5$ seconds. For
 \mptcp, the new path is detected after we up the client's second interface. For
