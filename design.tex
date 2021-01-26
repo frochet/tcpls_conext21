@@ -6,7 +6,16 @@
 \subsection{The Secure Control Channel}\label{sec:extending}
 
 \tls 1.3~\cite{rfc8446} has been designed with careful consideration for
-potential extensions and to prevent middlebox interference.  A \tcpls client indicates its willingness to use \tcpls with a transport parameter in the \textsc{ClientHello} message. Upon reception of this parameter, the server replies with a \textsc{ServerHello} messages. It can opportunistically as lightweight \tcpls data and \tcp options as \textsc{EncryptedExtensions}. Any extension sent with the \textsc{ServerHello} message is encrypted with the handshake key, and is not part of the context used to derive the eventual application key. If the client does not support some extension, it echoes back an alert with the value of the option it does not recognize, but the connection continues.
+potential extensions and to prevent middlebox interference.  A \tcpls client
+indicates its willingness to use \tcpls with a transport parameter in the
+\textsc{ClientHello} message. Upon reception of this parameter, the server
+replies with a \textsc{ServerHello} messages. It can opportunistically as
+lightweight \tcpls data and \tcp options as \textsc{EncryptedExtensions}. Any
+extension sent with the \textsc{ServerHello} message is encrypted with the
+handshake key, and is not part of the context used to derive the eventual
+application key. If the client does not support some extension, it echoes back
+an alert with the value of the option it does not recognize, but the connection
+continues.
 
 A reasonable approach to designing extensibility mechanisms in today's Internet
 is to avoid leaking any information that could help an on-path attacker
@@ -18,7 +27,11 @@ considers those problems by avoiding unencrypted data within the
 \textsc{ClientHello}.
 
 Once the secure handshake has succeeded, the hosts can exchange \tls records.
-To prevent middlebox interference, the \tls 1.3 Record Protocol ensures that any new message appears as an \textsc{AppData} message type while the true content type (TType) is stored at the end of the encrypted payload. \tcpls uses this feature of \tls 1.3 to encode the control messages that are sent over the secure channel as new \tls record types.
+To prevent middlebox interference, the \tls 1.3 Record Protocol ensures that any
+new message appears as an \textsc{AppData} message type while the true content
+type (TType) is stored at the end of the encrypted payload. \tcpls uses this
+feature of \tls 1.3 to encode the control messages that are sent over the secure
+channel as new \tls record types.
 
 %It supports the \textsc{EncryptedExtensions} message sent
 %by the server alongside the \textsc{ServerHello}.
@@ -34,28 +47,50 @@ To prevent middlebox interference, the \tls 1.3 Record Protocol ensures that any
 
 \subsection{The \tcpls Streams}\label{sec:datastreams}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-The classical solution to support streams in a transport protocol is to assign an identifier to each stream and send the data from stream $x$ as a tuple $x,seq,data$ where $seq$ is a sequence number. This is the solution chosen by \sctp~\cite{rfc4960} and \quic~\cite{draft-ietf-quic-transport}. \tcpls relies on cryptographic properties to support several streams.
+The classical solution to support streams in a transport protocol is to assign
+an identifier to each stream and send the data from stream $x$ as a tuple
+$x,seq,data$ where $seq$ is a sequence number. This is the solution chosen by
+\sctp~\cite{rfc4960} and \quic~\cite{draft-ietf-quic-transport}. \tcpls relies
+on cryptographic properties to support several streams.
 
-\paragraph*{Cryptographic Details and Tricks}
-In \tcpls, each stream has its own cryptographic context. All streams use
-the same key but derive a specific Initial Vector (IV - also called cryptographic nonce) such that nonce-misuse cannot happen. Furthermore, we derive the IV such that \tcpls record sequence number can securly start at $0$ within each stream.
+\paragraph*{Cryptographic Details and Tricks} In \tcpls, each stream has its own
+cryptographic context. All streams use the same key but derive a specific
+Initial Vector (IV - also called cryptographic nonce) such that nonce-misuse
+cannot happen. Furthermore, we derive the IV such that \tcpls record sequence
+number can securly start at $0$ within each stream.
 
-\tcpls uses only one application-level key for $N$ streams, for each direction. We selected this approach is to avoid security degradation with the usage of multiple keys (by a factor $k$ with $k$ keys)~\cite{chatterjee2011another}.
+\tcpls uses only one application-level key for $N$ streams, for each direction.
+We selected this approach is to avoid security degradation with the usage of
+multiple keys (by a factor $k$ with $k$ keys)~\cite{chatterjee2011another}.
 
-To enable all stream sequence numbers to start at 0, we rely on some properties of the Authenticated Encryption with Associated Data (AEAD) schemes used
-by \tls 1.3. To preserve AEAD security, the AEAD nonce used by \tcpls
-must be of unique use when encrypting and decrypting a record. The
-initial nonce must also be unpredictable for an adversary observing the
-handshake. \tcpls derives it from the \tls handshake session secret in
-a similar fashion as the \tls keys~\cite{rfc8446}. The nonce size must range from $96$ bits to $128$ bits depending on the underlying cipher used. In all cases, for a nonce of size $N$ bits, \tls computes the cryptographic nonce given to the underlying by concatenating the $N-64$ leftmost bits with the 64 lower bits xored with the record's implicit sequence number encoded in 64 bits.
-The lower 64 bits xoring provides more unpredictability to the nonce when
-the same plaintext is encrypted multiple times with the same
-key~\cite{bellare2016multi,hoang2018multi}. This design implies that we give to
-the underlying cipher the 32 upper bits untouched. The resulting value is then
-incremented at most 1024 times starting from the leftmost bits to encrypt a \tls
-record of maximum size (16384 bytes, i.e, 1024 times 128 bits for the the
+To enable all stream sequence numbers to start at 0, we rely on some properties
+of the Authenticated Encryption with Associated Data (AEAD) schemes used by \tls
+1.3. To preserve AEAD security, the AEAD nonce used by \tcpls must be of unique
+use when encrypting and decrypting a record. The initial nonce must also be
+unpredictable for an adversary observing the handshake. \tcpls derives it from
+the \tls handshake session secret in a similar fashion as the \tls
+keys~\cite{rfc8446}. The nonce size must range from $96$ bits to $128$ bits
+depending on the underlying cipher used. In all cases, for a nonce of size $N$
+bits, \tls computes the cryptographic nonce given to the underlying by
+concatenating the $N-64$ leftmost bits with the 64 lower bits xored with the
+record's implicit sequence number encoded in 64 bits.  The lower 64 bits xoring
+provides more unpredictability to the nonce when the same plaintext is encrypted
+multiple times with the same key~\cite{bellare2016multi,hoang2018multi}. This
+design implies that we give to the underlying cipher the 32 upper bits
+untouched. The resulting value is then incremented at most 1024 times starting
+from the leftmost bits to encrypt a \tls record of maximum size (16384 bytes,
+i.e, 1024 times 128 bits for the the
 minimum block size). We thus observe that 7 bits among those 32 bits are
-untouchable, leading to at least 25 bits that are available to encode a unique stream number. By encoding such a unique number in this part of the cryptographic nonce, we enable each stream to start its sequence number at 0 while encrypting its records with the same key. This observation means that we can create independant cryptographic contexts based on a tweak of the cryptographic nonce. This implies that stream records can be encrypted and decrypted independently of each other, with the same key value. This technique maintains AEAD's core assumption (uniqueness of nonce), which means that the state of art AEAD's security proof starting from that assumption applies to our design~\cite{chatterjee2011another} and guarantees the security of our scheme.
+untouchable, leading to at least 25 bits that are available to encode a unique
+stream number. By encoding such a unique number in this part of the
+cryptographic nonce, we enable each stream to start its sequence number at 0
+while encrypting its records with the same key. This observation means that we
+can create independant cryptographic contexts based on a tweak of the
+cryptographic nonce. This implies that stream records can be encrypted and
+decrypted independently of each other, with the same key value. This technique
+maintains AEAD's core assumption (uniqueness of nonce), which means that the
+state of art AEAD's security proof starting from that assumption applies to our
+design~\cite{chatterjee2011another} and guarantees the security of our scheme.
 
 \paragraph*{Carrying Multiple Streams over the Same Transport}
 Thanks to those separate cryptographic contexts, \tcpls can perform concurrent
@@ -70,10 +105,14 @@ we also
 %data is not encrypted but the AEAD cipher authenticates them). This choice
 %means potential middlebox interference, which we chose to avoid. The other
 %option is to
-leverage the AEAD cipher and check the authentication tag of the incoming record until we find the stream that properly verifies this tag. This
-operation is lightweight: it does not require full decryption of the record
-because the AEAD ciphers used by \tls 1.3 do Encrypt then MAC (and MAC then
-Decrypt). This implies that they first check the tag and only decrypt if the tag is correct. Looking for the right stream that succeeds the tag verification needs to be performed once each time the application writes to another stream over the same \tcp connection.
+leverage the AEAD cipher and check the authentication tag of the incoming record
+until we find the stream that properly verifies this tag. This operation is
+lightweight: it does not require full decryption of the record because the AEAD
+ciphers used by \tls 1.3 do Encrypt then MAC (and MAC then Decrypt). This
+implies that they first check the tag and only decrypt if the tag is correct.
+Looking for the right stream that succeeds the tag verification needs to be
+performed once each time the application writes to another stream over the same
+\tcp connection.
 
 Note that, security-wise, each failed decryption is considered as a
 forgery attempt. However, we have large limits on the confidentiality and
