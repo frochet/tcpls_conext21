@@ -246,41 +246,14 @@ expected, similarly to the drop and \rst outage studied in Fig.~\ref{fig:recover
 \subsection{Application-Level Migration}
 
 When there are multiple IP paths, connection migration might be a
-powerful tool to improve the application's resilience to network problems. Applications
-can take advantage of the \tcpls API to migrate their traffic from one network
-path to another.
-Fig.~\ref{fig:conn_migration} shows the result of an Application-level
-connection migration demo using the API (i.e., the application
-decides when to migrate, and we expose a simplistic code flow to perform it).
-In this experiment, we rely on the Mininet topology from Sec.~\ref{sec:bwaggr}.
-We set a
-bandwidth of 30~Mbps on each path, a round-trip-time of 40~ms for the v4 link,
-and a round-trip-time of 80~ms for the v6 link. Our application downloads
-a 60~MB file from a server and migrates twice (i.e., from the IPv4 to the IPv6 path
-and once again to the IPv4 path).
+powerful tool to improve the application's resilience to network problems. Applications can take advantage of the \tcpls API to migrate their traffic from one network path to another. Fig.~\ref{fig:conn_migration} shows the result of an Application-level connection migration demo using the API (i.e., the application decides when to migrate, and we expose a simplistic code flow to perform it). In this experiment, we reuse the Mininet topology introduced in Sec.~\ref{sec:bwaggr}. We set a bandwidth of 30Mbps on each path, a 40ms round-trip-time for the v4 link, and 80ms for the v6 link. Our application downloads
+a 60MB file from a server and migrates twice (i.e., from the IPv4 to the IPv6 path and once again to the IPv4 path).
 
-Triggering the first connection migration involves chaining 5 API calls: first,
-if a \tcp connection is not already established, the application issues a
+Triggering the first connection migration involves chaining five API calls: first, if a \tcp connection is not already established, the application issues a
 \texttt{tcpls\_connect()} that creates a $\tcp$ connection (or directly uses
-\texttt{tcpls\_handshake()} with TFO enabled. Calling \texttt{tcpls\_handshake()}
-is required and needs to be configured with handshake properties announcing a
-\join over the IPv6 connection. Then, the creation of a new stream
-\texttt{tcpls\_stream\_new()} for the IPv6 connection, finally followed by the
-attachment of this new stream \texttt{tcpls\_streams\_attach()} and the secure
-closing of the IPv4 \tcp connection using \texttt{tcpls\_stream\_close()}.
-Following these events, the server seamlessly switches the path while looping
-over \texttt{tcpls\_send()} to send the file. Note that all the events
-trigger callbacks on the server side, to let the server react appropriately if
-other requirements need to be fulfilled.
+\texttt{tcpls\_handshake()} with TFO enabled. Calling \texttt{tcpls\_handshake()} is required and needs to be configured with handshake properties announcing a \join over the IPv6 connection. Then, the creation of a new stream \texttt{tcpls\_stream\_new()} for the IPv6 connection, finally followed by the attachment of this new stream \texttt{tcpls\_streams\_attach()} and the secure closing of the IPv4 \tcp connection using \texttt{tcpls\_stream\_close()}. Following these events, the server seamlessly switches the path while looping over \texttt{tcpls\_send()} to send the file. Note that all the events trigger callbacks on the server side, to let the server react appropriately if other requirements need to be fulfilled.
 
-Figure~\ref{fig:conn_migration} shows a peak in goodput during each
-migration. During the migration window (marked with vertical black bars
-indicating the attachment of the new stream and the closing of the initial
-stream), the client is taking advantage of both paths to receive its data: the
-first path finishes to flush its data while the second path is already used.
-Once the last record of the first path is sent, \tcpls can reorder the
-data and deliver it to the client. We then obtain a goodput peak matching the
-accumulated bandwidth over both paths oduring the migration time window.
+Fig.~\ref{fig:conn_migration} shows a peak in goodput during each migration. During the migration window (marked with vertical black bars indicating the attachment of the new stream and the closing of the initial stream), the client is taking advantage of both paths to receive its data: the first path finishes to flush its data while the second path is already used. Once the last record of the first path is sent, \tcpls can reorder the data and deliver it to the client. We then obtain a goodput peak matching the accumulated bandwidth over both paths oduring the migration time window.
 
 \begin{figure}[!t]
   \begin{center}
@@ -292,8 +265,6 @@ accumulated bandwidth over both paths oduring the migration time window.
   \label{fig:conn_migration}
 \end{figure}
 
-
-
 \subsection{Dynamically Extending \tcpls}
 
 The \tcpls streams enable new use case. Obviously, a \tcpls application can
@@ -303,26 +274,18 @@ exchange control information. To demonstrate the versatily of these control
 streams, we extended \tcpls to enable a server to push a different congestion
 control scheme to a specific client over an existing \tcpls session. Recent
 work on restructuring congestion control has proposed a generic architecture
-for congestion controllers \cite{narayan2018restructuring}.
+for congestion controllers~\cite{narayan2018restructuring}.
 During the last years, the Linux kernel developpers have relied on eBPF
-to make the Linux TCP/IP stack \cite{brakmo2017tcp,tran2020beyond} easier
+to make the Linux TCP/IP stack~\cite{brakmo2017tcp,tran2020beyond} easier
 to extend. Since Linux kernel version 5.6, an application can inject
 a different congestion control scheme entirely implemented using eBPF. A similar
 approach was proposed in Pluginizing \quic~\cite{de2019pluginizing}. We
 leverage these new eBPF capabilities to demonstrate the feasibility of injecting
 and updating a congestion control scheme during a \tcpls session.
 
-We perform our experiment using Mininet over a 100~Mbps emulated link
-that has a 60 msec delay.
-Fig.~\ref{fig:vegasCubic} shows a client that uses the TCP
-Vegas~\cite{10.1145/190314.190317} congestion control scheme to upload a file.
-This \tcpls session fully uses the bottleneck link. After some time, another
-client starts an upload, but using the CUBIC congestion
-controller~\cite{rfc8312}. This results in an unfair distribution of the
-bandwidth. The server then sends the eBPF bytecode implementing the CUBIC congestion
-control scheme to the \tcp Vegas client that injects it in its kernel and the
-unfairness disappears. We performed the same experiment for different delays,
-varying from 10ms to 100ms and obtained similar results.
+We perform our experiment using Mininet over a 100Mbps emulated link
+that has a 60msec delay. Fig.~\ref{fig:vegasCubic} shows a client that uses the \tcp Vegas~\cite{10.1145/190314.190317} congestion control scheme to upload a file. This \tcpls session fully uses the bottleneck link. After some time, another client starts an upload, but using the CUBIC congestion controller~\cite{rfc8312}. This results in an unfair distribution of the
+bandwidth. The server then sends the eBPF bytecode implementing the CUBIC congestion control scheme to the \tcp Vegas client that injects it in its kernel and the unfairness disappears. We performed the same experiment for different delays, varying from 10ms to 100ms and obtained similar results.
 
 \begin{figure}[!t]
   \begin{center}
