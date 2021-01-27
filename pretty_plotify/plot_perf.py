@@ -21,6 +21,7 @@ def init_args():
 def parse_data(filepath):
     bytes = []
     pps = []
+    print(filepath)
     with open(filepath) as f:
         for line in f:
             tab = line.split('\t')
@@ -54,12 +55,12 @@ def main():
         bar_height_pps.append((args.label[counter], pps_median))
         counter+=1
 
-    bar_height_bw.sort(key=lambda x: x[1], reverse=True)
+    #bar_height_bw.sort(key=lambda x: x[1], reverse=True)
     mapping = dict(bar_height_pps)
-    bar_height_pps_sorted = [(x[0], mapping[x[0]]) for x in bar_height_bw]
-    bar_height_pps = bar_height_pps_sorted
+    #bar_height_pps_sorted = [(x[0], mapping[x[0]]) for x in bar_height_bw]
+    #bar_height_pps = bar_height_pps_sorted
     y_pos = np.arange(len(bar_height_bw))
-    y_pos = [ 0,  1,  2,  3,  4.5,  5.5,  7,  8 , 9,  10.5, 11.5, 13, 14 ,15]
+    y_pos = [ 0,  1,  2,  3,  4,  5.5,  6.5,  7.5 , 9,  10, 11, 12.5, 13.5 ,15 , 16, 17]
     #data plotting
     fig, ax = plt.subplots(figsize=(8,6))
 
@@ -71,8 +72,8 @@ def main():
 #             cmap[2],cmap[0],
 #             cmap[1],cmap[5],cmap[0]]
 
-    colors = [cmap[5],cmap[5], cmap[5],cmap[5],
-          cmap[4], cmap[4],
+    colors = [cmap[5],cmap[5], cmap[5],cmap[5],cmap[5],
+          cmap[4], cmap[4],cmap[4],
           cmap[3],cmap[3],cmap[3],
           cmap[2],cmap[2],
           cmap[1],cmap[1],cmap[1]]
@@ -95,7 +96,9 @@ def main():
 
     for i, p in enumerate(ax.patches):
         left, bottom, width, height = p.get_bbox().bounds
-        ax.annotate(legend_label(r" $\textbf{"+str(bar_height_pps[i][1])+"}$ pps"), xy=(left+0.5+width/2, bottom+height/2),
+        ax.annotate(legend_label(r" $\textbf{"+str(bar_height_pps[i][1])+"}$ pps"), 
+        xy=(left+1.0, bottom+height/2),
+        #xy=(left+0.5+width/2, bottom+height/2),
                     ha='center', va='center', color='black', weight='bold', fontsize=12)
 
     axis_aesthetic(ax)
