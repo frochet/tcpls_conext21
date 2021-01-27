@@ -234,12 +234,15 @@ to cancel a migration attempt).
 
 \subsection{Bandwidth Aggregation}
 \label{sec:bwaggr}
-We compare the capability of \tcpls to the state of the art \mptcp. Both
-protocols run in the same Mininet topology with two IP paths available, 
-\todo{KE: Description of mininet topology comes after this reference}
-each 
-offering 25 Mbps and a latency of 10 ms. The experiment consists to transfering
-a file over a single path and then enabling the second one at $5$ seconds. For
+We compare the capability of \tcpls to the state of the art \mptcp. 
+To this end, we build a Mininet network~\cite{handigol2012reproducible}
+composed of a client and a server, both
+dual-stacks. The IPv4 and IPv6 paths are completely disjoint in this emulated
+network. 
+Both protocols run in the same topology with two IP paths available, 
+each offering 25 Mbps and a latency of 10 ms.
+The experiment consists to transfering
+a 60MB file over a single path and then enabling the second one at $5$ seconds. For
 \mptcp, the new path is detected after we up the client's second interface. For
 \tcpls, managing paths is easier: the application can use the API to add local
 or peer-related addresses at any point of the session. In that case, we add
@@ -356,12 +359,11 @@ can take advantage of the \tcpls API to migrate their traffic from one network
 path to another. 
 Fig.~\ref{fig:conn_migration} shows the result of an Application-level
 connection migration demo using the API (i.e., it is left to the application to
-decide when to migrate, and we expose a simplistic code flow to perform it). In
-this experiment, we use a Mininet network~\cite{handigol2012reproducible} composed of a client and a server, both
-dual-stacks. The IPv4 and IPv6 paths are completely disjoint in this emulated
-network. 
-We configure the
-bandwidth on each path to be 30~Mbps, a round-trip-time of 40ms for the v4 link,
+decide when to migrate, and we expose a simplistic code flow to perform it). 
+
+In this experiment, we rely on the Mininet topology from Sec.~\ref{sec:bwaggr}.
+We set a
+bandwidth of 30~Mbps on each path, a round-trip-time of 40ms for the v4 link,
 and a round-trip-time of 80ms for the v6 link. Our application downloads
 a 60 MB file from a server and migrates twice (i.e., from the v4 to the v6 path
 and once again to the v4 path).
