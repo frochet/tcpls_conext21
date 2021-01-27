@@ -27,8 +27,8 @@ authenticate the information exchanged using Secure Socket Layer
 a performance viewpoint. During the last two decades, the situation completely
 changed. Modern CPUs include specialized instructions that enable fast
 encryption. Furthermore, the SSL standardization improved the protocol security.
-The most recent version (\tls 1.3~\cite{rfc8446}) is considered to be much more
-secure than the previous ones, and Let's Encrypt~\cite{aas2019let} has
+The most recent version (\tls 1.3~\cite{rfc8446}) is considered to be more
+secure than the previous ones, and intiatives such as Let's Encrypt~\cite{aas2019let} has
 simplified the distribution of certificates.
 
 \tls 1.3 brings several essential features compared to the previous versions. It
@@ -44,22 +44,23 @@ encrypted to prevent ossification.
 During the last five years, the IETF has put a lot of effort
 into designing and deploying a new transport protocol targeted at web
 applications: \quic \cite{langley2017quic}. \quic provides a secure and
-reliable delivery like the traditional \tls/\tcp stack, but on top of \udp.
+reliable delivery like the \tls/\tcp stack, but on top of \udp.
 \quic
 version 1.0 is being finalised~\cite{draft-ietf-quic-transport} and there are
-more than a dozen implementations~\cite{quicimplem,marx2020same}. \quic is used
-in production as shown by recent measurement studies~\cite{trevisan2020five}.
+more than a dozen implementations~\cite{quicimplem,marx2020same}. \quic is
+already used in production as shown by recent measurement
+studies~\cite{trevisan2020five}.
 
 A growing number of applications are used on devices such as smartphones that
 are attached to two or more networks. Users expect their applications to be
 resilient to network failures.  With regular \tcp, applications need to
 reestablish their connections when one of their network connection fails.
-Multipath \tcp (\mptcp)~\cite{rfc8684,raiciu2012hard} is a \tcp extension that
-enables a connection to use different paths. One of the main use cases for
+Multipath \tcp (\mptcp)~\cite{rfc8684,raiciu2012hard} is a \tcp extension
+enabling a connection to use different paths. One of the main use cases for
 \mptcp is to provide fast failovers on iPhones~\cite{bonaventure2016multipath}.
 It also provides bandwidth aggregation by simultaneously using two or more
 network paths to support one connection. Multipath extensions have also been
 proposed for \quic~\cite{viernickel2018multipath,de2017multipath}. \quic version
-1.0~\cite{draft-ietf-quic-transport} includes a connection migration capability
+1~\cite{draft-ietf-quic-transport} includes a connection migration capability
 that supports failovers but not bandwidth aggregation.
 
