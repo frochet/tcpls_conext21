@@ -32,12 +32,12 @@
 \section{The \tcpls API}
 \label{appendix:api}
 
-To illustrate \tcpls API's flexibility, we consider a simple
+As an example to illustrate the flexibility of \tcpls' API, we consider a simple
 use case inspired by Happy Eyeballs~\cite{rfc8305}. This technique is
 used by web browsers when interacting with dual-stack servers. They
-try to establish \tcp connections using IPv4 and IPv6 and prefer the
+try to establish parallel \tcp connections using IPv4 and IPv6 and prefer the
 one that offers the lowest latency. This avoids problems when an address
-family is broken on a path but not the other and sometimes results in
+family is broken on a path but not the other one and sometimes results in
 lower latency~\cite{bajpai2019longitudinal}.
 
 \begin{figure}[!t]
@@ -91,16 +91,16 @@ Fig.~\ref{fig:api} shows an example of our current API workflow. The API can
 handle explicit multipath techniques such as Happy Eyeball by chaining
 \texttt{tcpls\_connect()} with an appropriate timeout of 50ms, as shown in the
 Figure. \tcpls lets the application explicitly choose the multipath mesh by
-calling several times \texttt{tcpls\_connect(src, dest,timeout)};. The
+calling several times \texttt{tcpls\_connect(src, dest,timeout)}. The
 application may configure callbacks to connection events that would occur within
 \tcpls, such as a connection establishment, a stream attachment, a multipath
-join, the reception of a \tcp option to tune \tcp, and more. When multiple
+join, the reception of a \tcp option to tune \tcp, and more. When 
 streams are attached to multiple \tcp connections, the application may configure
 various \tcpls behaviours. Among them, we support HOL-blocking avoidance,
 aggregation of bandwidth with multipathing, connection failover, and connection
-migration. Note that, HOL-blocking avoidance is incompatible with the
-aggregation of bandwidth with multipathing (the application can do either one
-but not both at the same time).
+migration. Note that, HOL-blocking avoidance is incompatible with 
+aggregating bandwidth using multipathing (the application cannot enable both
+features at the same time).
 
 \section{Capability Comparison}
 
@@ -111,13 +111,13 @@ capabilities. They mainly differ in their semantic. \tcpls's semantic is to let
 the applications make the decision, and we design its API to fulfill this goal.
 That is, the meaning of \tcpls is to offer advanced, extensible and secure
 transport-layer functionalities on top of \tcp, while exposing a simple but
-powerful API to let the application composes the properties its transport should
+powerful API to let the application decide the properties its transport should
 have.
 
-Note that several of the features suggested by \tcpls are also suggested on \tcp
-or \quic via research works such as a new socket API for explicit \mptcp
-\cite{hesmans2016enhanced}, or eBPF plugins in
-\quic~\cite{de2019pluginizing}.
+Note that several of the features included in \tcpls are also suggested by researchers
+for \tcp or \quic such as a new socket API for explicit \mptcp
+\cite{hesmans2016enhanced}, eBPF plugins in \quic~\cite{de2019pluginizing} or multipath
+extensions to \quic~\cite{viernickel2018multipath,de2017multipath,draft-liu-multipath-quic-02}.
 
 \begin{table*}[!t]
   \small
@@ -148,26 +148,26 @@ or \quic via research works such as a new socket API for explicit \mptcp
 
 \section{Failover Protocol}
 
-Figure~\ref{fig:protocol_example} gives a selected set of messages during the
-establishment of a \tcpls session, a file transfer and a network failure with
-the failover feature enabled by default on both peer. First, during the \tcpls
-handshake, we may observe the \tls encrypted extensions \texttt{Cookies}, \texttt{Sessid},
-\texttt{Multihoming v6} and \texttt{User Timeout} sent with the
+Figure~\ref{fig:protocol_example} provides a closer look at the operation of \tcpls. It
+shows the key \tcpls messages that are exchanged during a \tcpls session using failover
+that transfers a file but suffers from a failure. First, during the \tcpls
+handshake, we observe the \tls encrypted extensions \texttt{Cookies}, \texttt{Sessid},
+\texttt{Multihoming v6} and \texttt{User Timeout} records sent with the
 \texttt{ServerHello} messages. The multihoming v6 extension announces an
-alternative address to the client, and the User Timeout \tcpls extension
-announces to the peer that it should not wait more than the $X$ ms to expect
+alternate address to the client. The User Timeout \tcpls extension
+announces to the peer that it should not wait more than the $X$~ms to expect
 more data to read. In this experiment, the User Timeout is $250ms$, and
 should in practice be an upper bound of the server-to-client path latency.
-After the handshake is finished, the Server proceeds to attach a stream and
-begins to send the file content within TLS APPDATA records. The clients sends
-special \tcpls DATA\_ACK to acknowledge the received records. In this
-experiment, the network suffers a failure after around $16s$ of transfer. The client performs a
-Join \tcpls handshake over the v6 address received during the \tcpls initial
-handshake and play the Failover protocol over the new path. Both peer
+At the end of the handshake, the Server attaches a stream and
+begins to send the file as TLS APPDATA records. The clients sends
+special \tcpls DATA\_ACK records to acknowledge the received records. In this
+experiment, the \tcp connection fails after around $16~s$. The Client creates
+a new \tcp connection towards the Server's IPv6 address. It sends Join \tcpls handshake
+and executes the Failover protocol over the new connection. Both peers
 resynchronize their decrypting sequence number and replay the records that have
-been lost on the first network path's failure. When they sent all lost records,
-a FAILOVER\_END message is sent and the stream is recovered. The Server can
-proceed to send the data and finishes by securly closing the stream.
+been lost during the failure. The send a FAILOVER\_END record after having replayed all
+the unacked records to indicate that the stream is recovered. The Server can then
+send new data and finishes by securely closing the stream.
 
 To be extra clear on any security concern, different records are never encrypted
 with the same sequence number, nor any record is encrypted twice or decrypted
@@ -471,7 +471,7 @@ twice.
   \caption{Example of record messages exchanged covering the attachment of a
     new stream, the reception of DATA\_RECORD containing application payload, the exchange of DATA\_ACK, a Failover
     event in which the stream is recovered and finally a secure closing the
-    connection. Real trace captured with qlog and pruned to only show
+    connection. The trace was captured using \texttt{qlog} and pruned to only show
     interesting messages}
   \label{fig:protocol_example}
 \end{figure*}
@@ -479,16 +479,16 @@ twice.
 \section{Multipath Aggregation}
 \label{appendix:aggr}
 
-Figure~\ref{fig:aggregation_1500bytes_records} shows the same experiment than
-the one provided in our evaluation Section~\ref{sec:bwaggr}. However, we use
-1500 bytes record size for \tcpls in order to demonstrate that the
+Figure~\ref{fig:aggregation_1500bytes_records} shows the same experiment as
+the one provided in Section~\ref{sec:bwaggr}. However, we now configure
+\tcpls with a 1500 bytes record size to demonstrate that the
 irregularities are mainly due to the payload chunk size that the reordering
-algorithm has to manipulate. The larger the records are, the bigger
-the payload chunk size is, and higher irregularities should be observed. We
+algorithm has to manipulate. The larger the records, the bigger
+the payload chunk size, and higher irregularities should be observed. We
 observe here a steady goodput with several large irregularities, which is a
 progress compared to Figure~\ref{fig:multipath_aggregation}. However, large
-peaks remain, which are probably linked to the state of advancement of our
-research prototype: several bugs might remain.
+peaks remain, which are probably linked to the some remaining bugs in our current \tcpls 
+prototype implementation. 
 
 \begin{figure}
   \includegraphics[width=\columnwidth]{figures/aggregate_1500bytes_records_dual.png}
