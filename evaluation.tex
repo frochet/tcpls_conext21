@@ -325,8 +325,7 @@ around $\approx 1$ second to recover from the outage.
     \includegraphics[width=\columnwidth]{figures/tcpls_mptcp.png}
   \end{center}
 \vspace{-0.5cm}
-  \caption{Connection reliability: influence of the path manager and congestion
-    control.}
+  \caption{\mptcp has difficulties to react to successive network outages. \tcpls reacts quickly to such outages.}
   \label{fig:failover}
 \end{figure}
 
@@ -399,8 +398,7 @@ accumulated bandwidth over both paths oduring the migration time window.
   \end{center}
 \vspace{-0.5cm}
   \caption{Application-level connection migration during a 60~MB file download.
-    Showing smooth path handover without goodput loss thanks to a temporary
-    bandwidth aggregation.}
+    \tcpls temporarily aggregates the two network paths during such a migration.}
   \label{fig:conn_migration}
 \end{figure}
 
