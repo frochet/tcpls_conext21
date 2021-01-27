@@ -249,13 +249,6 @@ Note that several of the features suggested by \tcpls are also suggested on \tcp
   
   \node(0,0) (t36 left) {}; & &    \node(0,0) (t36 right) {};\\
   \node(0,0) (\Client 36) {}; & \node(0,0) (\Event 36) {}; & \node(0,0) (\Server 36) {};  \\
-  \node(0,0) (t37 left) {}; & &    \node(0,0) (t37 right) {};\\
-  \node(0,0) (\Client 37) {}; & \node(0,0) (\Event 37) {}; & \node(0,0) (\Server 37) {};  \\
-  
-  \node(0,0) (t38 left) {}; & &    \node(0,0) (t38 right) {};\\
-  \node(0,0) (\Client 38) {}; & \node(0,0) (\Event 38) {}; & \node(0,0) (\Server 38) {};  \\
-  \node(0,0) (t39 left) {}; & &    \node(0,0) (t39 right) {};\\
-  \node(0,0) (\Client 39) {}; & \node(0,0) (\Event 39) {}; & \node(0,0) (\Server 39) {};  \\
 };
 
 % Agents labels
@@ -263,60 +256,58 @@ Note that several of the features suggested by \tcpls are also suggested on \tcp
 	(\Client) node[draw,fill=white] {\Client}
 	(\Server) node[draw,fill=white] {\Server};
 
-% Horizontal time lines
-\node[text width=10mm] at (3.2,11.55) {$72.18ms$};
-\node[text width=10mm] at (-3.4,11.55) {$51.95ms$};
-\node[text width=10mm] at (3.2,10.80) {$72.87ms$};
-\node[text width=10mm] at (-3.4,10.80) {$96.17ms$};
+% at (3.2,11.55) Horizontal time lines
+\node[text width=10mm, below=of \Server, yshift=3.1mm, xshift=8mm]  {$72.18ms$};
+\node[text width=10mm, below=of \Client, yshift=3.1mm, xshift=-8mm]  {$51.95ms$};
+\node[text width=10mm, below=of \Server, yshift=-2.9mm, xshift=8mm] {$72.87ms$};
+\node[text width=10mm, below=of \Client, yshift=-2.9mm, xshift=-8mm]  {$96.17ms$};
 
-\node[text width=10mm] at (3.2,10.2) {$73.06ms$};
-\node[text width=10mm] at (-3.4,10.2) {$96.72ms$};
+\node[text width=10mm, below=of \Server, yshift=-8.9mm, xshift=8mm]  {$73.06ms$};
+\node[text width=10mm, below=of \Client, yshift=-8.9mm, xshift=-8mm]  {$96.72ms$};
 
-\node[text width=10mm] at (3.2,9.7) {$73.18ms$};
-\node[text width=10mm] at (-3.4,9.7) {$96.86ms$};
+\node[text width=10mm, below=of \Server, yshift=-14.9mm, xshift=8mm]  {$73.18ms$};
+\node[text width=10mm, below=of \Client, yshift=-14.9mm, xshift=-8mm]  {$96.86ms$};
 
-\node[text width=10mm] at (3.2,9.1) {$75.85ms$};
-\node[text width=10mm] at (-3.4,9.1) {$96.92ms$};
+\node[text width=10mm, below=of \Server, yshift=-20.9mm, xshift=8mm]  {$75.85ms$};
+\node[text width=10mm, below=of \Client, yshift=-20.9mm, xshift=-8mm] {$96.92ms$};
 
-\node[text width=10mm] at (3.2,8.4) {$117.27ms$};
-\node[text width=10mm] at (-3.4,8.4) {$97.07ms$};
+\node[text width=10mm, below=of \Server, yshift=-26.9mm, xshift=8mm]  {$117.27ms$};
+\node[text width=10mm, below=of \Client, yshift=-26.9mm, xshift=-8mm] {$97.07ms$};
 
-\node[text width=10mm] at (3.2,7.8) {$117.63ms$};
-\node[text width=10mm] at (-3.4,7.8) {$137.91ms$};
+\node[text width=10mm, below=of \Server, yshift=-32.9mm, xshift=8mm]  {$117.63ms$};
+\node[text width=10mm, below=of \Client, yshift=-32.9mm, xshift=-8mm]  {$137.91ms$};
 
-\node[text width=10mm] at (3.2,7.1) {$117.71ms$};
-\node[text width=10mm] at (-3.4,7.1) {$139.12ms$};
+\node[text width=10mm, below=of \Server, yshift=-38.9mm, xshift=8mm]  {$117.71ms$};
+\node[text width=10mm, below=of \Client, yshift=-38.9mm, xshift=-8mm] {$139.12ms$};
 
-\node[text width=10mm] at (3.2,6.5) {$117.96ms$};
-\node[text width=10mm] at (-3.4,6.5) {$178.22ms$};
+\node[text width=10mm, below=of \Server, yshift=-46.9mm, xshift=8mm] {$117.96ms$};
+\node[text width=10mm, below=of \Client, yshift=-46.9mm, xshift=-8mm] {$178.22ms$};
 
-\node[text width=10mm] at (3.2,4.6) {$268.93ms$};
-\node[text width=10mm] at (-3.6,4.6) {$289.05ms$};
+\node[text width=10mm, below=of \Server, yshift=-64.9mm, xshift=8mm]  {$268.93ms$};
+\node[text width=10mm, below=of \Client, yshift=-64.9mm, xshift=-8mm] {$289.05ms$};
 
-\node[text width=10mm] at (3.2,3.3) {$13358.268ms$};
-\node[text width=10mm] at (-3.6,3.3) {$13398.892ms$};
+\node[text width=10mm, below=of \Server, yshift=-76.9mm, xshift=8mm]  {$13358.268ms$};
+\node[text width=10mm, below=of \Client, yshift=-76.9mm, xshift=-12mm] {$13398.892ms$};
 
-\node[text width=10mm] at (3.2,2.7) {$13358.453ms$};
+\node[text width=10mm, below=of \Server, yshift=-82.9mm, xshift=8mm]  {$13358.453ms$};
 
-\node[text width=10mm] at (3.2,2.1) {$13358.516ms$};
-\node[text width=10mm] at (-3.6,2.1) {$13439.685ms$};
+\node[text width=10mm, below=of \Server, yshift=-88.9mm, xshift=8mm]  {$13358.516ms$};
+\node[text width=10mm, below=of \Client, yshift=-88.9mm, xshift=-12mm]  {$13439.685ms$};
 
-\node[text width=10mm] at (3.2,1.5) {$13358.621ms$};
+\node[text width=10mm, below=of \Server, yshift=-95.9mm, xshift=8mm]  {$13358.621ms$};
 
 
-%\node[text width=10mm] at (3.2,-0.8) {$15991.13ms$};
-%\node[text width=10mm] at (-3.6,-0.8) {$15870.75ms$};
 
-\node[text width=10mm] at (3.2,0.9) {$13399.144ms$};
+\node[text width=10mm, below=of \Server, yshift=-101.9mm, xshift=8mm]  {$13399.144ms$};
 
-\node[text width=10mm] at (3.2,0.3) {$13399.238ms$};
+\node[text width=10mm, below=of \Server, yshift=-107.9mm, xshift=8mm] {$13399.238ms$};
 
 %\node[text width=10mm] at (3.2,-1.5) {$15891.35ms$};
 %\node[text width=10mm] at (-3.6,-1.5) {$15911.63ms$};
 
-\node[text width=10mm] at (-3.6,-0.4) {$13439.787ms$};
+\node[text width=10mm, below=of \Client, yshift=-114.9mm, xshift=-12mm] {$13439.787ms$};
 
-\node[text width=10mm] at (-3.6,-1.0) {$13439.829ms$};
+\node[text width=10mm, below=of \Client, yshift=-120.9mm, xshift=-12mm] {$13439.829ms$};
 
 %\node[text width=10mm] at (3.2,-2.6) {$15891.53ms$};
 %\node[text width=10mm] at (-3.6,-2.6) {$15911.92ms$};
@@ -324,30 +315,32 @@ Note that several of the features suggested by \tcpls are also suggested on \tcp
 %\node[text width=10mm] at (3.2,-3.3) {$15932.18ms$};
 %\node[text width=10mm] at (-3.6,-3.3) {$15911.98ms$};
 
-\node[text width=10mm] at (-3.6,-1.6) {$13439.940ms$};
+\node[text width=10mm, below=of \Client, yshift=-127.9mm, xshift=-12mm] {$13439.940ms$};
 
-\node[text width=10mm] at (-3.6,-2.2) {$13439.980ms$};
+\node[text width=10mm, below=of \Client, yshift=-134.9mm, xshift=-12mm] {$13439.980ms$};
 
-\node[text width=10mm] at (-3.6,-3.5) {$13481.659ms$};
+\node[text width=10mm, below=of \Server, yshift=-141.9mm, xshift=8mm] {$13481.659ms$};
 
-\node[text width=10mm] at (3.2,-4.9) {$15070.751ms$};
+\node[text width=10mm, below=of \Server, yshift=-148.9mm, xshift=8mm] {$15070.751ms$};
 
-\node[text width=10mm] at (3.2,-5.5) {$15070.836ms$};
+\node[text width=10mm, below=of \Server, yshift=-155.9mm, xshift=8mm] {$15070.836ms$};
 
-\node[text width=10mm] at (3.2,-6.1) {$15070.862ms$};
+\node[text width=10mm, below=of \Server, yshift=-162.9mm, xshift=8mm] {$15070.862ms$};
 
-\node[text width=10mm] at (-3.6,-4.2) {$13520.552ms$};
+\node[text width=10mm, below=of \Client, yshift=-148.9mm, xshift=-12mm] {$13520.552ms$};
+
+\node[text width=10mm, below=of \Client, yshift=-155.9mm, xshift=-12mm] {$13536.552ms$};
 
 
 
-\node[text width=10mm] at (-3.6,-9.2) {$15777.726ms$};
-\node[text width=10mm] at (3.2,-8.7) {$15091.967ms$};
+\node[text width=10mm, below=of \Client, yshift=-190.9mm, xshift=-12mm] {$15777.726ms$};
+\node[text width=10mm, below=of \Server, yshift=-186.9mm, xshift=8mm] {$15091.967ms$};
 
-\node[text width=10mm] at (-3.6,-11.2) {$21026.605ms$};
-\node[text width=10mm] at (3.2,-11.2) {$19662.913ms$};
+\node[text width=10mm, below=of \Client, yshift=-210.9mm, xshift=-12mm]  {$21026.605ms$};
+\node[text width=10mm, below=of \Server, yshift=-210.9mm, xshift=8mm]  {$19662.913ms$};
 
-\node[text width=10mm] at (-3.6,-11.8) {$21026.669ms$};
-\node[text width=10mm] at (3.2,-11.8) {$20987.919ms$};
+\node[text width=10mm, below=of \Client, yshift=-217.9mm, xshift=-12mm] {$21026.669ms$};
+\node[text width=10mm, below=of \Server, yshift=-217.9mm, xshift=8mm]  {$20987.919ms$};
 
 
 
@@ -404,9 +397,9 @@ Note that several of the features suggested by \tcpls are also suggested on \tcp
   (\Server 25) -- (\Server 26)
   (\Client 25) -- (\Client 26)
   (\Event 26) -- (\Event 29)
-  (\Server 26) -- (\Server 39)
-  (\Client 26) -- (\Client 39)
-  (\Event 34) -- (\Event 37)
+  (\Server 26) -- (\Server 36)
+  (\Client 26) -- (\Client 36)
+  (\Event 31) -- (\Event 34)
   
  
   (\Event 9) -- (\Event 11)
@@ -469,12 +462,12 @@ Note that several of the features suggested by \tcpls are also suggested on \tcp
   (\Client 28.north west) rectangle (\Client 28.south east)
   (\Server 29.north west) rectangle (\Server 29.south east)
   (\Client 29.north west) rectangle (\Client 29.south east)
-  (\Server 33.north west) rectangle (\Server 33.south east)
-  (\Client 34.north west) rectangle (\Client 34.south east)
-  (\Server 37.north west) rectangle (\Server 37.south east)
-  (\Client 37.north west) rectangle (\Client 37.south east)
-  (\Server 38.north west) rectangle (\Server 38.south east)
-  (\Client 38.north west) rectangle (\Client 38.south east)
+  (\Server 31.north west) rectangle (\Server 31.south east)
+  (\Client 32.north west) rectangle (\Client 32.south east)
+  (\Server 35.north west) rectangle (\Server 35.south east)
+  (\Client 35.north west) rectangle (\Client 35.south east)
+  (\Server 36.north west) rectangle (\Server 36.south east)
+  (\Client 36.north west) rectangle (\Client 36.south east)
   ;
   
 \draw [-latex] (\Client 1) -- (\Server 1);
@@ -496,15 +489,15 @@ Note that several of the features suggested by \tcpls are also suggested on \tcp
 \draw [-latex] (\Client 20) -- (\Event 20);
 \draw [-latex] (\Client 21) -- (\Event 21);
 \draw [-latex] (\Client 22) -- (\Event 22);
-\draw [-latex] (\Client 23) -- (\Server 33);
+\draw [-latex] (\Client 23) -- (\Server 31);
 \draw [-latex] (\Server 24) -- (\Event 24);
 \draw [-latex] (\Server 25) -- (\Client 25);
 \draw [-latex] (\Server 26) -- (\Client 26);
-\draw [-latex] (\Server 27) -- (\Client 34);
+\draw [-latex] (\Server 27) -- (\Client 32);
 \draw [-latex] (\Client 28) -- (\Server 28);
 \draw [-latex] (\Client 29) -- (\Server 29);
-\draw [-latex] (\Server 37) -- (\Client 37);
-\draw [-latex] (\Client 38) -- (\Server 38);
+\draw [-latex] (\Server 35) -- (\Client 35);
+\draw [-latex] (\Client 36) -- (\Server 36);
 
 
 
@@ -593,10 +586,10 @@ Note that several of the features suggested by \tcpls are also suggested on \tcp
     node[above,font=\footnotesize,rotate=40] {$FAILOVER\_END$}
     node[font=\footnotesize, below] {}
     
-    (\Event 37) 
+    (\Event 35) 
     node[above,font=\footnotesize] {$STREAM\_CLOSE$}
     node[font=\footnotesize, below] {}
-    (\Event 38) 
+    (\Event 36) 
     node[above,font=\footnotesize] {$STREAM\_ACK$}
     node[font=\footnotesize, below] {};
 \end{tikzpicture}
