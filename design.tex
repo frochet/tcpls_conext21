@@ -98,7 +98,7 @@ Note that, security-wise, each failed decryption is considered a
 forgery attempt. However, we have large limits on the confidentiality and
 integrity with all AEAD ciphers~\cite{luykx2015limits, aeadlimits} before a
 successful forgery may be considered as a non-negligible probability. For
-example, in the case of ChaCha20+Poly1305, an adversary making $2^{60}$ forgery
+example, in the case of ChaCha20 + Poly1305, an adversary making $2^{60}$ forgery
 attempts succeeds with probability $2^{-33}$.
 
 \subsection{Connection Management}\label{sec:multipath}
@@ -111,7 +111,8 @@ existing \tcpls session. This is similar to \mptcp's path
 managers~\cite{raiciu2012hard,hesmans2015smapp,hesmans2016enhanced},
 but with some differences. First, \tcpls does not suffer from the same
 security limitations as \mptcp. Second, \tcpls supports several multipathing
-modes, including connection failover and bandwidth aggregation.
+modes, including connection failover, bandwidth aggregation and non-aggregated
+multiple paths.
 
 \begin{figure}[!t]
   \centering
@@ -148,14 +149,14 @@ options during the \tcp handshake~\cite{rfc6824, rfc8684}. These keys are then
 used later to authenticate the attachment of subflows. An
 attacker that has observed the initial handshake can attach any subflow to an
 existing \mptcp connection~\cite{rfc6181}. \tcpls leverages its secure channel
-to solves this \texttt{``connection join''} problem in a much more secure
+to solves this \texttt{``connection join''} problem in a more secure
 manner. Consider a client connecting to a dual-stack server
 (Fig.~\ref{fig:join-example} depicts the \tls messages exchanged in such a
-scenario). The client sends a \textsc{ClientHello} containing the \tcpls
+scenario). The client sends a \textsc{ClientHello} containing the \tls
 extension to negotiate \tcpls. The server replies with a \textsc{ServerHello}
 with three types of encrypted extensions. First, the server announces its IPv4
 and IPv6 addresses. Second, it associates one identifier to the \tcpls session
-(SESSID($\alpha$) in Fig.~\ref{fig:join-example}). This identifier uniquely
+(SESSID($\alpha$) in Fig.~\ref{fig:join-example}). It uniquely
 identifies the \tcpls session on the server. Third, the server provides a list
 of \tcpls session cookies (COOKIE($\beta_1,\beta_2$) on
 Fig.~\ref{fig:join-example}). Each of these session cookies enables the client
@@ -189,7 +190,7 @@ the unacknowledged data records that were sent over a failed \tcp connection are
 \tcpls' Failover mode is optionnal. Both peers need to activate it or
 negotiate the feature throught the Secure Control Channel.
 We discuss in Sec.~\ref{sec:perf} measurements quantifying the
-performance impact of adding \tcpls record level acknowledgments. We also give a
+performance impact of adding \tcpls record-level acknowledgments. We also give a
 scenario involving a file transfer and the failover protocol in
 Appendix~\ref{app:failover}
 
@@ -211,8 +212,7 @@ all its streams to the new path, the migrating host sends a
 At this point, the migrating host cannot send new stream data anymore over the
 old connection. Once the remote host has received a \textsc{Stream\_Close}
 message over the old \tcp connection, it knows that the connection is not
-available anymore, and needs to find a (potentially fresh) connection to send
-its data (i.e., the ones that just opened over the new path). It first sends a
+available anymore, and can switch to the other connections. It first sends a
 \textsc{Stream\_Close\_Ack} message for each received \textsc{Stream\_Close}.
 The migrating host can close the old connection upon reception of the last
 \textsc{Stream\_Close\_Ack}, indicating that no more data would be received over
@@ -250,10 +250,10 @@ underlying \tcp connections in a non-aggrega-ted bandwidth mode. This is a choic
   %\label{fig:ex_record}
 %\end{figure}
 
-\tcp~\cite{rfc793} limits the size of the entire \tcp header (including options) to 64 bytes. Unfortunately, the \tcp designers did not foresee that so many \tcp extensions would be standardized. Today, the \tcp header size becomes a constraint.
+\tcp~\cite{rfc793} limits the size of the entire \tcp header (including options) to 64 bytes. Unfortunately, the \tcp designers did not foresee that many \tcp extensions would be standardized. Today, the \tcp header size becomes a constraint.
 %For example, it severely limits the number of gaps that
 %can be covered by selective acknowledgments.
-This gets worse with extensions such as \mptcp~\cite{rfc6824} that consume more space in the \tcp header. The IETF has discussed this problem for several years, but the latest attempt to solve it~\cite{draft-ietf-tcpm-tcp-edo-10} has not yet been implemented by major \tcp stacks.
+The restriction gets more strict with extensions such as \mptcp~\cite{rfc6824} that consume more space in the \tcp header. The IETF has discussed this problem for several years, but the latest attempt to solve it~\cite{draft-ietf-tcpm-tcp-edo-10} has not yet been implemented by major \tcp stacks.
 
 \tcpls provides more space for \tcp options. First, with \tcpls, \tcp
 options can be negotiated during the \tls handshake. Since the \tls messages are
@@ -264,12 +264,26 @@ but could also prevent \tcpls from correctly working through some types of
 transparent \tcp proxies.
 
 Second, \tcpls can also carry \tcp options inside \tls records. \tcpls includes
-one record type to carry \tcp options. This new type of records can be used to carry TCP options that need to be exchanged reliably such as the \tcp User Timeout option \cite{rfc5482} or \mptcp's \texttt{ADD\_ADDR} and \texttt{REMOVE\_ADDR} option or experimental \tcp options \cite{rfc6994}.
+one record type to carry \tcp options. This new type of records can be used to
+carry TCP options that need to be exchanged reliably such as the \tcp User
+Timeout option \cite{rfc5482}, \mptcp's \texttt{ADD\_ADDR} and
+\texttt{REMOVE\_ADDR} option and experimental \tcp options \cite{rfc6994}.
 
 \subsection{Secure Connection Closing}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \tcpls's semantic offers a secure stream abstraction to the application.
 Streams can be attached to and closed from what we call a \texttt{transportid}
 (the application does not have any knowledge of the \tcp interface). When a
-stream gets attached for the first time to a \tcp connection, this connection
-becomes active. The only way to gracefully close a \tcp connection is by securely closing all streams attached to it, then \tcpls gracefully closes the \tcp connection. That is, if \tcpls receives a \rst or a \fin over an active \tcp connection, it tries to re-establish a \tcp connection. If failover is enabled, \tcpls would try another network path first. Otherwise, a connection over the same IP source and destination is reestablished and the streams are moved to this new \tcp connection. If failover is not enabled, \tcpls would opportunistically try to reestablish the connection. However, if failover is not enabled and records were in flight while receiving an illegitimate \rst or \fin (e.g., sent by a middlebox), \tcpls may suffer from a decryption error, and report a critical error to the application.
+stream is attached for the first time to a \tcp connection, this connection
+becomes active. The only way to gracefully closes a \tcp connection is by
+securely closing all streams attached to it, then \tcpls gracefully closes the
+\tcp connection. That is, if \tcpls receives a \rst or a \fin over an active
+\tcp connection, it tries to re-establish a \tcp connection. If failover is
+enabled, \tcpls tries another network path first. Otherwise, a connection over
+the same IP source and destination is reestablished and the streams are moved to
+this new \tcp connection. If failover is not enabled, \tcpls would
+opportunistically try to reestablish the connection. However, if failover is not
+enabled and records were in flight while receiving an illegitimate \rst or \fin
+(e.g., sent by a middlebox), \tcpls may suffer from a decryption error, and
+report a critical error to the application leading to the termination of the
+session.

@@ -7,9 +7,14 @@ In this section, we describe our \tcpls implementation. In a nutshell, it provid
     handle multihoming, multipathing, and various transport layer mechanisms.
 ($iii$) An improved \tcp extensibility mechanism that sends \tcp options
    through the secure \tcpls channel (as described in
-   Sec.~\ref{sec:background-design}). We currently support Linux's \tcp User Timeout option. Supporting another \tcp option is only a matter of extending the sender's API and processing the option on the receiver side. \tcpls's internal machinery can already send any \tcp option during (server-side) or after (client-side) the \tcp handshake.
+   Sec.~\ref{sec:background-design}). We demonstrate this possibility by
+   implementeding the Linux's \tcp User Timeout option that will be useful for
+   our Failover protocol. Supporting another \tcp option is only a matter of
+   extending the sender's API and processing the option on the receiver side.
+   \tcpls's internal machinery allows to the server (resp. client) to send any
+   TCP option during (resp. after) the \tls handshake.
 ($iv$) Different multipath modes for the \tcpls streams: bandwidth aggregation
-or independent paths.
+or independent paths with non-aggregation.
 ($v$) The ability for the server to send eBPF bytecode over the secure channel to upgrade the client's \tcp congestion control scheme or tune other \tcp mechanisms~\cite{brakmo2017tcp,tran2019beyond}. Variable-length options (e.g., eBPF bytecode) can be sent within streams to take advantage of bandwidth aggregation or Failover if those features are enabled.
 ($vi$) Different connection migration modes: Failover and Application-level
 Connection Migration.
@@ -52,7 +57,7 @@ which builds upon good practices proposed by the outlined research.
 
 \subsection{Multipathing}
 
-\subsubsection{Data Aggregation}
+\subsubsection{Bandwidth Aggregation}
 The application can create and join several \tcp connections to
 the same \tcpls session. As soon as one of the peers attaches streams to
 different \tcp connections of the session, and enables the aggregation mode,
@@ -72,7 +77,11 @@ support other schedulers in the future and allow the application to select its p
 
 \subsubsection{Failover}\label{failover}
 Failover is a binary mode (on/off) that is fully internal to \tcpls.
-Once activated, \tcpls exchanges acknowledgments for records received on each stream. These acknowldgments are stream-based and configurable. The default acknowledgment policy is to acknowledge every 16 received records, or when a stream has processed more than $249,600$ bytes since the last acknowledgment. When a \tcp connection sustaining \tcpls streams suffers from a network outage (e.g., a \rst is received or the connection becomes idle for too long), we move the stream to a new \tcp connection, retransmit the unacked records, and resume the transfer. Our prototype handles failover over IPv4 and IPv6 \tcp connections, and by default, chooses different source and destination addresses than the failed \tcp connection if some are available.
+Once activated, \tcpls exchanges acknowledgments for records received on each
+stream. These acknowldgments are stream-based and configurable. The default
+acknowledgment policy is to acknowledge every 16 received records, or when a
+stream has processed more than $249,600$ bytes since the last acknowledgment.
+When a \tcp connection conveying \tcpls streams suffers from a network outage (e.g., a \rst is received or the connection becomes idle for too long), we move the stream to a new \tcp connection, retransmit the unacked records, and resume the transfer. Our prototype handles failover over IPv4 and IPv6 \tcp connections, and by default, chooses different source and destination addresses than the failed \tcp connection if some are available.
 %Failover might be negotiated by both party, or
 %enabled by default by both party.
 Depending on the application type, Failover might be enabled or not by default. It is also possible to activate Failover during a \tcpls session by sending a message on the secure channel. We evaluate the performance of Failover in Sec.~\ref{sec:eval_failover}

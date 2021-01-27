@@ -61,7 +61,8 @@ that we measured with \tcpls: 12.4~Gbps. This result was obtained with jumbo
 frames (i.e., 9000 bytes MTU) and using \tcp Segmentation Offload (TSO) on the
 NICs. TSO is a standard feature that is enabled by all high-speed NICS. This
 result is impressive given that we measure that AES128-GCM-SHA256 peaks at
-13.1~Gbps when doing in-memory encryption/decryption on our testbed's servers.
+13.1~Gbps when doing in-memory encryption/decryption on our testbed's servers,
+which explains the gap between TCPLS and raw TCP.
 The next bar (labeled ``\tcpls tso on'') shows that with TSO and standard frame
 size (1,500 bytes MTU), the throughput still reaches 10.84 Gbps. These
 results should be compared with the 22~Gbps \tcp reaches in the same
@@ -122,7 +123,8 @@ of the schedulers adopted by \mptcp.
     \includegraphics[width=\columnwidth]{figures/perf_analysis.png}
   \end{center}
 \vspace{-0.5cm}
-  \caption{\tcpls raw performance and comparison with state of the art.  The \tcpls prototype is faster than \tls over \tcp and different \quic implementations.}
+  \caption{\tcpls raw performance and comparison with state of the art.  The
+    \tcpls prototype is faster than \tls over \tcp and several \quic implementations.}
   \label{fig:perf}
 \end{figure}
 
@@ -144,14 +146,14 @@ hardcoded to 16,384 bytes in \texttt{picotls}'s perf client. This implementation
 choice results in fragmentation on the receiver and prevents it from using the
 zero-copy code path provided by the library. \tcpls uses a larger read buffer
 and benefits from zero-copy. At first, one may consider this as an unfair
-comparison. However, the devil is in the details. In our \tcpls implementation,
+comparison. \tcpls's design is an attempt to solve a common mistake. Indeed, in our \tcpls implementation,
 the application developers cannot touch \texttt{read()}'s interface. This
 implies that an application developer cannot misuse the relationship between
 \tls and \tcp by creating fragmented records and doing unnecessary copies to
 handle those fragments. \tcpls's design and implementation try to prevent
 fragmentation by, first, having a sufficiently large read buffer size. Second,
 \tcpls deciphers a record when it has received the entire content.
-\tls libraries provides \tls/\tcp record fragmentation as a usability
+\tls libraries provide \tls/\tcp record fragmentation as a usability
 feature that spares the application developers from taking into account all \tls
 details, at the cost of lower performance. With \tcpls, application developers
 can ignore \tls details without misusing the interface, which is why
@@ -179,7 +181,7 @@ The results in Fig.~\ref{fig:perf} show that \tcpls compares favorably
 with the tested \quic implementations. The fastest \quic implementation is
 \quicly. Thanks to GSO, it reaches 4.4~Gbps in our testbed with a 1,500 bytes
 MTU. This result is directly comparable to \tcpls with TSO enabled, which still
-performs more than twice faster at 100\% CPU peak with similar configurations
+performs more than twice faster at CPU limitation with similar configurations
 for the receiving buffer size. Surprisingly, \quicly's performance decreases with
 jumbo frames but is still faster than when GSO is disabled.
 \msquic could only reach 1.96~Gbps and \mvfst was slower despite GSO.
@@ -372,7 +374,7 @@ During the last years, the Linux kernel developers have relied on eBPF
 to make the Linux TCP/IP stack~\cite{brakmo2017tcp,tran2020beyond} easier
 to extend. Since Linux kernel version 5.6, an application can inject
 a different congestion control scheme entirely implemented using eBPF. A similar
-approach was proposed in Pluginizing \quic~\cite{de2019pluginizing}. We
+approach was proposed for \quic in Pluginizing \quic~\cite{de2019pluginizing}. We
 leverage these new eBPF capabilities to demonstrate the feasibility of injecting
 and updating a congestion control scheme during a \tcpls session.
 
