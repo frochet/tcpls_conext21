@@ -76,6 +76,13 @@ environment using \texttt{iperf} but without any encryption.
 %\tcpls is also more than twice faster than the strongest evaluated QUIC
 %implementation (quicly) over CPU limited experimentations. We evaluate \tcpls
 
+We also compared \tcpls's native bandwidth aggregation using two streams with a single stream
+produced by our \tcpls client on the top of the \mptcp kernel creating two
+\mptcp subflows. Our \tcpls scheduler is a simple round-robin. The \mptcp
+scheduler is the lowest-RTT scheduler enabled by default. \mptcp needs less
+re-ordoring, thus achieves better performance. In the future, \tcpls could also
+take advantage of smarter schedulers.
+
 We then evaluated the impact of adding the \tcpls-level acknowledgements
 described in Sec.~\ref{failover} to support failover.
 % Thanks to these acknowledgements, \tcpls can support failover.

@@ -137,8 +137,7 @@ independent cryptographic context derived from the \tcpls security context. The
 \tcpls streams can carry application data or control information.
 
 
-To attach a new stream, a host simply sends the \textsc{Stream\_Attach} message
-as a special \tls record over the secure channel. Since each stream is an
+Streams are attached over the Secure Control Channel. Since each stream is an
 independent cryptographic context, the recipient can immediately start to
 decrypt and extract data from the new stream. No round-trip is wasted to attach
 a new stream.
@@ -154,13 +153,13 @@ is enabled, \tcpls considers its own sequence numbers and acknowledgements that 
 A \tcp connection ends with the exchange of \fin or \rst packets. However, some
 middleboxes force the termination of \tcp connections by sending \rst
 packets~\cite{rfc3360,weaver2009detecting}. \tcpls can preserve established
-connections by automatically restarting the underlying \tcp connection upon
+session by automatically restarting the underlying \tcp connection upon
 reception of a spurious reset. \tcpls defines the connection termination at the
-stream level: a \tcpls session is closed once the last stream attached to a \tcp
-connection is securely closed.
+stream level: a \tcp connection is closed once the last stream attached to a
+\tcp connection is securely closed.
 
-That is, \tcpls' Secure Control Channel provides a flexible abstraction to the
-upper layer that supports various new features such as Streams, connection
+In summary, \tcpls provides a flexible abstraction to the
+upper layer that supports various new features such as streams, connection
 reliability, different secure multipath modes, secure connection closing,
 encrypted \tcp options, and leverages \tcp's performance and \tls's state of
 deployment.
