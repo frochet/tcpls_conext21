@@ -48,6 +48,7 @@ The next bar (labeled ``\tcpls tso on'') shows that with TSO and a standard fram
 results should be compared with the 22~Gbps \tcp reaches in the same
 environment using \texttt{iperf} but without any encryption.
 
+
 %the shows several interesting results. First, while offering similar (and more)
 %capabilities than what QUIC is providing today,
 %\tcpls is also more than twice faster than the strongest evaluated QUIC
@@ -61,7 +62,8 @@ described in Sec.~\ref{failover} to support failover.
 From a performance viewpoint, they increase the number of control records and
 the number of system calls. Our prototype currently sends a \tcpls-ack for every
 16 received records. Our measurements indicate that with this functionnality,
-\tcpls reaches 9.65 Gbps with a path MTU of 1,500 bytes.
+\tcpls reaches 9.65 Gbps with a $1500$ bytes MTU.
+
 
 \begin{figure}[!t]
   \begin{center}
@@ -104,7 +106,7 @@ with the tested \quic implementations. The fastest \quic implementation is
 MTU. This result is directly comparable to \tcpls with TSO enabled, which still
 performs more than twice faster at 100\% CPU peak with similar configurations
 for the receiving buffer size. Suprisingly, \quicly's performance decreases with
-jumbo frames but is still faster than when GSO is disabled. In our testbed,
+jumbo frames but is still faster than when GSO is disabled.
 \msquic could only reach 1.96~Gbps and \mvfst was slower despite GSO.
 
 
@@ -206,10 +208,10 @@ outage on their main path and fallback to their secondary path. Both the client 
 
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=0.8\columnwidth]{figures/breakage_analysis.png}
+    \includegraphics[width=.8\columnwidth]{figures/breakage_analysis.png}
   \end{center}
 \vspace{-0.5cm}
-  \caption{Recovery speed analysis.}
+  \caption{Recovery delay analysis.}
   \label{fig:recovery}
 \end{figure}
 
@@ -282,7 +284,7 @@ accumulated bandwidth over both paths oduring the migration time window.
 
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=0.8\columnwidth]{figures/migration.png}
+    \includegraphics[width=.8\columnwidth]{figures/migration.png}
   \end{center}
 \vspace{-0.5cm}
   \caption{Application-level connection migration during a 60MB file download.
@@ -324,7 +326,7 @@ varying from 10ms to 100ms and obtained similar results.
 
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=\columnwidth]{pretty_plotify/plots/vegas_cubic.png}
+    \includegraphics[width=.8\columnwidth]{pretty_plotify/plots/vegas_cubic.png}
   \end{center}
 \vspace{-0.5cm}
   \caption{\tcpls hosts can exchange congestion control schemes compiled into eBPF bytecode and activate them during a \tcpls session.}
