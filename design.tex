@@ -72,15 +72,8 @@ unpredictable for an adversary observing the handshake. \tcpls derives it from
 the \tls handshake session secret in a similar fashion as the \tls
 keys~\cite{rfc8446}. The nonce size must range from $96$ bits to $128$ bits
 depending on the underlying cipher used. In all cases, for a nonce of size $N$
-bits, \tls computes the cryptographic nonce by
-concatenating the $N-64$ leftmost bits with the 64 lower bits xored with the
-record's implicit sequence number encoded in 64 bits. The lower 64 bits xoring
-provides more unpredictability to the nonce when the same plaintext is encrypted
-multiple times with the same key~\cite{bellare2016multi,hoang2018multi}. This
-design implies that we give to the underlying cipher the 32 upper bits
-untouched. The resulting value is then incremented at most 1024 times starting
-from the leftmost bits to encrypt a \tls record of maximum size (16384 bytes,
-i.e, 1024 times 128 bits, with 128 bits the size of the minimum AEAD block
+bits, \tls computes the cryptographic nonce by concatenating the $N-64$ leftmost bits with the 64 lower bits xored with the record's implicit sequence number encoded in 64 bits. The lower 64 bits xoring provides more unpredictability to the nonce when the same plaintext is encrypted multiple times with the same key~\cite{bellare2016multi,hoang2018multi}. This design implies that we give to the underlying cipher the 32 upper bits untouched. The resulting value is then incremented at most 1,024 times starting from the leftmost bits to encrypt a \tls record of maximum size (16,384 bytes,
+i.e, 1,024 $\times$ 128 bits, with 128 bits the size of the minimum AEAD block
 size). We thus observe that 7 bits among those 32 bits are untouchable, leading
 to at least 25 bits that are available to encode a unique stream number. By
 encoding such a unique number in this part of the cryptographic nonce, we enable
@@ -182,36 +175,12 @@ additional subflows, \mptcp hosts exchange short keys in plaintext inside \tcp
 options during the \tcp handshake~\cite{rfc6824, rfc8684}. These keys are then
 used later to authenticate the attachment of subflows. An
 attacker that has observed the initial handshake can attach any subflow to an
-existing \mptcp connection~\cite{rfc6181}. \tcpls leverages its secure channel to solves this
-\texttt{``connection join''} problem in a much more secure manner. Consider a
-client connecting to a dual-stack server. Fig.~\ref{fig:join-example} depicts
-the \tls messages exchanged. The client sends a \textsc{ClientHello} containing
-the \tcpls extension to negotiate \tcpls. The server replies with a
-\textsc{ServerHello} with three types of encrypted extensions.
-First, the server announces its IPv4 and IPv6 addresses. Second, it
-associates one identifier to the \tcpls session.
-This identifier uniquely identifies the \tcpls session on the server.
-Third, the server provides a list
-of \tcpls session cookies.
-Each of these session cookies enables the client to
-attach one additional \tcp connection to the \tcpls session. By sending $n$
-cookies, the server indicates that it currently accepts the attachment of only
-$n$ \tcp connections to this session. This prevents resources exhaustion attacks
-that are difficult to counter with \mptcp. The server can
-send additional cookies later and update its list of addresses. \tcpls is
-symmetrical and the client can also announce its addresses and send cookies.
+existing \mptcp connection~\cite{rfc6181}. \tcpls leverages its secure channel to solves this \texttt{``connection join''} problem in a much more secure manner. Consider a client connecting to a dual-stack server (Fig.~\ref{fig:join-example} depicts the \tls messages exchanged in such a scenario). The client sends a \textsc{ClientHello} containing the \tcpls extension to negotiate \tcpls. The server replies with a \textsc{ServerHello} with three types of encrypted extensions. First, the server announces its IPv4 and IPv6 addresses. Second, it associates one identifier to the \tcpls session (SESSID($\alpha$) in Fig.~\ref{fig:join-example}). This identifier uniquely identifies the \tcpls session on the server. Third, the server provides a list of \tcpls session cookies (COOKIE($\beta_1,\beta_2$) on Fig.~\ref{fig:join-example}). Each of these session cookies enables the client to attach one additional \tcp connection to the \tcpls session. By sending $n$ cookies, the server indicates that it currently accepts the attachment of only $n$ \tcp connections to this session. This prevents resources exhaustion attacks that are difficult to counter with \mptcp. The server can send additional cookies later and update its list of addresses. \tcpls is symmetrical and the client can also announce its addresses and send cookies.
 
 To attach a new connection, e.g., using the server's IPv6 address, the client
 sends a \textsc{ClientHello} message containing the session identifier
-($SESSID$) and one of the server's cookies ($COOKIE$). The server checks the
-validity of the cookie and then uses the session identifier to attach the new
-\tcp connection to the right \tcpls session. The session identifier and cookie
-play that same role as \mptcp's token. From a security viewpoint, \tcpls'
-session
-cookie is longer than \mptcp's token. Furthermore it is sent encrypted in the
-initial \textsc{ServerHello} message, and can only be used once (i.e., when the
-server receives a valid cookie, it accepts the connection, attaches it to the
-right \tcpls session, and discards the cookie).
+(SESSID($\alpha$) on Fig.~\ref{fig:join-example}) and one of the server's cookies (COOKIE($\beta_1$) on Fig.~\ref{fig:join-example}). The server checks the validity of the cookie and then uses the session identifier to attach the new \tcp connection to the right \tcpls session. The session identifier and cookie play that same role as \mptcp's token. From a security viewpoint, \tcpls'
+session cookie is longer than \mptcp's token. Furthermore it is sent encrypted in the initial \textsc{ServerHello} message, and can only be used once (i.e., when the server receives a valid cookie, it accepts the connection, attaches it to the right \tcpls session, and discards the cookie).
 
 %Thanks to the cookies, the server can limit the number of \tcp connections that
 %a client can attach to a \tcpls connection. Apart from preventing on-path
@@ -281,7 +250,7 @@ connections, which brings us to explain how multipath is designed
 Like \mptcp \cite{raiciu2012hard,rfc6824} or Multipath QUIC \cite{de2017multipath,draft-liu-multipath-quic-02}, \tcpls supports an aggregation mode that maps data over two or more \tcp connections. On multihomed hosts, this can increase the total throughput of a \tcpls session by spreading the data over different network interfaces. In this case, one or more data streams are mapped to two or more underlying \tcp connections and \tcpls schedules different records over different connections.
 
 In addition, \tcpls allows the application to attach its streams to the
-underlying \tcp connections in a non-aggregated bandwidth mode. This is a choice left to the application using the API. It has several advantages and drawbacks compared to the aggregation mode. For example, the aggregation mode is simple to use and can potentially saturate the available network paths but can lead to Head-Of-Line (HOL) blocking, since records sent over different \tcp connections need to be eventually re-ordered. The aggregation mode is also more CPU costly, since a zero-copy codepath is technically possible only when the records arrive in order. In the non-aggregated multipath mode, the application needs to take care to fully send an application-level object over the same stream, since the ordering is only guaranteed per-stream in this mode. However, our \tcpls implementation guarantees that this mode will benefit from zero-copy of the decrypted application data, which makes this mode potentially quite interesting for application protocols such as HTTP that need to fetch multiple application objects at the same time.
+underlying \tcp connections in a non-aggrega-ted bandwidth mode. This is a choice left to the application using the API. It has several advantages and drawbacks compared to the aggregation mode. For example, the aggregation mode is simple to use and can potentially saturate the available network paths but can lead to Head-Of-Line (HOL) blocking, since records sent over different \tcp connections need to be eventually re-ordered. The aggregation mode is also more CPU costly, since a zero-copy codepath is technically possible only when the records arrive in order. In the non-aggregated multipath mode, the application needs to take care to fully send an application-level object over the same stream, since the ordering is only guaranteed per-stream in this mode. However, our \tcpls implementation guarantees that this mode will benefit from zero-copy of the decrypted application data, which makes this mode potentially quite interesting for application protocols such as HTTP that need to fetch multiple application objects at the same time.
 
 \subsection{Improving \tcp's Extensibility}
 
@@ -303,8 +272,7 @@ underlying \tcp connections in a non-aggregated bandwidth mode. This is a choice
   %\label{fig:ex_record}
 %\end{figure}
 
-\tcp~\cite{rfc793} limits the size of the entire \tcp header (including options) to 64 bytes. Unfortunately, the \tcp designers did not foresee that so many \tcp extensions would be standardized. Today, the size of the \tcp header
-becomes a constraint.
+\tcp~\cite{rfc793} limits the size of the entire \tcp header (including options) to 64 bytes. Unfortunately, the \tcp designers did not foresee that so many \tcp extensions would be standardized. Today, the \tcp header size becomes a constraint.
 %For example, it severely limits the number of gaps that
 %can be covered by selective acknowledgments.
 This gets worse with extensions such as \mptcp~\cite{rfc6824} that consume more space in the \tcp header. The IETF has discussed this problem for several years, but the latest attempt to solve it~\cite{draft-ietf-tcpm-tcp-edo-10} has not yet been implemented by major \tcp stacks.
@@ -336,20 +304,7 @@ one record type to carry \tcp options. This new type of records can be used to c
 Streams can be attached to and closed from what we call a \texttt{transportid}
 (the application does not have any knowledge of the \tcp interface). When a
 stream gets attached for the first time to a \tcp connection, this connection
-becomes active. The only way to gracefully
-close a \tcp connection is by securely closing all
-streams attached to it, then \tcpls gracefully close the \tcp
-connection. That is, if \tcpls receives a \rst or a \fin over an active \tcp
-connection, it tries to re-establish
-a \tcp connection. If failover is enabled, \tcpls would try another
-network path first. Otherwise, a connection over the same
-IP source and destination is
-reestablished and the streams are moved to this new \tcp
-connection. If failover is not enabled, \tcpls would opportunistically try to
-reestablish the connection. However, if failover is not enabled and
-records were in flight while receiving an illegitimate \rst or \fin
-(e.g., sent by a middlebox), \tcpls may suffer from a decryption error, and report a critical
-error to the application.
+becomes active. The only way to gracefully close a \tcp connection is by securely closing all streams attached to it, then \tcpls gracefully closes the \tcp connection. That is, if \tcpls receives a \rst or a \fin over an active \tcp connection, it tries to re-establish a \tcp connection. If failover is enabled, \tcpls would try another network path first. Otherwise, a connection over the same IP source and destination is reestablished and the streams are moved to this new \tcp connection. If failover is not enabled, \tcpls would opportunistically try to reestablish the connection. However, if failover is not enabled and records were in flight while receiving an illegitimate \rst or \fin (e.g., sent by a middlebox), \tcpls may suffer from a decryption error, and report a critical error to the application.
 
 
 
