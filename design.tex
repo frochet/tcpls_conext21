@@ -110,8 +110,8 @@ The CM is fully configurable and exposed to applications through the \tcpls API.
 existing \tcpls session. This is similar to \mptcp's path
 managers~\cite{raiciu2012hard,hesmans2015smapp,hesmans2016enhanced},
 but with some differences. First, \tcpls does not suffer from the same
-security limitations as \mptcp. Second, \tcpls supports several modes
-of multipathing including connection failover and bandwidth aggregation.
+security limitations as \mptcp. Second, \tcpls supports several multipathing
+modes, including connection failover and bandwidth aggregation.
 
 \begin{figure}[!t]
   \centering
@@ -142,32 +142,59 @@ of multipathing including connection failover and bandwidth aggregation.
 \end{figure}
 
 \paragraph*{1) Better Security Than \mptcp} A \mptcp connection gathers several
-underlying connections that are called subflows. To ``secure'' the attachment of
+underlying connections called subflows. To ``secure'' the attachment of
 additional subflows, \mptcp hosts exchange short keys in plaintext inside \tcp
 options during the \tcp handshake~\cite{rfc6824, rfc8684}. These keys are then
 used later to authenticate the attachment of subflows. An
 attacker that has observed the initial handshake can attach any subflow to an
-existing \mptcp connection~\cite{rfc6181}. \tcpls leverages its secure channel to solves this \texttt{``connection join''} problem in a much more secure manner. Consider a client connecting to a dual-stack server (Fig.~\ref{fig:join-example} depicts the \tls messages exchanged in such a scenario). The client sends a \textsc{ClientHello} containing the \tcpls extension to negotiate \tcpls. The server replies with a \textsc{ServerHello} with three types of encrypted extensions. First, the server announces its IPv4 and IPv6 addresses. Second, it associates one identifier to the \tcpls session (SESSID($\alpha$) in Fig.~\ref{fig:join-example}). This identifier uniquely identifies the \tcpls session on the server. Third, the server provides a list of \tcpls session cookies (COOKIE($\beta_1,\beta_2$) on Fig.~\ref{fig:join-example}). Each of these session cookies enables the client to attach one additional \tcp connection to the \tcpls session. By sending $n$ cookies, the server indicates that it currently accepts the attachment of only $n$ \tcp connections to this session. This prevents resources exhaustion attacks that are difficult to counter with \mptcp. The server can send additional cookies later and update its list of addresses. \tcpls is symmetrical and the client can also announce its addresses and send cookies.
+existing \mptcp connection~\cite{rfc6181}. \tcpls leverages its secure channel
+to solves this \texttt{``connection join''} problem in a much more secure
+manner. Consider a client connecting to a dual-stack server
+(Fig.~\ref{fig:join-example} depicts the \tls messages exchanged in such a
+scenario). The client sends a \textsc{ClientHello} containing the \tcpls
+extension to negotiate \tcpls. The server replies with a \textsc{ServerHello}
+with three types of encrypted extensions. First, the server announces its IPv4
+and IPv6 addresses. Second, it associates one identifier to the \tcpls session
+(SESSID($\alpha$) in Fig.~\ref{fig:join-example}). This identifier uniquely
+identifies the \tcpls session on the server. Third, the server provides a list
+of \tcpls session cookies (COOKIE($\beta_1,\beta_2$) on
+Fig.~\ref{fig:join-example}). Each of these session cookies enables the client
+to attach one additional \tcp connection to the \tcpls session. By sending $n$
+cookies, the server indicates that it currently accepts the attachment of only
+$n$ \tcp connections to this session. This prevents resource exhaustion attacks
+that are difficult to counter with \mptcp. The server can send additional
+cookies later and update its list of addresses.
 
 To attach a new connection, e.g., using the server's IPv6 address, the client
 sends a \textsc{ClientHello} message containing the session identifier
-(SESSID($\alpha$) on Fig.~\ref{fig:join-example}) and one of the server's cookies (COOKIE($\beta_1$) on Fig.~\ref{fig:join-example}). The server checks the validity of the cookie and then uses the session identifier to attach the new \tcp connection to the right \tcpls session. The session identifier and cookie play that same role as \mptcp's token. From a security viewpoint, \tcpls'
-session cookie is longer than \mptcp's token. Furthermore it is sent encrypted in the initial \textsc{ServerHello} message, and can only be used once (i.e., when the server receives a valid cookie, it accepts the connection, attaches it to the right \tcpls session, and discards the cookie).
+(SESSID($\alpha$) on Fig.~\ref{fig:join-example}) and one of the server's
+cookies (COOKIE($\beta_1$) on Fig.~\ref{fig:join-example}). The server checks
+the validity of the cookie and then uses the session identifier to attach the
+new \tcp connection to the right \tcpls session. The session identifier and
+cookie play that same role as \mptcp's token. From a security viewpoint, \tcpls'
+session cookie is longer than \mptcp's token. Furthermore, it is sent encrypted
+in the initial \textsc{ServerHello} message, and can only be used once (i.e.,
+when the server receives a valid cookie, it accepts the connection, attaches it
+to the right \tcpls session, and discards the cookie).
 
-upon network outage, \tcpls can recover the session over another \tcp
+\paragraph*{2) A More Flexible Connection Migration}
+
+Upon network outage, \tcpls can recover the session over another \tcp
 connection. When the failover mode is enabled, \tcpls sends stream-level record
-acknowledgements announcing to the peer the records that have been received
+acknowledgments announcing to the peer the records that have been received
 over each stream. Upon network outage, \tcpls \textbf{\textit{moves}} the
 active streams out of the broken \tcp connection to an active one. Furthermore,
 the unacknowledged data records that were sent over a failed \tcp connection are
 \textbf{\textit{sent again}} on a functional \tcp connection.
-\tcpls' Failover mode is optionnal. It needs to be activated by both peers or
-negotiated throught the Secure Control Channel.
+\tcpls' Failover mode is optionnal. Both peers need to activate it or
+negotiate the feature throught the Secure Control Channel.
 We discuss in Sec.~\ref{sec:perf} measurements quantifying the
-performance impact of adding \tcpls record level acknowledgements.
+performance impact of adding \tcpls record level acknowledgments. We also give a
+scenario involving a file transfer and the failover protocol in
+Appendix~\ref{app:failover}
 
 Second, \tcpls also supports the \textit{Application-level Connection Migration}
-mode. Essentialy, it means that \tcpls provides a simple API that enables an
+mode. Essentially, it means that \tcpls provides a simple API that enables an
 application to migrate when it wishes to do so (e.g., a smartphone could migrate
 from LTE to Wi-Fi when the Wi-Fi appears healthy, a client using privacy
 compliant IPv6 addresses~\cite{rfc4941} could restart the underlying \tcp
@@ -193,9 +220,9 @@ this connection. Note that since these messages are \tls records, they are sent
 reliably by the underlying \tcp connection.
 
 This second type of migration does not require application-level
-acknowledgements, but it cannot survive from the failure of one of the
-underlying connections. During such a migration, data is sent over two
-connections, which brings us to explain how multipath is designed
+acknowledgments, but it cannot survive from one of the
+underlying connections' failure. During such a migration, data is sent over two
+connections, which brings us to explain how multipath is designed.
 
 \paragraph*{3) Different Multipath Modes}
 Like \mptcp \cite{raiciu2012hard,rfc6824} or Multipath QUIC \cite{de2017multipath,draft-liu-multipath-quic-02}, \tcpls supports an aggregation mode that maps data over two or more \tcp connections. On multihomed hosts, this can increase the total throughput of a \tcpls session by spreading the data over different network interfaces. In this case, one or more data streams are mapped to two or more underlying \tcp connections and \tcpls schedules different records over different connections.
