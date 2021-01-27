@@ -53,17 +53,12 @@ so. History tells us that \tcp has evolved with competing transport protocols.
 In this paper, we take a step back. As \quic closely couples the reliability and
 security mechanisms, we reconsider the separation between \tcp and \tls.  In
 this paper, we combine both \tcp and \tls 1.3 in a single fast, flexible, and
-secure protocol called \textbf{\tcpls}\footnote{We presented a preliminary version of this
-work in a workshop paper~\cite{rochet2020tcpls}.}. We have
+secure protocol called \textbf{\tcpls}\footnote{We presented a preliminary version of this work in a workshop paper~\cite{rochet2020tcpls}.}. We have
 designed \tcpls with three goals in mind. First, \tcpls exposes modern transport
 features, such as multipath capabilities, to the application. Second, \tcpls
 solves \tcp's extensibility issues in \tcp by relying on the \tls handshake for
 \tcp options negotiation and by including \tcp options inside \tls records.
-Finally, we draw a path to make \tcpls an excellent challenger to \quic.  With that in
-mind, we have implemented \tcpls as a user-space library that exposes a powerful
-API to applications but still relies on the high-performance in-kernel \tcp
-stack. Our implementation uses \tls' flexible record layer to create a secure
-control channel that the endpoints of a \tcpls session can use to exchange
+Finally, we draw a path to make \tcpls an excellent challenger to \quic.  With that in mind, we have implemented \tcpls as a user-space library that exposes a powerful API to applications but still relies on the high-performance in-kernel \tcp stack. Our implementation uses \tls' flexible record layer to create a secure control channel that the \tcpls session endpoints can use to exchange
 control information. This channel enables different use cases such as connection
 migration or seamless failovers without risking middlebox interference. Our lab
 measurements indicate that our \tcpls prototype outperforms existing \quic
@@ -78,4 +73,3 @@ we implemented \tcpls; Sec.~\ref{sec:evaluation} evaluates the performance and
 behavior of \tcpls; Sec.~\ref{sec:related} discusses the related work;  finally, Sec.~\ref{sec:conclusion} concludes this paper by
 summarizing its main achievements and discussing further directions.  This work
 does not raise any ethical issues.
-

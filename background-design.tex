@@ -15,6 +15,7 @@
 %  \label{fig:arch}
 %\end{figure}
 
+
 \subsection{Overview}
 %%%%%%%%%%%%%%%%%%%%%%
 Today's applications expect more than a simple bytestream from the transport
@@ -30,7 +31,7 @@ negotiate a security context and uses it to send the user data authenticated and
 encrypted as \tls records. It leverages these records to establish a secure
 control channel between the client and server. This channel is used to manage
 the \tcpls session and exchange all control information without any possible
-middlebox interference. Finally, \tcpls includes a Connection Manager that
+middlebox interference. Finally, \tcpls includes a Connection Manager (CM) that
 controls the underlying \tcp connection. The TLS records of a \tcpls session can
 be transported over different \tcp connections during the session lifetime. This
 brings several interesting failover and multipath capabilities.
@@ -38,78 +39,73 @@ Fig.~\ref{fig:arch} illustrates the interactions between two \tcpls hosts.
 \tcpls can be implemented in userspace within a library like current \tls
 implementations. It interacts with the \tcp stack that in our prototype resides
 in the kernel. The crypto module negotiates and manages the security context
-while the connection manager (CM) manages the utilization of the underlying \tcp
-connection(s). Closely coupling \tcp and \tls in \tcpls brings opportunities for
-performance improvement (e.g., avoiding records fragmentation with dynamic
-receive buffer auto-tuning and/or with dynamic control of the record length),
-and for connection reliability (e.g., failover).
+while the CM manages the utilization of the underlying \tcp connection(s). Closely coupling \tcp and \tls in \tcpls brings opportunities for performance improvement (e.g., avoiding records fragmentation with dynamic receive buffer auto-tuning and/or with dynamic control of the record length), and for connection reliability (e.g., failover).
 
 
- \begin{figure}[!hbt]
-  \begin{center}
+
+\begin{figure}[!t]
+ \begin{center}
 \begin{tikzpicture}[node distance=0 cm,outer sep = 0pt,inner sep = 2pt,  scale=0.80, transform shape]
-        \tikzset{application/.style={align=center,minimum height=0.3cm,minimum width=10mm}}
-        \tikzset{tcpls/.style={align=center,shape=rectangle,fill=green!70!red!100,minimum height=1.5cm,minimum width=22mm,rounded corners, draw}}
-         \tikzset{conman/.style={align=center,shape=rectangle,fill=blue!70!green!10,minimum height=0.15cm,minimum width=10mm,rounded corners, draw}}
-        \tikzset{api/.style={align=center,shape=rectangle,fill=purple!30,minimum height=0.15cm,minimum width=22mm,rounded corners,draw}}
-        \tikzset{tcp/.style={align=center,shape=rectangle,fill=yellow, minimum height=0.4cm,minimum width=5mm,rounded corners,draw}}
-        \tikzset{label/.style={align=center,minimum height=0.5cm,minimum width=5mm}}
-        \draw(-3,-0.3) rectangle (-0.5,0.4);
-        \draw(-3,-3.8) rectangle (-0.5,0.4);
-        \draw [red, ultra thick] (-3,-2.5) -- (-0.5,-2.5);
-        \draw(-3,-4.5) rectangle (-0.5,-3.8);
-        \draw[fill=red!50] (-1.75,-0.3) ellipse (9pt and 4pt);
-        \node[application, xshift=-18mm](application){Application};
-        \node[tcpls, below= 6.3mm and 0mm of application, xshift=0.3mm](tcpls1){\tcpls};
-        \node[api, name=API, below= 3.0mm and 0mm of application, yshift=0mm, xshift=0.3mm ](api1){API};
-        \node[conman, name=CM, below= 17mm and 0mm of application](cm1){CM};
-        \node[conman, name=CM, below= 7.5mm and 0mm of application](crypto){Crypto};
-        \node[tcp, below= 4.5mm and 0mm of tcpls1, xshift=-6mm](tcpx1){\texttt{TCP}$_1$};
-        \node[tcp, right=5mm and 0mm of tcpx1, yshift=-4mm, xshift=2mm](tcpy1){\texttt{TCP}$_2$};
-        \node[label,  below=8mm and 0mm of tcpx1](ip11){IPV4};
-        \node[label,  below=4mm and 0mm of tcpy1](ip12){IPV6};
+       \tikzset{application/.style={align=center,minimum height=0.3cm,minimum width=10mm}}
+       \tikzset{tcpls/.style={align=center,shape=rectangle,fill=green!70!red!100,minimum height=1.5cm,minimum width=22mm,rounded corners, draw}}
+        \tikzset{conman/.style={align=center,shape=rectangle,fill=blue!70!green!10,minimum height=0.15cm,minimum width=10mm,rounded corners, draw}}
+       \tikzset{api/.style={align=center,shape=rectangle,fill=purple!30,minimum height=0.15cm,minimum width=22mm,rounded corners,draw}}
+       \tikzset{tcp/.style={align=center,shape=rectangle,fill=yellow, minimum height=0.4cm,minimum width=5mm,rounded corners,draw}}
+       \tikzset{label/.style={align=center,minimum height=0.5cm,minimum width=5mm}}
+       \draw(-3,-0.3) rectangle (-0.5,0.4);
+       \draw(-3,-3.8) rectangle (-0.5,0.4);
+       \draw [red, ultra thick] (-3,-2.5) -- (-0.5,-2.5);
+       \draw(-3,-4.5) rectangle (-0.5,-3.8);
+       \draw[fill=red!50] (-1.75,-0.3) ellipse (9pt and 4pt);
+       \node[application, xshift=-18mm](application){Application};
+       \node[tcpls, below= 6.3mm and 0mm of application, xshift=0.3mm](tcpls1){\tcpls};
+       \node[api, name=API, below= 3.0mm and 0mm of application, yshift=0mm, xshift=0.3mm ](api1){API};
+       \node[conman, name=CM, below= 17mm and 0mm of application](cm1){CM};
+       \node[conman, name=CM, below= 7.5mm and 0mm of application](crypto){Crypto};
+       \node[tcp, below= 4.5mm and 0mm of tcpls1, xshift=-6mm](tcpx1){\texttt{TCP}$_1$};
+       \node[tcp, right=5mm and 0mm of tcpx1, yshift=-4mm, xshift=2mm](tcpy1){\texttt{TCP}$_2$};
+       \node[label,  below=8mm and 0mm of tcpx1](ip11){IPV4};
+       \node[label,  below=4mm and 0mm of tcpy1](ip12){IPV6};
 
 
-        \draw(2.3,-0.3) rectangle (4.8,0.4);
-        \draw(2.3,-3.8) rectangle (4.8,0.4);
-        \draw [red, ultra thick] (2.3,-2.5) -- (4.8,-2.5);
-        \draw(2.3,-4.5) rectangle (4.8,-3.8);
-        \draw[fill=red!50] (3.6,-0.3) ellipse (9pt and 4pt);
-        \node[application, right= 0mm and 43mm of application, xshift=-8mm](application2){ Application};
-        \node[tcpls, name=TCPLS, below= 6.3mm and 0mm of application2, xshift=0.3mm](tcpls2){\tcpls};
-        \node[api, name=API, below= 3.0mm and 0mm of application2, , xshift=0.3mm](api2){API};
-        \node[conman, name=CM, below= 17mm and 0mm of application2](cm2){CM};
-        \node[conman, name=CM, below= 7.5mm and 0mm of application2](crypto){Crypto};
-        \node[tcp, below= 4.5mm and 0mm of tcpls2, xshift=6mm](tcpx2){\texttt{TCP}$_x$};
-        \node[tcp, left=5mm and 0mm of tcpx2, yshift=-4mm, xshift=-0.3mm](tcpy2){\texttt{TCP}$_y$};
-        \node[label,  below=8.5mm and 0mm of tcpx2](ip21){IPV4};
-        \node[label,  below=4mm and 0mm of tcpy2](ip22){IPV6};
+       \draw(2.3,-0.3) rectangle (4.8,0.4);
+       \draw(2.3,-3.8) rectangle (4.8,0.4);
+       \draw [red, ultra thick] (2.3,-2.5) -- (4.8,-2.5);
+       \draw(2.3,-4.5) rectangle (4.8,-3.8);
+       \draw[fill=red!50] (3.6,-0.3) ellipse (9pt and 4pt);
+       \node[application, right= 0mm and 43mm of application, xshift=-8mm](application2){ Application};
+       \node[tcpls, name=TCPLS, below= 6.3mm and 0mm of application2, xshift=0.3mm](tcpls2){\tcpls};
+       \node[api, name=API, below= 3.0mm and 0mm of application2, , xshift=0.3mm](api2){API};
+       \node[conman, name=CM, below= 17mm and 0mm of application2](cm2){CM};
+       \node[conman, name=CM, below= 7.5mm and 0mm of application2](crypto){Crypto};
+       \node[tcp, below= 4.5mm and 0mm of tcpls2, xshift=6mm](tcpx2){\texttt{TCP}$_x$};
+       \node[tcp, left=5mm and 0mm of tcpx2, yshift=-4mm, xshift=-0.3mm](tcpy2){\texttt{TCP}$_y$};
+       \node[label,  below=8.5mm and 0mm of tcpx2](ip21){IPV4};
+       \node[label,  below=4mm and 0mm of tcpy2](ip22){IPV6};
 
-        \node[label,  below=8mm and 0mm of application2, xshift=15mm,rotate=90 ](user1){user space};
-        \node[label,  below=33mm and 0mm of application2, xshift=15mm, rotate=90 ](user1){kernel space};
+       \node[label,  below=8mm and 0mm of application2, xshift=15mm,rotate=90 ](user1){user space};
+       \node[label,  below=33mm and 0mm of application2, xshift=15mm, rotate=90 ](user1){kernel space};
 
-        \node[label,  left=of api2, xshift=-5mm, yshift=-5mm, green!70!red!100 ](user1){\tls records};
-        \node[label,  left=of ip22, xshift=-5mm, yshift=10.6mm ](user1){\tcp segments};
+       \node[label,  left=of api2, xshift=-5mm, yshift=-5mm, green!70!red!100 ](user1){\tls records};
+       \node[label,  left=of ip22, xshift=-5mm, yshift=10.6mm ](user1){\tcp segments};
 
-        \draw[<->,dotted,green!70!red!100,ultra thick] (tcpls1.east) -- node (line) {} (tcpls2.west);
-        \draw[<->,dotted, ultra thick] (tcpx1.east) -- node (line) {} (tcpx2.west);
-        \draw[<->,dotted, ultra thick] (tcpy1.east) -- node (line) {} (tcpy2.west);
-        \draw[<->, ultra thick] (tcpx1.south) -- node (line) {}(ip11.north);
-        \draw[<->, ultra thick] (tcpy1.south) -- node (line) {}(ip12.north);
-        \draw[<->, ultra thick] (tcpx2.south) -- node (line) {}(ip21.north);
-        \draw[<->, ultra thick] (tcpy2.south) -- node (line) {}(ip22.north);
-        \draw[<->,   thick] (cm1.south) -- node (line) {}(tcpx1.north);
-        \draw[<->,   thick] (cm1.south) -- node (line) {}(tcpy1.north);
-        \draw[<->,   thick] (cm2.south) -- node (line) {}(tcpx2.north);
-        \draw[<->,   thick] (cm2.south) -- node (line) {}(tcpy2.north);
+       \draw[<->,dotted,green!70!red!100,ultra thick] (tcpls1.east) -- node (line) {} (tcpls2.west);
+       \draw[<->,dotted, ultra thick] (tcpx1.east) -- node (line) {} (tcpx2.west);
+       \draw[<->,dotted, ultra thick] (tcpy1.east) -- node (line) {} (tcpy2.west);
+       \draw[<->, ultra thick] (tcpx1.south) -- node (line) {}(ip11.north);
+       \draw[<->, ultra thick] (tcpy1.south) -- node (line) {}(ip12.north);
+       \draw[<->, ultra thick] (tcpx2.south) -- node (line) {}(ip21.north);
+       \draw[<->, ultra thick] (tcpy2.south) -- node (line) {}(ip22.north);
+       \draw[<->,   thick] (cm1.south) -- node (line) {}(tcpx1.north);
+       \draw[<->,   thick] (cm1.south) -- node (line) {}(tcpy1.north);
+       \draw[<->,   thick] (cm2.south) -- node (line) {}(tcpx2.north);
+       \draw[<->,   thick] (cm2.south) -- node (line) {}(tcpy2.north);
 \end{tikzpicture}
 \end{center}
 \vspace{-0.5cm}
 \caption{\tcpls is implemented as a user space library. The application controls the streams and the underlying \tcp connections through the API. The crypto module manages the security context and the Connetion Manager (CM) controls the utilization of one or more \tcp connections using the kernel stack.}
- \label{fig:arch}
+\label{fig:arch}
 \end{figure}
-
-
 
 \tcp separates control information and data by placing the control information
 in the packet header and the data in the payload. This separation worked well
@@ -125,9 +121,9 @@ of \tls 1.3 to place control information including some \tcp options inside the
 \tls handshake messages and new \tls records. Since this information is
 encrypted and authenticated, the communicating hosts can exchange new control
 information without encountering middlebox interference. We refer to this
-exchange of control information as the secure channel between the two hosts.
+exchange of control information as the \textit{secure channel} between the two hosts.
 
-A \tcpls session starts with a secure \tls 1.3 handshake ~\cite{rfc8446}. The
+A \tcpls session starts with a secure \tls 1.3 handshake~\cite{rfc8446}. The
 client adds a new \tcpls transport parameter in its \textsc{ClientHello}
 message. A \tcpls server replies with a \textsc{ServerHello} message that
 negotiates the security keys and may include additional \tcpls information as
@@ -141,44 +137,29 @@ independent cryptographic context derived from the \tcpls security context. The
 \tcpls streams can carry application data or control information.
 
 
-To attach a new stream, a host simply sends the \texttt{STREAM\_ATTACH} message
-as a special \tls record over the secure channel. Since each stream is an
+Streams are attached over the Secure Control Channel. Since each stream is an
 independent cryptographic context, the recipient can immediately start to
 decrypt and extract data from the new stream. No round-trip is wasted to attach
 a new stream.
 
-\tcpls' Connection Manager controls the utilization of the underlying \tcp
-connections. It can open, close, or reestablish failed \tcp connections. Each of
-the connections that composes a \tcpls session is identified by a
-\emph{transport identifier}. By default, the data from a stream can be sent over
-any of the underlying \tcp connections. The applications that require finer
-control over the utilization of the underlying \tcp connections can use the
-\tcpls API to map a stream on a specific underlying connection. In this case,
-all the data of this stream is exchanged over this specific connection. By
-placing two streams on different connections, an application can prevent
-Head-Of-Line (HOL) blocking among these streams.
+\tcpls' CM controls the utilization of the underlying \tcp connections. It can open, close, or reestablish failed \tcp connections. Each of the connections that composes a \tcpls session is identified by a \emph{transport identifier}. By default, the data from a stream can be sent over any of the underlying \tcp connections. The applications that require finer control over the utilization of the underlying \tcp connections can use the \tcpls API to map a stream on a specific underlying connection. In this case, all the data of this stream is exchanged over this specific connection. By placing two streams on different connections, an application can prevent Head-Of-Line (HOL) blocking among these streams.
 
 \tcpls also supports failover and multipath. To support these features, it must
 be possible to send data from a given stream over different \tcp connections. In
 this case, the \tcp level sequence numbers and acknowledgements are not
 sufficient anymore to enable the receiver to reorder the data. When this feature
-is enabled, \tcpls its own sequence numbers and acknowledgements that are
-exchanged as new \tls records over the secure control channel.  Thanks to these
-\tcpls acknowledegments, a \tcpls session can survive to the failure of the
-underlying \tcp connection by reestablishing a new \tcp connection to continue
-the data transfer and replay the lost records.
+is enabled, \tcpls considers its own sequence numbers and acknowledgements that are exchanged as new \tls records over the secure control channel.  Thanks to these \tcpls acknowledegments, a \tcpls session can survive to the failure of the underlying \tcp connection by reestablishing a new \tcp connection to continue the data transfer and replay the lost records.
 
 A \tcp connection ends with the exchange of \fin or \rst packets. However, some
 middleboxes force the termination of \tcp connections by sending \rst
 packets~\cite{rfc3360,weaver2009detecting}. \tcpls can preserve established
-connections by automatically restarting the underlying \tcp connection upon
+session by automatically restarting the underlying \tcp connection upon
 reception of a spurious reset. \tcpls defines the connection termination at the
-stream level: a \tcpls session is closed once the last stream attached to a \tcp
-connection is securely closed.
+stream level: a \tcp connection is closed once the last stream attached to a
+\tcp connection is securely closed.
 
-That is, \tcpls' Secure Control Channel provides a flexible abstraction to the
-upper layer that supports various new features such as Streams, connection
+In summary, \tcpls provides a flexible abstraction to the
+upper layer that supports various new features such as streams, connection
 reliability, different secure multipath modes, secure connection closing,
-encrypted \tcp options and leverages \tcp's performance and \tls's state of
+encrypted \tcp options, and leverages \tcp's performance and \tls's state of
 deployment.
-
