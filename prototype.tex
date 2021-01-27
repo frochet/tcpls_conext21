@@ -1,25 +1,23 @@
 % !TEX root = ./paper.tex
 \label{sec:content}
-In this section, we describe our \tcpls implementation.  In a nutshell, our implementation offers the following benefits:
-($i$) The support of parallel streams and multiplexing over \tcp connections
-  with different cryptographic context.
+
+In this section, we describe our \tcpls implementation. In a nutshell, it provides the following benefits.
+($i$) Applications can use parallel streams and multiplex them over \tcp connections with different cryptographic contexts.
 ($ii$) An experimental API that wraps \tls and \tcp and enables applications to
-    handle multihoming, multipathing, and various transport layer mechanisms.
+    handle multihoming, multipathing, and various transport layer mechanisms,
 ($iii$) An improved \tcp extensibility mechanism that sends \tcp options
    through the secure \tcpls channel (as described in
-   Sec.~\ref{sec:background-design}). We currently support Linux's \tcp User Timeout
-   option. Supporting another \tcp option is only a matter of extending the
-   sender's API and processing the option on the receiver side. \tcpls's
-   internal machinery can already send any \tcp option during (server-side) or
-   after (client-side) the handshake.
-($iv$) Different multipath modes for the \tcpls streams: bandwidth aggregation or
-independant paths.
+   Sec.~\ref{sec:background-design}). We currently support Linux's \tcp User Timeout option. Supporting another \tcp option is only a matter of extending the
+sender's API and processing the option on the receiver side. \tcpls's
+internal machinery can already send any \tcp option during (server-side) or
+after (client-side) the \tcp handshake.
+($iv$) Different multipath modes for the \tcpls streams: bandwidth aggregation or independant paths.
 ($v$) The ability for the server to send eBPF bytecode over the secure
   channel to upgrade the client's \tcp congestion control scheme or
-  tune other \tcp mechanisms~\cite{brakmo2017tcp, tran2019beyond}.
+  tune other \tcp mechanisms~\cite{brakmo2017tcp,tran2019beyond}.
   Variable-length options (e.g., eBPF bytecode) can be sent within streams to
   take advantage of bandwidth aggregation or Failover if those features are
-  used.
+  enabled.
 ($vi$) Different Connection Migration modes: Failover and Application-level
 Connection Migration.
 
@@ -39,9 +37,9 @@ The API that applications use to interact with a protocol plays an important
 role in enabling them to leverage all the protocol features. The most popular
 API to interact with the transport layer remains the BSD socket API. Researchers
 and the IETF have explored new ways to expose a transport
-API~\cite{draft-ietf-taps-arch,hruby2014sockets,rfc6458,hesmans2016enhanced,schmidt2013socket}.
-We show in appendix~\ref{appendix:api} a simple example of our API workflow,
-which develop common good practices proposed by the outlined research.
+API~\cite{draft-ietf-taps-arch,hruby2014sockets,rfc6458,schmidt2013socket}.
+Due to space limitations, we provide in appendix~\ref{appendix:api} a simple example of our API workflow,
+which builds upon common good practices proposed by the outlined research.
 
 %In this spirit, application-level developers would only be required to
 %configure a \tcpls context and register function callbacks.
@@ -62,12 +60,12 @@ which develop common good practices proposed by the outlined research.
 \subsection{Multipathing}
 
 \subsubsection{Data Aggregation}
-The application can connect and join multiple \tcp connection to
+The application can create and join several \tcp connections to
 the same \tcpls session. As soon as one of the peers attaches streams to
 different \tcp connections of the session, and enables the aggregation mode,
 \tcpls adds a sequence number encrypted in the \tls record payload. This
 sequence number is used to reorder the received records after decryption. Our
-current state of implementation supports one global ordering, but
+current implementation supports one global ordering, but
 we envision for the \tcpls protocol to have streams potentially detached from
 the global orderings. For example, a HTTP application may want to use an
 aggregation mode for 2 streams over 2 \tcp connections downloading a video
@@ -76,30 +74,30 @@ client do not necessarly need to be part of the multipath bandwidth aggregation.
 Such a feature may be implemented through a negotiation of the aggregation
 mode.
 
-The implementation currently supports a round-robin scheduler. We expect in the
-future that the receiver's scheduler might set through the API, or even sent
-from the peer to enable an efficient scheduling against particular sending patterns. The more
-the \tcpls receives the records in order, the more \tcpls can deliver them in a zero-copy
-fashion to the application. When some record number is not the next expected
-record, there is a copy of the record content made within a reordering buffer.
-Our multipath bandwidth aggregation is evaluated in Section~\ref{sec:bwaggr}
+Our implementation currently includes a round-robin scheduler. We expect to
+support other schedulers in the future allow the application to select its preferred scheduler through the API, or even send as eBPF bytecode over the session. The more \tcpls receives records in order, the more it can deliver them in a zero-copy fashion to the application.
+When a record is received out-of-sequence, its content is copied in
+a reordering buffer. The performance of our multipath
+bandwidth aggregation is evaluated in Section~\ref{sec:bwaggr}
 
 \subsubsection{Failover}\label{failover}
-Failover is a binary mode (on/off) fully internal to \tcpls. Once activated,
-\tcpls exchanges acknowledgments for records received in each stream. The
-acknowldgment is stream-based and configurable. The default acknowledgment
-policy sends an ack every 16 received records, or when a stream has process more
-than $249,600$ bytes since the last acknowledgment.  When a \tcp connection
+Failover is a binary mode (on/off) that is fully internal to \tcpls.
+Once activated,
+\tcpls exchanges acknowledgments for records received on each stream. These
+acknowldgements are stream-based and configurable. The default acknowledgment
+policy is to acknowledge every 16 received records, or when a stream has process more
+than $249,600$ bytes since the last acknowledgement. When a \tcp connection
 sustaining \tcpls streams suffers from a network outage (e.g., a $RST$ is
 received or the connection became idle for too long), we move the stream to a
 new \tcp connection, retransmit the unacked records and resume the transfer. Our
-prototype handles failover over v4 or v6 \tcp connection, and by default,
-chooses a different source and destination address than the failed \tcp
-connection if some are available. Failover might be negotiated by both party, or
-enabled by default by both party. Depending on the application type, Failover
-might be enabled or not by default and a negotiatiation through \tcpls's control
-channel should happen to change its value (on/off). Our implementation is
-evaluated in Section~\ref{sec:eval_failover}
+prototype handles failover over IPv4 and IPv6 \tcp connections, and by default,
+chooses different source and destination addresses than the failed \tcp
+connection if some are available.
+%Failover might be negotiated by both party, or
+%enabled by default by both party.
+Depending on the application type, Failover
+might be enabled or not by default. It is also possible to activate Failover during a \tcpls session by sending a message on the secure channel. 
+We evaluate the performance of Failover in Section~\ref{sec:eval_failover}
 
 %\subsubsection{Application-level Connection Migration}
 %\label{sec:connmigr}
