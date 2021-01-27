@@ -128,22 +128,21 @@ extensions to \quic~\cite{viernickel2018multipath,de2017multipath,draft-liu-mult
     Transport reliability & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
     Message conf. and auth.&  \xmark & \xmark & \checkmark & \checkmark & \checkmark \\
     Connection reliability (failover) &  \xmark & \checkmark &\xmark & (\checkmark) & \checkmark \\
-    0-RTT & \checkmark & \xmark & (\xmark) & \checkmark  & \checkmark \\
+    0-RTT & \checkmark & (\checkmark) & (\xmark) & \checkmark  & \checkmark \\
     Session Resumption & \xmark & \xmark & \checkmark & \checkmark & \checkmark \\
     Connection Migration & \xmark & \xmark &\xmark & \checkmark & \checkmark \\
     \multicolumn{5}{l}{Application-exposed features} \\
     \hspace{2em} Streams & \xmark &  \xmark & \xmark & \checkmark & \checkmark \\
-    \hspace{2em} Happy eyeballs & \xmark & \xmark & \xmark & \xmark & \checkmark \\
     \hspace{2em} Explicit Multipath & \xmark & \xmark & \xmark & \xmark & \checkmark \\
-    \hspace{2em} App-level Con. migration & \xmark & \xmark & \xmark & \xmark & \checkmark \\
-    \hspace{2em} kernel eBPF Pluginization & \xmark & \xmark & \xmark & \xmark & \checkmark \\
-    Resilience to HOL blocking & \xmark & \xmark & \xmark & \checkmark  & \checkmark \\
+    \hspace{2em} App-level Con. migration & \xmark & \xmark & \xmark & (\checkmark) & \checkmark \\
+    Resilience to HOL blocking & \xmark & \xmark & \xmark & \checkmark & \checkmark \\
     Secure Connection Closing & \xmark &  \xmark & \xmark & \checkmark & \checkmark \\
     \bottomrule
   \end{tabular}
   \caption{Protocol features comparison. (\xmark) means that the feature is
     available, but not straightforward to use. (\checkmark) means that the
-  feature is partially available and under development.}
+  feature is partially available and under development. \checkmark means that
+  the feature is available, and \xmark means that it is not.}
   \label{table:tcplsvsquic}
 \end{table*}
 
