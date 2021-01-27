@@ -150,6 +150,9 @@ Note that several of the features suggested by \tcpls are also suggested on \tcp
 
 \todo{Describe the protocol}
 
+
+
+
 % Agents
 \def\Client{Client}
 \def\Server{Server}
@@ -158,114 +161,198 @@ Note that several of the features suggested by \tcpls are also suggested on \tcp
 
 
 \begin{figure*}[!t]
- \begin{center}
-   \begin{tiny}
 \begin{tikzpicture}[every node/.style={font=\tiny, minimum height=0.03cm,minimum width=0.03cm},scale=0.90, transform shape]
 \tikzset{label/.style={align=center,minimum height=0.5cm,minimum width=5mm}}
-\node [matrix, very thin,column sep=2.2cm,row sep=0.05cm] (matrix) at (0,0) {
-  & \node(0,0) (\Client) {}; & \node(0,0) (\Inactivity) {};  & \node(0,0) (\Server) {};  & \\
-  & \node(0,0) (\Client 0) {}; & & \node(0,0) (\Server 0) {};  & \\
-  \node(0,0) (u1 left) {}; & & & &   \node(0,0) (u1 right) {};\\
-  \node(0,0) (t0 left) {}; & \node(0,0) (\Client 1) {}; & \node(0,0) (\Event 1) {}; & \node(0,0) (\Server 1) {};  & \node(0,0) (t0 right) {};\\
-   \node(0,0) (u1 left) {}; & & & &   \node(0,0) (u1 right) {};\\
- \node[label] (t1 left) {}; & \node(0,0) (\Client 2) {}; & \node(0,0) (\Event 2) {}; & \node(0,0) (\Server 2) {};  &\node(0,0) (t1 right) {}; \\
-  \node(0,0) (u2 left) {}; & & & &   \node(0,0) (u2 right) {};\\
-\node(0,0) (t2 left) {};  & \node(0,0) (\Client 3) {}; & \node(0,0) (\Event 3) {}; & \node(0,0) (\Server 3) {};  & \node(0,0) (t2 right) {};\\
-  \node(0,0) (u3 left) {}; & & & &   \node(0,0) (u3 right) {};\\
-  \node(0,0) (t3 left) {}; & \node(0,0) (\Client 4) {}; & \node(0,0) (\Event 4) {}; & \node(0,0) (\Server 4) {};  &  \node(0,0) (t3 right) {};\\
-  \node(0,0) (u4 left) {}; & & & &   \node(0,0) (u4 right) {};\\
- \node(0,0) (t4 left) {}; & \node(0,0) (\Client 5) {}; & \node(0,0) (\Event 5) {}; & \node(0,0) (\Server 5) {};  & \node(0,0) (t4 right) {}; \\
-  \node(0,0) (u5 left) {}; & & & &   \node(0,0) (u5 right) {};\\
- \node(0,0) (t5 left) {}; & \node(0,0) (\Client 6) {}; & \node(0,0) (\Event 6) {}; & \node(0,0) (\Server 6) {};  & \node(0,0) (t5 right) {};\\
-  \node(0,0) (u6 left) {}; & & & &   \node(0,0) (u6 right) {};\\
- \node(0,0) (t6 left) {};  & \node(0,0) (\Client 7) {}; & \node(0,0) (\Event 7) {}; & \node(0,0) (\Server 7) {};  & \node(0,0) (t6 right) {};\\
-  \node(0,0) (u7 left) {}; & & & &   \node(0,0) (u7 right) {};\\
- \node(0,0) (t7 left) {}; & \node(0,0) (\Client 8) {}; & \node(0,0) (\Event 8) {}; & \node(0,0) (\Server 8) {};  &  \node(0,0) (t7 right) {}; \\
-  \node(0,0) (u8 left) {}; & & & &   \node(0,0) (u8 right) {};\\
-  \node(0,0) (t8 left) {}; & \node(0,0) (\Client 9) {}; & \node(0,0) (\Event 9) {}; & \node(0,0) (\Server 9) {};  & \node(0,0) (t8 right) {};\\
-  \node(0,0) (u9 left) {}; & & & &   \node(0,0) (u9 right) {};\\
- \node(0,0) (t9 left) {}; & \node(0,0) (\Client 10) {}; & \node(0,0) (\Event 10) {}; & \node(0,0) (\Server 10) {};  & \node(0,0) (t9 right) {};\\
-  \node(0,0) (u10 left) {}; & & & &   \node(0,0) (u10 right) {};\\
-  \node(0,0) (t10 left) {}; & \node(0,0) (\Client 11) {}; & \node(0,0) (\Event 11) {}; & \node(0,0) (\Server 11) {};  & \node(0,0) (t10 right) {};\\
-  \node(0,0) (u11 left) {}; & & & &   \node(0,0) (u11 right) {};\\
-  \node(0,0) (t11 left) {}; & \node(0,0) (\Client 12) {}; & \node(0,0) (\Event 12) {}; & \node(0,0) (\Server 12) {};  & \node(0,0) (t11 right) {};\\
-   \node(0,0) (t12 left) {}; & & & &   \node(0,0) (t12 right) {};\\
-  & \node(0,0) (\Client 13) {}; & \node(0,0) (\Event 13) {}; & \node(0,0) (\Server 13) {};  & \\
-   \node(0,0) (u13 left) {}; & & & &   \node(0,0) (u13 right) {};\\
- \node(0,0) (t13 left) {}; & \node(0,0) (\Client 14) {}; & \node(0,0) (\Event 14) {}; & \node(0,0) (\Server 14) {};  &  \node(0,0) (t13 right) {};\\
-   \node(0,0) (u14 left) {}; & & & &   \node(0,0) (u14 right) {};\\
- \node(0,0) (t14 left) {}; & \node(0,0) (\Client 15) {}; & \node(0,0) (\Event 15) {}; & \node(0,0) (\Server 15) {};  & \node(0,0) (t14 right) {};\\
-   \node(0,0) (u15 left) {}; & & & &   \node(0,0) (u15 right) {};\\
-  \node(0,0) (t15 left) {};  & \node(0,0) (\Client 16) {}; & \node(0,0) (\Event 16) {}; & \node(0,0) (\Server 16) {};  & \node(0,0) (t15 right) {};\\
-   \node(0,0) (u16 left) {}; & & & &   \node(0,0) (u16 right) {};\\
- \node(0,0) (t16 left) {}; & \node(0,0) (\Client 17) {}; & \node(0,0) (\Event 17) {}; & \node(0,0) (\Server 17) {};  & \node(0,0) (t16 right) {};\\
-  \node(0,0) (u17 left) {}; & & & &   \node(0,0) (u17 right) {};\\
- \node(0,0) (t17 left) {};  & \node(0,0) (\Client 18) {}; & \node(0,0) (\Event 18) {}; & \node(0,0) (\Server 18) {};  &\node(0,0) (t17 right) {}; \\
-  \node(0,0) (t18 left) {}; & & & &   \node(0,0) (t18 right) {};\\
-  & \node(0,0) (\Client 19) {}; & \node(0,0) (\Event 19) {}; & \node(0,0) (\Server 19) {};  & \\
-  \node(0,0) (t20 left) {}; & & & &   \node(0,0) (t20 right) {};\\
-  & \node(0,0) (\Client 20) {}; & \node(0,0) (\Event 20) {}; & \node(0,0) (\Server 20) {};  & \\
-  \node(0,0) (u21 left) {}; & & & &   \node(0,0) (u21 right) {};\\
-  \node(0,0) (t21 left) {};& \node(0,0) (\Client 21) {}; & \node(0,0) (\Event 21) {}; & \node(0,0) (\Server 21) {};  & \node(0,0) (t21 right) {};\\
-  \node(0,0) (u22 left) {}; & & & &   \node(0,0) (u22 right) {};\\
- \node(0,0) (t22 left) {}; & \node(0,0) (\Client 22) {}; & \node(0,0) (\Event 22) {}; & \node(0,0) (\Server 22) {};  &  \node(0,0) (t22 right) {};\\
-  \node(0,0) (u23 left) {}; & & & &   \node(0,0) (u23 right) {};\\
- \node(0,0) (t23 left) {}; & \node(0,0) (\Client 23) {}; & \node(0,0) (\Event 23) {}; & \node(0,0) (\Server 23) {};  & \node(0,0) (t23 right) {};\\
-  \node(0,0) (u24 left) {}; & & & &   \node(0,0) (u24 right) {};\\
- \node(0,0) (t24 left) {}; & \node(0,0) (\Client 24) {}; & \node(0,0) (\Event 24) {}; & \node(0,0) (\Server 24) {};  & \node(0,0) (t24 right) {};\\
-  \node(0,0) (t25 left) {}; & & & &   \node(0,0) (t25 right) {};\\
-  & \node(0,0) (\Client 25) {}; & \node(0,0) (\Event 25) {}; & \node(0,0) (\Server 25) {};  & \\
-  \node(0,0) (t26 left) {}; & & & &   \node(0,0) (t26 right) {};\\
-  & \node(0,0) (\Client 26) {}; & \node(0,0) (\Event 26) {}; & \node(0,0) (\Server 26) {};  & \\
+\node [matrix, very thin,column sep=2.cm,row sep=0.05cm] (matrix) at (0,0) {
+   \node(0,0) (\Client) {}; & \node(0,0) (\Inactivity) {};  & \node(0,0) (\Server) {};   \\
+   \node(0,0) (\Client 0) {}; & & \node(0,0) (\Server 0) {};   \\
+  \node(0,0) (u1 left) {}; & &    \node(0,0) (u1 right) {};\\
+   \node(0,0) (\Client 1) {}; & \node(0,0) (\Event 1) {}; & \node(0,0) (\Server 1) {};  \\
+   \node(0,0) (u1 left) {}; & &    \node(0,0) (u1 right) {};\\
+   \node(0,0) (\Client 2) {}; & \node(0,0) (\Event 2) {}; & \node(0,0) (\Server 2) {};   \\
+  \node(0,0) (u2 left) {}; & &   \node(0,0) (u2 right) {};\\
+  \node(0,0) (\Client 3) {}; & \node(0,0) (\Event 3) {}; & \node(0,0) (\Server 3) {};   \\
+  \node(0,0) (u3 left) {}; & &    \node(0,0) (u3 right) {};\\
+   \node(0,0) (\Client 4) {}; & \node(0,0) (\Event 4) {}; & \node(0,0) (\Server 4) {};   \\
+  \node(0,0) (u4 left) {}; & &    \node(0,0) (u4 right) {};\\
+  \node(0,0) (\Client 5) {}; & \node(0,0) (\Event 5) {}; & \node(0,0) (\Server 5) {};   \\
+  \node(0,0) (u5 left) {}; & &   \node(0,0) (u5 right) {};\\
+  \node(0,0) (\Client 6) {}; & \node(0,0) (\Event 6) {}; & \node(0,0) (\Server 6) {};   \\
+  \node(0,0) (u6 left) {}; & &   \node(0,0) (u6 right) {};\\
+  \node(0,0) (\Client 7) {}; & \node(0,0) (\Event 7) {}; & \node(0,0) (\Server 7) {};   \\
+  \node(0,0) (u7 left) {}; & &    \node(0,0) (u7 right) {};\\
+  \node(0,0) (\Client 8) {}; & \node(0,0) (\Event 8) {}; & \node(0,0) (\Server 8) {};    \\
+  \node(0,0) (u8 left) {}; & &    \node(0,0) (u8 right) {};\\
+  \node(0,0) (\Client 9) {}; & \node(0,0) (\Event 9) {}; & \node(0,0) (\Server 9) {};  \\
+  \node(0,0) (u9 left) {}; & &    \node(0,0) (u9 right) {};\\
+  \node(0,0) (\Client 10) {}; & \node(0,0) (\Event 10) {}; & \node(0,0) (\Server 10) {};   \\
+  \node(0,0) (u10 left) {}; & &    \node(0,0) (u10 right) {};\\
+  \node(0,0) (\Client 11) {}; & \node(0,0) (\Event 11) {}; & \node(0,0) (\Server 11) {};   \\
+  \node(0,0) (u11 left) {}; & &    \node(0,0) (u11 right) {};\\
+  \node(0,0) (\Client 12) {}; & \node(0,0) (\Event 12) {}; & \node(0,0) (\Server 12) {};   \\
+   \node(0,0) (t12 left) {}; & &    \node(0,0) (t12 right) {};\\
+   \node(0,0) (\Client 13) {}; & \node(0,0) (\Event 13) {}; & \node(0,0) (\Server 13) {};   \\
+   \node(0,0) (u13 left) {}; & &    \node(0,0) (u13 right) {};\\
+  \node(0,0) (\Client 14) {}; & \node(0,0) (\Event 14) {}; & \node(0,0) (\Server 14) {};   \\
+   \node(0,0) (u14 left) {}; & &    \node(0,0) (u14 right) {};\\
+  \node(0,0) (\Client 15) {}; & \node(0,0) (\Event 15) {}; & \node(0,0) (\Server 15) {};   \\
+   \node(0,0) (u15 left) {}; & &    \node(0,0) (u15 right) {};\\
+  \node(0,0) (\Client 16) {}; & \node(0,0) (\Event 16) {}; & \node(0,0) (\Server 16) {};   \\
+   \node(0,0) (u16 left) {}; & &    \node(0,0) (u16 right) {};\\
+  \node(0,0) (\Client 17) {}; & \node(0,0) (\Event 17) {}; & \node(0,0) (\Server 17) {};   \\
+  \node(0,0) (u17 left) {}; & &    \node(0,0) (u17 right) {};\\
+  \node(0,0) (\Client 18) {}; & \node(0,0) (\Event 18) {}; & \node(0,0) (\Server 18) {};  \\
+  \node(0,0) (t18 left) {}; & &   \node(0,0) (t18 right) {};\\
+   \node(0,0) (\Client 19) {}; & \node(0,0) (\Event 19) {}; & \node(0,0) (\Server 19) {};   \\
+  \node(0,0) (t20 left) {}; & &    \node(0,0) (t20 right) {};\\
+   \node(0,0) (\Client 20) {}; & \node(0,0) (\Event 20) {}; & \node(0,0) (\Server 20) {};   \\
+  \node(0,0) (u21 left) {}; & &   \node(0,0) (u21 right) {};\\
+   \node(0,0) (\Client 21) {}; & \node(0,0) (\Event 21) {}; & \node(0,0) (\Server 21) {};   \\
+  \node(0,0) (u22 left) {}; & &    \node(0,0) (u22 right) {};\\
+   \node(0,0) (\Client 22) {}; & \node(0,0) (\Event 22) {}; & \node(0,0) (\Server 22) {};    \\
+  \node(0,0) (u23 left) {}; & &    \node(0,0) (u23 right) {};\\
+   \node(0,0) (\Client 23) {}; & \node(0,0) (\Event 23) {}; & \node(0,0) (\Server 23) {};   \\
+  \node(0,0) (u24 left) {}; & &    \node(0,0) (u24 right) {};\\
+   \node(0,0) (\Client 24) {}; & \node(0,0) (\Event 24) {}; & \node(0,0) (\Server 24) {};   \\
+  \node(0,0) (t25 left) {}; & &    \node(0,0) (t25 right) {};\\
+   \node(0,0) (\Client 25) {}; & \node(0,0) (\Event 25) {}; & \node(0,0) (\Server 25) {};   \\
+  \node(0,0) (t26 left) {}; & &    \node(0,0) (t26 right) {};\\
+  \node(0,0) (\Client 26) {}; & \node(0,0) (\Event 26) {}; & \node(0,0) (\Server 26) {};  \\
+  
+ 
+  \node(0,0) (t27 left) {}; & &    \node(0,0) (t27 right) {};\\
+  \node(0,0) (\Client 27) {}; & \node(0,0) (\Event 27) {}; & \node(0,0) (\Server 27) {};  \\
+  
+  \node(0,0) (t28 left) {}; & &    \node(0,0) (t28 right) {};\\
+  \node(0,0) (\Client 28) {}; & \node(0,0) (\Event 28) {}; & \node(0,0) (\Server 28) {};  \\
+  
+  \node(0,0) (t29 left) {}; & &    \node(0,0) (t29 right) {};\\
+  \node(0,0) (\Client 29) {}; & \node(0,0) (\Event 29) {}; & \node(0,0) (\Server 29) {};  \\
+  
+  \node(0,0) (t30 left) {}; & &    \node(0,0) (t30 right) {};\\
+  \node(0,0) (\Client 30) {}; & \node(0,0) (\Event 30) {}; & \node(0,0) (\Server 30) {};  \\
+  
+  \node(0,0) (t31 left) {}; & &    \node(0,0) (t31 right) {};\\
+  \node(0,0) (\Client 31) {}; & \node(0,0) (\Event 31) {}; & \node(0,0) (\Server 31) {};  \\
+  
+  \node(0,0) (t32 left) {}; & &    \node(0,0) (t32 right) {};\\
+  \node(0,0) (\Client 32) {}; & \node(0,0) (\Event 32) {}; & \node(0,0) (\Server 32) {};  \\
+  
+  \node(0,0) (t33 left) {}; & &    \node(0,0) (t33 right) {};\\
+  \node(0,0) (\Client 33) {}; & \node(0,0) (\Event 33) {}; & \node(0,0) (\Server 33) {};  \\
+  
+  \node(0,0) (t34 left) {}; & &    \node(0,0) (t34 right) {};\\
+  \node(0,0) (\Client 34) {}; & \node(0,0) (\Event 34) {}; & \node(0,0) (\Server 34) {};  \\
+  
+  \node(0,0) (t35 left) {}; & &    \node(0,0) (t35 right) {};\\
+  \node(0,0) (\Client 35) {}; & \node(0,0) (\Event 35) {}; & \node(0,0) (\Server 35) {};  \\
+  
+  \node(0,0) (t36 left) {}; & &    \node(0,0) (t36 right) {};\\
+  \node(0,0) (\Client 36) {}; & \node(0,0) (\Event 36) {}; & \node(0,0) (\Server 36) {};  \\
+  \node(0,0) (t37 left) {}; & &    \node(0,0) (t37 right) {};\\
+  \node(0,0) (\Client 37) {}; & \node(0,0) (\Event 37) {}; & \node(0,0) (\Server 37) {};  \\
+  
+  \node(0,0) (t38 left) {}; & &    \node(0,0) (t38 right) {};\\
+  \node(0,0) (\Client 38) {}; & \node(0,0) (\Event 38) {}; & \node(0,0) (\Server 38) {};  \\
+  \node(0,0) (t39 left) {}; & &    \node(0,0) (t39 right) {};\\
+  \node(0,0) (\Client 39) {}; & \node(0,0) (\Event 39) {}; & \node(0,0) (\Server 39) {};  \\
 };
 
 % Agents labels
-\fill
+\fill 
 	(\Client) node[draw,fill=white] {\Client}
 	(\Server) node[draw,fill=white] {\Server};
 
 % Horizontal time lines
-\draw [dotted]
-  (t0 left) -- (t0 right) node[right] {$72.18ms$}
-  (t0 right) -- (t0 left) node[left] {$51.95ms$}
-  (t1 left) -- (t1 right) node[right] {$72.87ms$}
-  (t1 right) -- (t1 left) node[left] {$96.17ms$}
-  (t2 left) -- (t2 right) node[right] {$73.06ms$}
-  (t2 right) -- (t2 left) node[left] {$96.72ms$}
-  (t3 left) -- (t3 right) node[right] {$73.18ms$}
-  (t3 right) -- (t3 left) node[left] {$96.86ms$}
-  (t4 left) -- (t4 right) node[right] {$75.85ms$}
-  (t4 right) -- (t4 left) node[left] {$96.92ms$}
-  (t5 left) -- (t5 right) node[right] {$117.27ms$}
-  (t5 right) -- (t5 left) node[left] {$97.07ms$}
-  (t6 left) -- (t6 right) node[right] {$117.63ms$}
-  (t6 right) -- (t6 left) node[left] {$137.91ms$}
-  (t7 left) -- (t7 right) node[right] {$117.71ms$}
-  (t7 right) -- (t7 left) node[left] {$139.12ms$}
-  (t8 left) -- (t8 right) node[right] {$117.96ms$}
-  (t8 right) -- (t8 left) node[left] {$178.22ms$}
-  (t11 left) -- (t11 right) node[right] {$289.05ms$}
-  (t11 right) -- (t11 left) node[left] {$268.93ms$}
-  (t13 left) -- (t13 right) node[right] {$15870.75ms$}
-  (t13 right) -- (t13 left) node[left] {$15991.13ms$}
-  (t14 left) -- (t14 right) node[right] {$15891.35ms$}
-  (t14 right) -- (t14 left) node[left] {$15911.63ms$}
-  (t15 left) -- (t15 right) node[right] {$15891.53ms$}
-  (t15 right) -- (t15 left) node[left] {$15911.92ms$}
-  (t16 left) -- (t16 right) node[right] {$15932.18ms$}
-  (t16 right) -- (t16 left) node[left] {$15911.98ms$}
-  (t17 left) -- (t17 right) node[right] {$15971.53ms$}
-  (t17 right) -- (t17 left) node[left] {$15961.92ms$}
-  (t21 left) -- (t21 right) node[right] {$15991.98ms$}
-  (t21 right) -- (t21 left) node[left] {$15971.98ms$}
-  (t22 left) -- (t22 right) node[right] {$18432.62ms$}
-  (t22 right) -- (t22 left) node[left] {$19319.70ms$}
-  (t23 left) -- (t23 right) node[right] {$20434.87ms$}
-  (t23 right) -- (t23 left) node[left] {$21407.99ms$}
-  (t24 left) -- (t24 right) node[right] {$21468.34ms$}
-  (t24 right) -- (t24 left) node[left] {$21408.06ms$};
+\node[text width=10mm] at (3.2,11.55) {$72.18ms$};
+\node[text width=10mm] at (-3.4,11.55) {$51.95ms$};
+\node[text width=10mm] at (3.2,10.80) {$72.87ms$};
+\node[text width=10mm] at (-3.4,10.80) {$96.17ms$};
 
-\draw
+\node[text width=10mm] at (3.2,10.2) {$73.06ms$};
+\node[text width=10mm] at (-3.4,10.2) {$96.72ms$};
+
+\node[text width=10mm] at (3.2,9.7) {$73.18ms$};
+\node[text width=10mm] at (-3.4,9.7) {$96.86ms$};
+
+\node[text width=10mm] at (3.2,9.1) {$75.85ms$};
+\node[text width=10mm] at (-3.4,9.1) {$96.92ms$};
+
+\node[text width=10mm] at (3.2,8.4) {$117.27ms$};
+\node[text width=10mm] at (-3.4,8.4) {$97.07ms$};
+
+\node[text width=10mm] at (3.2,7.8) {$117.63ms$};
+\node[text width=10mm] at (-3.4,7.8) {$137.91ms$};
+
+\node[text width=10mm] at (3.2,7.1) {$117.71ms$};
+\node[text width=10mm] at (-3.4,7.1) {$139.12ms$};
+
+\node[text width=10mm] at (3.2,6.5) {$117.96ms$};
+\node[text width=10mm] at (-3.4,6.5) {$178.22ms$};
+
+\node[text width=10mm] at (3.2,4.6) {$268.93ms$};
+\node[text width=10mm] at (-3.6,4.6) {$289.05ms$};
+
+\node[text width=10mm] at (3.2,3.3) {$13358.268ms$};
+\node[text width=10mm] at (-3.6,3.3) {$13398.892ms$};
+
+\node[text width=10mm] at (3.2,2.7) {$13358.453ms$};
+
+\node[text width=10mm] at (3.2,2.1) {$13358.516ms$};
+\node[text width=10mm] at (-3.6,2.1) {$13439.685ms$};
+
+\node[text width=10mm] at (3.2,1.5) {$13358.621ms$};
+
+
+%\node[text width=10mm] at (3.2,-0.8) {$15991.13ms$};
+%\node[text width=10mm] at (-3.6,-0.8) {$15870.75ms$};
+
+\node[text width=10mm] at (3.2,0.9) {$13399.144ms$};
+
+\node[text width=10mm] at (3.2,0.3) {$13399.238ms$};
+
+%\node[text width=10mm] at (3.2,-1.5) {$15891.35ms$};
+%\node[text width=10mm] at (-3.6,-1.5) {$15911.63ms$};
+
+\node[text width=10mm] at (-3.6,-0.4) {$13439.787ms$};
+
+\node[text width=10mm] at (-3.6,-1.0) {$13439.829ms$};
+
+%\node[text width=10mm] at (3.2,-2.6) {$15891.53ms$};
+%\node[text width=10mm] at (-3.6,-2.6) {$15911.92ms$};
+
+%\node[text width=10mm] at (3.2,-3.3) {$15932.18ms$};
+%\node[text width=10mm] at (-3.6,-3.3) {$15911.98ms$};
+
+\node[text width=10mm] at (-3.6,-1.6) {$13439.940ms$};
+
+\node[text width=10mm] at (-3.6,-2.2) {$13439.980ms$};
+
+\node[text width=10mm] at (-3.6,-3.5) {$13481.659ms$};
+
+\node[text width=10mm] at (3.2,-4.9) {$15070.751ms$};
+
+\node[text width=10mm] at (3.2,-5.5) {$15070.836ms$};
+
+\node[text width=10mm] at (3.2,-6.1) {$15070.862ms$};
+
+\node[text width=10mm] at (-3.6,-4.2) {$13520.552ms$};
+
+
+
+\node[text width=10mm] at (-3.6,-9.2) {$15777.726ms$};
+\node[text width=10mm] at (3.2,-8.7) {$15091.967ms$};
+
+\node[text width=10mm] at (-3.6,-11.2) {$21026.605ms$};
+\node[text width=10mm] at (3.2,-11.2) {$19662.913ms$};
+
+\node[text width=10mm] at (-3.6,-11.8) {$21026.669ms$};
+\node[text width=10mm] at (3.2,-11.8) {$20987.919ms$};
+
+
+
+
+\draw 
   (\Client 0)
     node[draw,rectangle,fill=yellow!20, rotate=-90]
       (\Client Timeline In) {}
@@ -275,11 +362,11 @@ Note that several of the features suggested by \tcpls are also suggested on \tcp
       (\Server Timeline In) {}
     node[below right] {};
 
-% Vertical flows
+% Vertical flows 
 \draw [-latex] (\Client Timeline In.east) -- (\Client 1);
 \draw [-latex] (\Server Timeline In.east) -- (\Server 1);
 
-\draw [dashed]
+\draw [dashed] 
   (\Client) -- (\Client Timeline In.west)
   (\Client 1) -- (\Client 2)
   (\Server 1) -- (\Server 2)
@@ -302,21 +389,31 @@ Note that several of the features suggested by \tcpls are also suggested on \tcp
   (\Server 12) -- (\Server 13)
   (\Client 12) -- (\Client 13)
   (\Server 12) -- (\Server 16)
-  (\Client 12) -- (\Client 16)
+  (\Client 12) -- (\Client 16)  
   (\Server 17) -- (\Server 21)
   (\Client 17) -- (\Client 21)
   (\Server 21) -- (\Server 22)
   (\Client 21) -- (\Client 22)
   (\Server 22) -- (\Server 23)
   (\Client 22) -- (\Client 23)
-  (\Server 23) -- (\Server 25)
-  (\Client 23) -- (\Client 25)
-
+  (\Server 23) -- (\Server 24)
+  (\Client 23) -- (\Client 24)
+  (\Server 24) -- (\Server 25)
+  (\Client 24) -- (\Client 25)
+  
+  (\Server 25) -- (\Server 26)
+  (\Client 25) -- (\Client 26)
+  (\Event 26) -- (\Event 29)
+  (\Server 26) -- (\Server 39)
+  (\Client 26) -- (\Client 39)
+  (\Event 34) -- (\Event 37)
+  
+ 
   (\Event 9) -- (\Event 11)
   (\Event 12) -- (\Event 14)
   (\Event 18) -- (\Event 20);
 
-% Blocks (Budget constraints)
+
 \filldraw[fill=blue!20]
   (\Server 1.north west) rectangle (\Server 1.south east)
   (\Client 1.north west) rectangle (\Client 1.south east)
@@ -338,26 +435,48 @@ Note that several of the features suggested by \tcpls are also suggested on \tcp
   (\Client 9.north west) rectangle (\Client 9.south east)
   (\Server 12.north west) rectangle (\Server 12.south east)
   (\Client 12.north west) rectangle (\Client 12.south east)
+  ;
+
+\filldraw[fill=red!20]
   (\Server 14.north west) rectangle (\Server 14.south east)
   (\Client 14.north west) rectangle (\Client 14.south east)
   (\Server 15.north west) rectangle (\Server 15.south east)
-  (\Client 15.north west) rectangle (\Client 15.south east)
+  %(\Client 15.north west) rectangle (\Client 15.south east)
   (\Server 16.north west) rectangle (\Server 16.south east)
   (\Client 16.north west) rectangle (\Client 16.south east)
   (\Server 17.north west) rectangle (\Server 17.south east)
-  (\Client 17.north west) rectangle (\Client 17.south east)
+  %(\Client 17.north west) rectangle (\Client 17.south east)
   (\Server 18.north west) rectangle (\Server 18.south east)
-  (\Client 18.north west) rectangle (\Client 18.south east)
-  (\Server 21.north west) rectangle (\Server 21.south east)
+  %(\Client 18.north west) rectangle (\Client 18.south east)
+  
+  (\Server 19.north west) rectangle (\Server 19.south east)
+  
+  (\Client 20.north west) rectangle (\Client 20.south east)
+  %(\Server 21.north west) rectangle (\Server 21.south east)
   (\Client 21.north west) rectangle (\Client 21.south east)
-  (\Server 22.north west) rectangle (\Server 22.south east)
+  %(\Server 22.north west) rectangle (\Server 22.south east)
   (\Client 22.north west) rectangle (\Client 22.south east)
-  (\Server 23.north west) rectangle (\Server 23.south east)
+  %(\Server 23.north west) rectangle (\Server 23.south east)
   (\Client 23.north west) rectangle (\Client 23.south east)
   (\Server 24.north west) rectangle (\Server 24.south east)
-  (\Client 24.north west) rectangle (\Client 24.south east);
-
-
+  %(\Client 24.north west) rectangle (\Client 24.south east)
+  (\Server 25.north west) rectangle (\Server 25.south east)
+  (\Client 25.north west) rectangle (\Client 25.south east)
+  (\Server 26.north west) rectangle (\Server 26.south east)
+  (\Client 26.north west) rectangle (\Client 26.south east)
+  (\Server 27.north west) rectangle (\Server 27.south east)
+  (\Server 28.north west) rectangle (\Server 28.south east)
+  (\Client 28.north west) rectangle (\Client 28.south east)
+  (\Server 29.north west) rectangle (\Server 29.south east)
+  (\Client 29.north west) rectangle (\Client 29.south east)
+  (\Server 33.north west) rectangle (\Server 33.south east)
+  (\Client 34.north west) rectangle (\Client 34.south east)
+  (\Server 37.north west) rectangle (\Server 37.south east)
+  (\Client 37.north west) rectangle (\Client 37.south east)
+  (\Server 38.north west) rectangle (\Server 38.south east)
+  (\Client 38.north west) rectangle (\Client 38.south east)
+  ;
+  
 \draw [-latex] (\Client 1) -- (\Server 1);
 \draw [-latex] (\Server 2) -- (\Client 2);
 \draw [-latex] (\Server 3) -- (\Client 3);
@@ -369,80 +488,118 @@ Note that several of the features suggested by \tcpls are also suggested on \tcp
 \draw [-latex] (\Server 9) -- (\Client 9);
 \draw [-latex] (\Client 12) -- (\Server 12);
 \draw [-latex] (\Client 14) -- (\Server 14);
-\draw [-latex] (\Server 15) -- (\Client 15);
+\draw [-latex] (\Server 15) -- (\Event 15);
 \draw [-latex] (\Server 16) -- (\Client 16);
-\draw [-latex] (\Server 17) -- (\Client 17);
-\draw [-latex] (\Client 18) -- (\Server 18);
-\draw [-latex] (\Client 21) -- (\Server 21);
-\draw [-latex] (\Server 22) -- (\Client 22);
-\draw [-latex] (\Server 23) -- (\Client 23);
-\draw [-latex] (\Client 24) -- (\Server 24);
+\draw [-latex] (\Server 17) -- (\Event 17);
+\draw [-latex] (\Server 18) -- (\Event 18);
+\draw [-latex] (\Server 19) -- (\Event 19);
+\draw [-latex] (\Client 20) -- (\Event 20);
+\draw [-latex] (\Client 21) -- (\Event 21);
+\draw [-latex] (\Client 22) -- (\Event 22);
+\draw [-latex] (\Client 23) -- (\Server 33);
+\draw [-latex] (\Server 24) -- (\Event 24);
+\draw [-latex] (\Server 25) -- (\Client 25);
+\draw [-latex] (\Server 26) -- (\Client 26);
+\draw [-latex] (\Server 27) -- (\Client 34);
+\draw [-latex] (\Client 28) -- (\Server 28);
+\draw [-latex] (\Client 29) -- (\Server 29);
+\draw [-latex] (\Server 37) -- (\Client 37);
+\draw [-latex] (\Client 38) -- (\Server 38);
 
 
 
-% Flows Labels
+
+% Flows Labels 
 \fill
-  (\Event 1)
-    node[above,font=\footnotesize] {\textsc{ClientHello}}
+  (\Event 1) 
+    node[above,font=\footnotesize] {ClientHello}
     node[font=\footnotesize, below] {}
-    (\Event 2)
-    node[above,font=\footnotesize] {\textsc{ServerHello}}
-    node[font=\footnotesize, below] {}
-    (\Event 3)
+    (\Event 2) 
+    node[above,font=\footnotesize] {ServerHello}
+    node[font=\footnotesize, below] {} 
+    (\Event 3) 
     node[above,font=\footnotesize] {cookies-connid-v6-v4-usertimeout}
     node[font=\footnotesize, below] {}
-    (\Event 4)
+    (\Event 4) 
     node[above,font=\footnotesize] {certificate}
     node[font=\footnotesize, below] {}
-    (\Event 5)
+    (\Event 5) 
     node[above,font=\footnotesize] {finished}
     node[font=\footnotesize, below] {}
-    (\Event 6)
+    (\Event 6) 
     node[above,font=\footnotesize] {finished}
     node[font=\footnotesize, below] {}
-    (\Event 7)
+    (\Event 7) 
     node[above,font=\footnotesize] {$STREAM\_ATTACH$}
     node[font=\footnotesize, below] {}
-     (\Event 8)
-    node[above,font=\footnotesize] {seq=0, $DATA\_RECORD$}
+     (\Event 8) 
+    node[above,font=\footnotesize] {$DATA\_RECORD$:1}
     node[font=\footnotesize, below] {}
-    (\Event 9)
-    node[above,font=\footnotesize] {seq=1, $DATA\_RECORD$}
+    (\Event 9) 
+    node[above,font=\footnotesize] {$DATA\_RECORD$:2}
     node[font=\footnotesize, below] {}
-     (\Event 12)
-    node[above,font=\footnotesize] {seq=0, $DATA\_ACK$}
+     (\Event 12) 
+    node[above,font=\footnotesize] {$DATA\_ACK$:1}
     node[font=\footnotesize, below] {}
-    (\Event 14)
-    node[above,font=\footnotesize] {\textsc{ClientHello}+\textsc{Join}}
+    (\Event 14) 
+    node[above,font=\footnotesize] {ClientHello+JOIN}
     node[font=\footnotesize, below] {}
-    (\Event 15)
-    node[above,font=\footnotesize] {$Transport\_NEW$}
+    (\Event 15) 
+    node[above,font=\footnotesize] {$TRANSPORT\_NEW$}
     node[font=\footnotesize, below] {}
-    (\Event 16)
+    (\Event 16) 
+    node[above,font=\footnotesize] {$TRANSPORT\_NEW$}
+    node[font=\footnotesize, below] {}
+    (\Event 17) 
     node[above,font=\footnotesize] {$USER\_TIMEOUT$}
     node[font=\footnotesize, below] {}
-    (\Event 17)
+    (\Event 18) 
     node[above,font=\footnotesize] {FAILOVER}
     node[font=\footnotesize, below] {}
-    (\Event 18)
+    (\Event 19) 
     node[above,font=\footnotesize] {FAILOVER}
     node[font=\footnotesize, below] {}
-    (\Event 21)
+     (\Event 20) 
+    node[above,font=\footnotesize] {$FAILOVER$}
+    node[font=\footnotesize, below] {}
+    (\Event 21) 
+    node[above,font=\footnotesize] {$FAILOVER$}
+    node[font=\footnotesize, below] {}
+    (\Event 22) 
     node[above,font=\footnotesize] {$FAILOVER\_END$}
     node[font=\footnotesize, below] {}
-    (\Event 22)
+    (\Event 28) 
+    node[above,font=\footnotesize,rotate=-50] {$FAILOVER\_END$}
+    node[font=\footnotesize, below] {}
+    (\Event 24) 
     node[above,font=\footnotesize] {$FAILOVER\_END$}
     node[font=\footnotesize, below] {}
-    (\Event 23)
+    (\Event 25) 
+    node[above,font=\footnotesize] {$DATA\_RECORD:4488$}
+    node[font=\footnotesize, below] {}
+    (\Event 26) 
+    node[above,font=\footnotesize] {$DATA\_RECORD:4489$}
+    node[font=\footnotesize, below] {}
+    
+    (\Event 28) 
+    node[above,font=\footnotesize] {$DATA\_ACK:255$}
+    node[font=\footnotesize, below] {}
+    
+    (\Event 29) 
+    node[above,font=\footnotesize] {$DATA\_ACK:256$}
+    node[font=\footnotesize, below] {}
+    
+    (\Event 30) 
+    node[above,font=\footnotesize,rotate=40] {$FAILOVER\_END$}
+    node[font=\footnotesize, below] {}
+    
+    (\Event 37) 
     node[above,font=\footnotesize] {$STREAM\_CLOSE$}
     node[font=\footnotesize, below] {}
-    (\Event 24)
-    node[above,font=\footnotesize] {$STREAM\_CLOSE\_ACK$}
+    (\Event 38) 
+    node[above,font=\footnotesize] {$STREAM\_ACK$}
     node[font=\footnotesize, below] {};
-
 \end{tikzpicture}
-\end{tiny}
-\end{center}
   \caption{Example of record messages exchanged covering the attachment of a
     new stream, the reception of DATA\_RECORD containing application payload, the exchange of DATA\_ACK, a Failover
     event in which the stream is recovered and finally a secure closing the
