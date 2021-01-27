@@ -4,21 +4,13 @@
 In this section, we describe our \tcpls implementation. In a nutshell, it provides the following benefits.
 ($i$) Applications can use parallel streams and multiplex them over \tcp connections with different cryptographic contexts.
 ($ii$) An experimental API that wraps \tls and \tcp and enables applications to
-    handle multihoming, multipathing, and various transport layer mechanisms,
+    handle multihoming, multipathing, and various transport layer mechanisms.
 ($iii$) An improved \tcp extensibility mechanism that sends \tcp options
    through the secure \tcpls channel (as described in
-   Sec.~\ref{sec:background-design}). We currently support Linux's \tcp User Timeout option. Supporting another \tcp option is only a matter of extending the
-sender's API and processing the option on the receiver side. \tcpls's
-internal machinery can already send any \tcp option during (server-side) or
-after (client-side) the \tcp handshake.
+   Sec.~\ref{sec:background-design}). We currently support Linux's \tcp User Timeout option. Supporting another \tcp option is only a matter of extending the sender's API and processing the option on the receiver side. \tcpls's internal machinery can already send any \tcp option during (server-side) or after (client-side) the \tcp handshake.
 ($iv$) Different multipath modes for the \tcpls streams: bandwidth aggregation or independant paths.
-($v$) The ability for the server to send eBPF bytecode over the secure
-  channel to upgrade the client's \tcp congestion control scheme or
-  tune other \tcp mechanisms~\cite{brakmo2017tcp,tran2019beyond}.
-  Variable-length options (e.g., eBPF bytecode) can be sent within streams to
-  take advantage of bandwidth aggregation or Failover if those features are
-  enabled.
-($vi$) Different Connection Migration modes: Failover and Application-level
+($v$) The ability for the server to send eBPF bytecode over the secure channel to upgrade the client's \tcp congestion control scheme or tune other \tcp mechanisms~\cite{brakmo2017tcp,tran2019beyond}. Variable-length options (e.g., eBPF bytecode) can be sent within streams to take advantage of bandwidth aggregation or Failover if those features are enabled.
+($vi$) Different connection migration modes: Failover and Application-level
 Connection Migration.
 
 
@@ -29,7 +21,7 @@ Connection Migration.
 %showcase those features but is however not yet ready for production, as many
 %bugs likely remain despite our unit tests and integration tests. Portability was
 %neither part of our goals, but might be necessary for a production ready \tcpls
-%library.  
+%library.
 
 \subsection{The \tcpls API}
 
@@ -75,29 +67,14 @@ Such a feature may be implemented through a negotiation of the aggregation
 mode.
 
 Our implementation currently includes a round-robin scheduler. We expect to
-support other schedulers in the future allow the application to select its preferred scheduler through the API, or even send as eBPF bytecode over the session. The more \tcpls receives records in order, the more it can deliver them in a zero-copy fashion to the application.
-When a record is received out-of-sequence, its content is copied in
-a reordering buffer. The performance of our multipath
-bandwidth aggregation is evaluated in Section~\ref{sec:bwaggr}
+support other schedulers in the future adn allow the application to select its preferred scheduler through the API, or even send it as eBPF bytecode over the session. The more \tcpls receives records in order, the more it can deliver them in a zero-copy fashion to the application. When a record is received out-of-sequence, its content is copied in a reordering buffer. The performance of our multipath bandwidth aggregation is evaluated in Sec.~\ref{sec:bwaggr}
 
 \subsubsection{Failover}\label{failover}
 Failover is a binary mode (on/off) that is fully internal to \tcpls.
-Once activated,
-\tcpls exchanges acknowledgments for records received on each stream. These
-acknowldgements are stream-based and configurable. The default acknowledgment
-policy is to acknowledge every 16 received records, or when a stream has process more
-than $249,600$ bytes since the last acknowledgement. When a \tcp connection
-sustaining \tcpls streams suffers from a network outage (e.g., a $RST$ is
-received or the connection became idle for too long), we move the stream to a
-new \tcp connection, retransmit the unacked records and resume the transfer. Our
-prototype handles failover over IPv4 and IPv6 \tcp connections, and by default,
-chooses different source and destination addresses than the failed \tcp
-connection if some are available.
+Once activated, \tcpls exchanges acknowledgments for records received on each stream. These acknowldgements are stream-based and configurable. The default acknowledgment policy is to acknowledge every 16 received records, or when a stream has processed more than $249,600$ bytes since the last acknowledgement. When a \tcp connection sustaining \tcpls streams suffers from a network outage (e.g., a \rst is received or the connection becomes idle for too long), we move the stream to a new \tcp connection, retransmit the unacked records, and resume the transfer. Our prototype handles failover over IPv4 and IPv6 \tcp connections, and by default, chooses different source and destination addresses than the failed \tcp connection if some are available.
 %Failover might be negotiated by both party, or
 %enabled by default by both party.
-Depending on the application type, Failover
-might be enabled or not by default. It is also possible to activate Failover during a \tcpls session by sending a message on the secure channel. 
-We evaluate the performance of Failover in Section~\ref{sec:eval_failover}
+Depending on the application type, Failover might be enabled or not by default. It is also possible to activate Failover during a \tcpls session by sending a message on the secure channel. We evaluate the performance of Failover in Sec.~\ref{sec:eval_failover}
 
 %\subsubsection{Application-level Connection Migration}
 %\label{sec:connmigr}
@@ -118,15 +95,9 @@ We evaluate the performance of Failover in Section~\ref{sec:eval_failover}
 
 \subsection{\tcpls Session Establishment}
 
-One notable feature of \quic is its ability to establish a secure connection within
-one round-trip-time with a new server. For subsequent connections with the same server, \quic can
-even include data during the handshake.
+One notable feature of \quic is its ability to establish a secure connection within one round-trip-time with a new server. For subsequent connections with the same server, \quic can even include data during the handshake.
 
-\tls 1.3 also includes a fast handshake for subsequent connections. When used with
-\tcp Fast Open (TFO)~\cite{radhakrishnan2011tcp}, the \tls handshake can be sent
-together with \tcp's three way handshake. However, TFO suffers from privacy
-issues~\cite{sy2020enhanced}. For this reason, we did not enable it by default
-in \tcpls. We could revise this decision if a solution similar to \tcp
+\tls 1.3 also includes a fast handshake for subsequent connections. When used with \tcp Fast Open (TFO)~\cite{radhakrishnan2011tcp}, the \tls handshake can be sent together with \tcp's three way handshake. However, TFO suffers from privacy issues~\cite{sy2020enhanced}. For this reason, we did not enable it by default in \tcpls. We could revise this decision if a solution similar to \tcp
 FOP~\cite{sy2020enhanced} is included in mainline TCP implementations.
 
 
@@ -141,5 +112,3 @@ FOP~\cite{sy2020enhanced} is included in mainline TCP implementations.
 %issues~\cite{sy2020enhanced}, thus we did not enable it by default. In the
 %future, we may expect to revise our choice if a solution similar to \tcp
 %FOP~\cite{sy2020enhanced} gets implemented in the Linux kernel.
-
-
