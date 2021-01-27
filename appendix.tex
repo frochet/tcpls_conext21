@@ -361,7 +361,10 @@ twice.
   (\Server 9.north west) rectangle (\Server 9.south east)
   (\Client 9.north west) rectangle (\Client 9.south east)
   (\Server 12.north west) rectangle (\Server 12.south east)
-  (\Client 12.north west) rectangle (\Client 12.south east)
+  (\Client 12.north west) rectangle (\Client 12.south east);
+
+
+\filldraw[fill=red!20]
   (\Server 14.north west) rectangle (\Server 14.south east)
   (\Client 14.north west) rectangle (\Client 14.south east)
   (\Server 15.north west) rectangle (\Server 15.south east)
@@ -380,7 +383,6 @@ twice.
   (\Client 23.north west) rectangle (\Client 23.south east)
   (\Server 24.north west) rectangle (\Server 24.south east)
   (\Client 24.north west) rectangle (\Client 24.south east);
-
 
 \draw [-latex] (\Client 1) -- (\Server 1);
 \draw [-latex] (\Server 2) -- (\Client 2);
@@ -440,7 +442,7 @@ twice.
     node[above,font=\footnotesize] {\textsc{ClientHello}+\textsc{Join}}
     node[font=\footnotesize, below] {}
     (\Event 15)
-    node[above,font=\footnotesize] {$Transport\_NEW$}
+    node[above,font=\footnotesize] {$TRANSPORT\_NEW$}
     node[font=\footnotesize, below] {}
     (\Event 16)
     node[above,font=\footnotesize] {$USER\_TIMEOUT$}
