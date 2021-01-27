@@ -1,6 +1,7 @@
+% !TEX root = ./paper.tex
 \tcp and \tls were designed as independent protocols, but they are very often
 used together. In this paper, we have shown that this is possible to design and
-implement the \tcpls protocol that is fast, flexible and secure by closely
+implement the \tcpls protocol that is fast, flexible, and secure by closely
 coupling \tcp and \tls.
 
 \tcpls inherits the security features of \tls 1.3 and all the reliability and
@@ -12,7 +13,7 @@ encrypted and authenticated and also hidden from middleboxes. \tcpls leverages
 these control messages to support fast failovers, but also offer smooth
 migration of the \tcpls session from one path to another or provide bandwidth
 aggregation under full control of the application throught an API. \tcpls can
-also use the secure channel to extend TCP with new options and even use the
+also use the secure channel to extend \tcp with new options and even use the
 \tcpls session to exchange a different congestion control scheme that is then
 used for this session.
 
@@ -21,7 +22,7 @@ flexible API that allows the applications to perform zero-copy data transfers,
 and easily manipulate the different features presented in this research work.
 Our performance evaluation shows that this prototype is more than twice as fast
 as currently available \quic implementations while already supporting additional
-features such as multipath, failover and connection migration.
+features such as multipath, failover, and connection migration.
 
 \tcpls is both simple and powerful. Simple because it can be implemented inside
 existing \tls libraries without any kernel change in contrast to \tcp. \tcpls is
