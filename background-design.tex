@@ -36,7 +36,7 @@
         \node[conman, name=CM, below= 7.5mm and 0mm of application](crypto){Crypto};
         \node[tcp, below= 4.5mm and 0mm of tcpls1, xshift=-6mm](tcpx1){\texttt{TCP}$_1$};
         \node[tcp, right=5mm and 0mm of tcpx1, yshift=-4mm, xshift=2mm](tcpy1){\texttt{TCP}$_2$};
-        \node[label,  below=8.5mm and 0mm of tcpx1](ip11){IPV4};
+        \node[label,  below=8mm and 0mm of tcpx1](ip11){IPV4};
         \node[label,  below=4mm and 0mm of tcpy1](ip12){IPV6};
 
 
@@ -45,7 +45,7 @@
         \draw [red, ultra thick] (2.3,-2.5) -- (4.8,-2.5);
         \draw(2.3,-4.5) rectangle (4.8,-3.8);
         \draw[fill=red!50] (3.6,-0.3) ellipse (9pt and 4pt);
-        \node[application, right= 0mm and 43mm of application, xshift=-9mm](application2){Application};
+        \node[application, right= 0mm and 43mm of application, xshift=-8mm](application2){ Application};
         \node[tcpls, name=TCPLS, below= 6.3mm and 0mm of application2, xshift=0.3mm](tcpls2){\tcpls};
         \node[api, name=API, below= 3.0mm and 0mm of application2, , xshift=0.3mm](api2){API};
         \node[conman, name=CM, below= 17mm and 0mm of application2](cm2){CM};
