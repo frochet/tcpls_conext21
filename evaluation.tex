@@ -1,10 +1,7 @@
 % !TEX root = ./paper.tex
 
 In this section, we evaluate \tcpls using two different types of experiments.
-First, we analyze the raw performance of our \tcpls prototype and the interactions
-with real middleboxes in a lab with a few servers. We then emulate more complex
-network scenarios that include failover and multipathing using
-Mininet~\cite{handigol2012reproducible}.
+First, we analyze the raw performance of our \tcpls prototype and how \tcpls interacts with middleboxes in a controlled environment. We then emulate, using Mininet~\cite{handigol2012reproducible}, more complex scenarios including failover and multipathing.
 
 
 %Our objective is to evaluate whether our design and implementation are indeed
@@ -24,84 +21,54 @@ Mininet~\cite{handigol2012reproducible}.
 %reproducible for future works, as the quic implementations continue to evolve.
 
 
-\subsection{Raw Performance}
-\label{sec:perf}
+\subsection{Raw Performance} \label{sec:perf}
 
 To evaluate the raw performance (Sec.~\ref{sec:perf}) and middlebox traversal
-(Sec.~\ref{sec:middlebox}) of our \tcpls prototype, we use the testbed shown in
-Fig.~\ref{fig:perf_testbed}. It contains three servers equipped with Intel Xeon
-CPU E5-2630 2.40GHz, 16 threads, at least 16~GB RAM, running Debian with Linux
-5.9 and 5.7 kernels. Two of these machines are used as Client and Server, while
-the third one is used as a router or a middlebox. Each machine is equipped with
-an Intel XL710 2x40Gbps NIC. With jumbo frames, a single \tcp connection can
-saturate the 40~Gbps path. With a 1500 bytes MTU, a single connection reaches 22~Gbps.
+(Sec.~\ref{sec:middlebox}) of our \tcpls prototype, we use the testbed depicted in Fig.~\ref{fig:perf_testbed}. Our testbed is made of three servers equipped with Intel Xeon CPU E5-2630 2.40GHz, 16 threads, at least 16~GB RAM, running Debian with Linux 5.9 and 5.7 kernels. Two of these machines are used as, respectively, Client and Server, while the third one is used as a router or a middlebox, depending on the scenario. Each machine is equipped with an Intel XL710 2x40Gbps NIC. With jumbo frames, a single \tcp connection can saturate the 40~Gbps path. With a 1500 bytes MTU, a single connection reaches 22~Gbps.
 
 \begin{figure}[!t]
   \begin{center}
     \includegraphics[width=.7\columnwidth]{figures/testbed.png}
   \end{center}
   \vspace{-0.5cm}
-  \caption{Performance Measurements Setups. C = Client. S = Server. R = Router/Middlebox.}
+  \caption{Performance Measurements Setup. C = Client. S = Server. R = Router/Middlebox.}
   \label{fig:perf_testbed}
-%    \vspace{-0.5cm}
 \end{figure}
 
 
-The first question that we want to answer is whether \tcpls can compete with the
-traditionnal \tls over \tcp stack. We then compare our \tcpls prototype with
+The first question we want to answer is whether \tcpls can compete with the
+traditionnal \tls over \tcp stack. We also compare our \tcpls prototype with
 different \quic implementations.
 
-
 \paragraph*{\tcpls}
-For all the \tcpls measurements, we used a custom application that performs
+For all the \tcpls measurements, we use a custom application that performs
 large memory-to-memory transfers over a \tcpls session using a single stream.
-\tcpls was configured to use the AES128-GCM-SHA256 cipher.
-Fig.~\ref{fig:perf} provides the goodput measured in our
-testbed. We report both the bandwidth in megabits per second and packets per
-second. Each bar in this figure is the median measured over 10 seconds of stable
-throughput. The bottom bar is the highest median goodput that we measured with \tcpls:
-12.4~Gbps. This result was obtained with jumbo frames (i.e. 9000 bytes MTU)
-and using TCP Segmentation Offload (TSO) on the NICs. TSO is a standard feature
-that is enabled by all high-speed NICS. This result is impressive given that
-we measured that
-AES128-GCM-SHA256 peaks at 13.1~Gbps when doing in-memory encrytion/decryption on our
-testbed's servers. 
-The next bar shows that with TSO and a
-standard frame size (1500 bytes MTU), the goodput still reaches 10.84 Gbps. These
-results should be compared with the 22~Gbps that TCP reaches in the same
-environment using \texttt{iperf} but without any encryption. 
+\tcpls is configured to use the AES128-GCM-SHA256 cipher. Fig.~\ref{fig:perf} provides the goodput as measured in our testbed. We report both the bandwidth in megabits per second and packets per second. Each bar in Fig.~\ref{fig:perf} corresponds to the median measured over 10 seconds of stable throughput. The bottom bar (labeled ``\tcpls tso on mtu 900'') is the highest median goodput that we measured with \tcpls: 12.4~Gbps. This result was obtained with jumbo frames (i.e. ,9000 bytes MTU) and using \tcp Segmentation Offload (TSO) on the NICs. TSO is a standard feature that is enabled by all high-speed NICS. This result is impressive given that we measure that AES128-GCM-SHA256 peaks at 13.1~Gbps when doing in-memory encrytion/decryption on our testbed's servers.
+The next bar (labeled ``\tcpls tso on'') shows that with TSO and a standard frame size (1,500 bytes MTU), the goodput still reaches 10.84 Gbps. These
+results should be compared with the 22~Gbps \tcp reaches in the same
+environment using \texttt{iperf} but without any encryption.
 
 %the shows several interesting results. First, while offering similar (and more)
 %capabilities than what QUIC is providing today,
 %\tcpls is also more than twice faster than the strongest evaluated QUIC
 %implementation (quicly) over CPU limited experimentations. We evaluate \tcpls
 
-We also compared \tcpls's native bandwidth aggregation using two streams with a single stream
-produced by our \tcpls client on the top of the \mptcp kernel creating two
-\mptcp subflows. Our \tcpls scheduler is a simple round-robin. The \mptcp
-scheduler is the lowest-RTT scheduler enabled by default. Both measurements are
-taken over the same 0.94.7 \mptcp kernel with a path MTU of 1500, in which
-\mptcp is disabled  when the \tcpls native experiment is performed.
-Surprisingly, \tcpls's native bandwidth aggregation outperforms \mptcp. Both
-experiments are CPU limited, and suffers from a raw throughput degradation
-compared to the single-path experiment.  However, \tcpls seems to handle it
-quite well despite the naive scheduler.
+We also compared \tcpls's native bandwidth aggregation using two streams with a single stream produced by our \tcpls client on the top of the \mptcp kernel creating two \mptcp subflows. Our \tcpls scheduler is a simple round-robin. The \mptcp scheduler is the lowest-RTT scheduler enabled by default. Both measurements are taken over the same 0.94.7 \mptcp kernel with a path MTU of 1,500, in which \mptcp is disabled when the \tcpls native experiment is performed.  Surprisingly, \tcpls's native bandwidth aggregation outperforms \mptcp. Both experiments are CPU limited, and suffers from a raw throughput degradation compared to the single-path experiment.  However, \tcpls seems to handle it quite well despite the naive scheduler.
 
-We then evaluated the impact of adding the \tcpls-level acknowledgements
+We then evaluate the impact of adding the \tcpls-level acknowledgements
 described in Sec.~\ref{failover} to support failover.
 % Thanks to these acknowledgements, \tcpls can support failover.
 From a performance viewpoint, they increase the number of control records and
 the number of system calls. Our prototype currently sends a \tcpls-ack for every
 16 received records. Our measurements indicate that with this functionnality,
-\tcpls reaches 9.65 Gbps with a path MTU of $1500$ bytes.
-
+\tcpls reaches 9.65 Gbps with a path MTU of 1,500 bytes.
 
 \begin{figure}[!t]
   \begin{center}
     \includegraphics[width=\columnwidth]{figures/perf_analysis.png}
   \end{center}
 \vspace{-0.5cm}
-  \caption{The \tcpls prototype is faster than \tls over \tcp and different \quic implementations.}
+  \caption{\tcpls raw performance and comparison with state of the art.  The \tcpls prototype is faster than \tls over \tcp and different \quic implementations.}
   \label{fig:perf}
 \end{figure}
 
@@ -115,29 +82,7 @@ the number of system calls. Our prototype currently sends a \tcpls-ack for every
 
 \paragraph*{\tcpls vs. \tls/\tcp} We now compare the performance of \tcpls with
 the traditional \tls over \tcp stack. To have a fair comparison, we use
-\texttt{picotls}'s perf client/server
-implementation with the same commit as our initial fork for \tcpls.
-Fig.~\ref{fig:perf} shows that \tls/\tcp provides a lower performance than
-\tcpls with regular and jumbo frames. This can be explained by the receiving
-buffer size provided to \texttt{read()}, which is hardcoded to 16,384 bytes
-in \texttt{picotls}'s perf client. This implementation choice
-results in fragmentation on the
-receiver and prevents it from using the zero-copy code path provided by the
-library. \tcpls uses a larger read buffer and benefits from zero-copy. At first,
-one may consider this as an unfair comparison, however the devil is in the
-details. In our \tcpls implementation, the application developers cannot touch
-\texttt{read()}'s interface. This implies that an application developer cannot
-missuse the relationship between \tls and \tcp by creating fragmented records
-and doing unecessary copies to handle those fragments. \tcpls's design and
-implementation try to prevent fragmentation by first, having a sufficiently
-large read buffer size. Second, \tcpls only starts deciphering a record when it has
-received the entire content. \tls/\tcp record fragmentation is provided by \tls
-libraries as a usability feature that spares the application developers from
-taking into account all \tls details, at the cost of lower performance. With
-\tcpls, application developers can ignore \tls details without missusing the
-interface, which is the reason why this comparison is interesting.\tcpls
-constrains the application developer to use the buffer type provided by the API,
-but offers zero-copy deciphered records in return.
+\texttt{picotls}'s perf client/server implementation with the same commit as our initial fork for \tcpls. Fig.~\ref{fig:perf} shows that \tls/\tcp provides a lower performance than \tcpls with regular and jumbo frames. This can be explained by the receiving buffer size provided to \texttt{read()}, which is hardcoded to 16,384 bytes in \texttt{picotls}'s perf client. This implementation choice results in fragmentation on the receiver and prevents it from using the zero-copy code path provided by the library. \tcpls uses a larger read buffer and benefits from zero-copy. At first, one may consider this as an unfair comparison, however the devil is in the details. In our \tcpls implementation, the application developers cannot touch \texttt{read()}'s interface. This implies that an application developer cannot missuse the relationship between \tls and \tcp by creating fragmented records and doing unecessary copies to handle those fragments. \tcpls's design and implementation try to prevent fragmentation by, first, having a sufficiently large read buffer size. Second, \tcpls only starts deciphering a record when it has received the entire content. \tls/\tcp record fragmentation is provided by \tls libraries as a usability feature that spares the application developers from taking into account all \tls details, at the cost of lower performance. With \tcpls, application developers can ignore \tls details without missusing the interface, which is the reason why this comparison is interesting. \tcpls constrains the application developer to use the buffer type provided by the API, but offers zero-copy deciphered records in return.
 
 %\todo{OB: pas sur que la suite est nécessaire} Moreover, but this has not
 %yet been implemented, it could be interesting to match the TLS record size to
@@ -146,29 +91,16 @@ but offers zero-copy deciphered records in return.
 
 \paragraph{\tcpls vs. \quic}
 Although \quic~\cite{draft-ietf-quic-transport} is a young protocol, there are
-already more than a dozen
-implementations~\cite{marx2020same,quicimplem,yang2020making} under active
-development. We compiled and installed three representative \quic
-implementations in our testbed: Facebook's \mvfst~\cite{mvfst-github,Joras_mvfst},
-Microsoft's \msquic~\cite{msquic-github} and Fastly's
-\quicly~\cite{quicly-github}. They are all developed by large companies that (plan to) use
-them in production and include their own benchmarking application to perform
-throughput measurements. Furthermore, \mvfst and \quicly support Generic
-Segmentation Offload (GSO), which should improve performance by offloading \udp
-segmentation and checksum computation to our NICs. We use the
+already more than a dozen implementations~\cite{marx2020same,quicimplem,yang2020making} under active
+development. We compiled and installed three representative \quic implementations in our testbed: Facebook's \mvfst~\cite{mvfst-github,Joras_mvfst}, Microsoft's \msquic~\cite{msquic-github}, and Fastly's
+\quicly~\cite{quicly-github}. They are all developed by large companies that (plan to) use them in production and include their own benchmarking application to perform throughput measurements. Furthermore, \mvfst and \quicly support Generic Segmentation Offload (GSO), that should improve performance by offloading \udp segmentation and checksum computation to our NICs. We use the
 implementation's bechmarking application as is, exploiting the optional
 arguments provided by their interface to increase the throughput but drawing the
-line there. That is, we do not modify the \quic implementations and use their default
-cipher. Note that, we
-tried to match the transport parameters to the same ones used by \tcpls when they did not
-adversaly affect \quic's performance too much. For example, several congestion
-control algorithms are implemented in the different \quic stacks, but setting a
-different one than the suggested default led to lower performance or unstable
-throughput measurements.
+line there. That is, we do not modify the \quic implementations and use their default cipher. Note that, we tried to match the transport parameters to the same ones used by \tcpls when they did not adversaly affect \quic's performance too much. For example, several congestion control algorithms are implemented in the different \quic stacks, but setting a different one than the suggested default led to lower performance or unstable throughput measurements.
 
 The results shown in Fig.~\ref{fig:perf} show that \tcpls compares favorably
 with the tested \quic implementations. The fastest \quic implementation is
-\quicly. Thanks to GSO, it reaches 4.4~Gbps in our testbed with a 1500 bytes
+\quicly. Thanks to GSO, it reaches 4.4~Gbps in our testbed with a 1,500 bytes
 MTU. This result is directly comparable to \tcpls with TSO enabled, which still
 performs more than twice faster at 100\% CPU peak with similar configurations
 for the receiving buffer size. Suprisingly, \quicly's performance decreases with
@@ -201,22 +133,17 @@ jumbo frames but is still faster than when GSO is disabled. In our testbed,
 \subsection{Middlebox Interference}
 \label{sec:middlebox}
 
-A full evaluation of middlebox interference would require measurements in various operational 
-networks that include such devices \cite{honda2011still,raman2020measuring,o2016tls}. This is 
-outside the scope of this paper and left for further work.
-We tested \tcpls against different opensource and commercial stateful
+A full evaluation of middlebox interference would require measurements in various operational networks that include such devices~\cite{honda2011still,raman2020measuring,o2016tls}. This is
+outside the scope of this paper and left for further work. Nevertheless, we have tested \tcpls against different opensource and commercial stateful
 firewalls and proxy implementations (i.e., pfSense, IPFire, Cisco ASAv,
 mitmproxy) and found no unexpected interference. Stateful filtering and stateful
-packet inspection policies did not impact connectivity, and transparent TLS proxy
-successfully succesfuly triggered \tcpls fallback to \tls/\tcp. Still, the security
-appliances that block \tls 1.3 or some of its features 
+packet inspection policies did not impact connectivity, and transparent TLS proxy successfully triggered \tcpls fallback to \tls/\tcp. Still, the security
+appliances that block \tls 1.3 or some of its features
 \cite{lee2019matls,Bock_China,raman2020measuring} would also block \tcpls.
 %pervasive monitoring allows for configurable TLS extensions blocking
 %\cite{rfc7258}. This is handled properly by \tcpls fallback mechanism.
 
-When faced with middleboxes that intercept \tls 1.3
-\cite{Bock_China,raman2020measuring}, we need to consider the \tcpls handshake
-TLS extensions: \tcpls, \join, \texttt{Sessid}, and \texttt{Cookie}. The other
+When faced with middleboxes that intercept \tls 1.3~\cite{Bock_China,raman2020measuring}, we need to consider the \tcpls handshake \tls extensions: \tcpls, \join, SESSID, and COOKIE. The other
 \tcpls messages through the Secure Control Channel are indistinguishable from
 classical \tls records (i.e., they look like encrypted application data
 for the middlebox). If a clients attempts to open a \tcpls session
@@ -251,8 +178,8 @@ We compare the bandwidth aggregation capability of \tcpls to the state-of-the-ar
 \mptcp. To this end, we build a Mininet network~\cite{handigol2012reproducible}
 composed of a client and a server, both
 dual-stacks. The IPv4 and IPv6 paths are completely disjoint in this emulated
-network. 
-Both protocols run in the same Mininet topology with two IP paths available, 
+network.
+Both protocols run in the same Mininet topology with two IP paths available,
 each offering 25 Mbps and a latency of 10 ms.
 The experiment consists in transfering
 a 60MB file over a single path and then enabling the second one after $5$ seconds.
@@ -362,17 +289,17 @@ failures with spurious $RST$, but \mptcp indefinitly stalled after the second $R
 
 \tcpls however, finds the right path and recovers the session as fast as
 expected, similarly to the $drop$ and $RST$ outage studied in Figure~\ref{fig:recovery}.
-Moreover, since those connections are fresh, they can quickly use the available bandwidth. 
+Moreover, since those connections are fresh, they can quickly use the available bandwidth.
 
 \subsection{Application-Level Migration}
 
 When there are multiple IP paths, connection migration might be a
 powerful tool to improve the application's resilience to network problems. Applications
 can take advantage of the \tcpls API to migrate their traffic from one network
-path to another. 
+path to another.
 Fig.~\ref{fig:conn_migration} shows the result of an Application-level
-connection migration demo using the API (i.e., the application 
-decides when to migrate, and we expose a simplistic code flow to perform it). 
+connection migration demo using the API (i.e., the application
+decides when to migrate, and we expose a simplistic code flow to perform it).
 In this experiment, we rely on the Mininet topology from Sec.~\ref{sec:bwaggr}.
 We set a
 bandwidth of 30~Mbps on each path, a round-trip-time of 40~ms for the v4 link,
