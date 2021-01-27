@@ -308,11 +308,11 @@ a 60~MB file from a server and migrates twice (i.e., from the IPv4 to the IPv6 p
 and once again to the IPv4 path).
 
 Triggering the first connection migration involves chaining 5 API calls: first,
-if a \tcp connection is not already established, the application has the choice \todo{why choice?}
-of issuing a \texttt{tcpls\_connect()} that creates a $\tcp$ connection and
-returns a \texttt{transport identification} to the application. The second option
-is to  directly call the required \texttt{tcpls\_handshake()} configured with handshake properties $TFO$,
-and announcing a \join over the IPv6 connection. Then, the creation of a new stream
+if a \tcp connection is not already established, the application issues a
+\texttt{tcpls\_connect()} that creates a $\tcp$ connection (or directly uses
+\texttt{tcpls\_handshake()} with TFO enabled. Calling \texttt{tcpls\_handshake()}
+is required and needs to be configured with handshake properties announcing a
+\join over the IPv6 connection. Then, the creation of a new stream
 \texttt{tcpls\_stream\_new()} for the IPv6 connection, finally followed by the
 attachment of this new stream \texttt{tcpls\_streams\_attach()} and the secure
 closing of the IPv4 \tcp connection using \texttt{tcpls\_stream\_close()}.
