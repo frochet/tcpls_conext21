@@ -54,26 +54,6 @@ environment using \texttt{iperf} but without any encryption.
 %\tcpls is also more than twice faster than the strongest evaluated QUIC
 %implementation (quicly) over CPU limited experimentations. We evaluate \tcpls
 
-We also compared \tcpls's native bandwidth aggregation using two streams with a
-single stream produced by our \tcpls client on the top of the \mptcp kernel
-creating two \mptcp subflows. Our \tcpls scheduler is a simple round-robin. The
-\mptcp scheduler is the lowest-RTT scheduler enabled by default. Both
-measurements are taken over the same 0.94.7 \mptcp kernel with a path MTU of
-1,500, in which \mptcp is disabled when the \tcpls native experiment is
-performed.  Surprisingly, \tcpls's native bandwidth aggregation outperforms
-\mptcp. Both experiments are CPU limited, and suffers from a raw throughput
-degradation compared to the single-path experiment. \tcpls's reordering is
-implemented with an heap~\cite{heap-github} highly efficient in
-resizing, but the main factor holds on the number of packets treated for
-reordering. Inside \mptcp, it reorders packets of $1,460$ bytes, even when those
-packets are part of the \textit{same} record. This information is only available
-at the \tcpls level, which reorders large chunk of data instead (max payload is
-$16,384$ bytes). This is somehow similar to the $Jumbo$ frames optimization goal:
-pushing larger data packets to reduce the number of times the same code is
-called.  Besides
-\tcpls's native  multipath uses the \tcp optimized stack, which together offer a
-strong secure bandwidth aggregation solution.
-
 We then evaluate the impact of adding the \tcpls-level acknowledgements
 described in Sec.~\ref{failover} to support failover.
 % Thanks to these acknowledgements, \tcpls can support failover.
@@ -81,6 +61,41 @@ From a performance viewpoint, they increase the number of control records and
 the number of system calls. Our prototype currently sends a \tcpls-ack for every
 16 received records. Our measurements indicate that with this functionnality,
 \tcpls reaches 9.65 Gbps with a $1500$ bytes MTU.
+
+%% We also compared \tcpls's native bandwidth aggregation using two streams with a
+%% single stream produced by our \tcpls client on the top of the \mptcp kernel
+%% creating two \mptcp subflows. Our \tcpls scheduler is a simple round-robin. The
+%% \mptcp scheduler is the lowest-RTT scheduler enabled by default. Both
+%% measurements are taken over the same 0.94.7 \mptcp kernel with a path MTU of
+%% 1,500, in which \mptcp is disabled when the \tcpls native experiment is
+%% performed.  Surprisingly, \tcpls's native bandwidth aggregation outperforms
+%% \mptcp. Both experiments are CPU limited, and suffers from a raw throughput
+%% degradation compared to the single-path experiment. \tcpls's reordering is
+%% implemented with an heap~\cite{heap-github} highly efficient in
+%% resizing, but the main factor holds on the number of packets treated for
+%% reordering. Inside \mptcp, it reorders packets of $1,460$ bytes, even when those
+%% packets are part of the \textit{same} record. This information is only available
+%% at the \tcpls level, which reorders large chunk of data instead (max payload is
+%% $16,384$ bytes). This is somehow similar to the $Jumbo$ frames optimization goal:
+%% pushing larger data packets to reduce the number of times the same code is
+%% called.  Besides
+%% \tcpls's native  multipath uses the \tcp optimized stack, which together offer a
+%% strong secure bandwidth aggregation solution.
+
+
+Our next step was to evaluate the cost of the multipath feature of \tcpls.
+We configured IPv4 and IPv6 addresses on the Client and the Server and created
+a \tcpls session that uses two \tcp connections. Our \tcpls prototype uses a
+round-robin scheduler to send the records over the available connections. This
+is not the best scheduler for a multipath
+transport~\cite{paasch2014experimental} since it will force the
+receiver to reorder the received records. \tcpls’s reordering is implemented
+with an efficient heap pushing unordered records in $O(log(n))$
+for $n$ elements in the heap, and retrieving ordered records
+in $O(1)$. Our measurements show that when using two subflows in our testbed,
+\tcpls can reach a goodput of \todo{x} Gbps, i.e. less than 10\% below the
+failover mode. \tcpls' multipath support could be improved by adding some
+of the schedulers adopted by \mptcp. 
 
 
 \begin{figure}[!t]
