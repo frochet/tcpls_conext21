@@ -10,22 +10,22 @@ lightweight \tcpls data and \tcp options as \textsc{EncryptedExtensions}. Any
 extension sent with the \textsc{ServerHello} message is encrypted with the
 handshake key, and is not part of the context used to derive the eventual
 application key. If the client does not support some extension, it echoes back
-an alert with the value of the option it does not recognize, but the connection
+an alert with the value of the option it does not recognize, letting the connection
 continues.
 
 A reasonable approach to design extensibility mechanisms in today's Internet
 is to avoid leaking any information that could help an on-path attacker
 recognize specific users or applications. Indeed, censorship~\cite{Morshed2017a,
 Gosain2017a,Chai2019a} can be easily implemented when protocol messages can be
-distinguished, and avoiding trivial opportunities to implement censorship should
+distinguished. Avoiding trivial opportunities to implement censorship should
 become the bare minimum in designing a new protocol. \tcpls's control protocol
-considers those problems by avoiding unencrypted data in the
-\textsc{ClientHello}.
+considers those problems by avoiding plaintext extensions data in the
+\textsc{ClientHello} as most as possible.
 
 Once the secure handshake has succeeded, the hosts can exchange \tls records.
 To prevent middlebox interference, the \tls 1.3 Record Protocol ensures that any
-new message appears as an \textsc{AppData} message type while the true content
-type (TType) is stored at the end of the encrypted payload. \tcpls uses this
+new message appears as an \textsc{AppData} message type. \tls stores the true
+content type (TType) at the end of the encrypted payload. \tcpls uses this
 feature of \tls 1.3 to encode the control messages that are sent over the secure
 channel as new \tls record types.
 
