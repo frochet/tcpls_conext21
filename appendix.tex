@@ -102,7 +102,6 @@ migration. Note that, HOL-blocking avoidance is incompatible with the
 aggregation of bandwidth with multipathing (the application can do either one
 but not both at the same time).
 
-
 \section{Capability Comparison}
 
 
@@ -115,7 +114,9 @@ transport-layer functionalities on top of \tcp, while exposing a simple but
 powerful API to let the application composes the properties its transport should
 have.
 
-Note that several of the features suggested by \tcpls are also suggested on \tcp or \quic via research works such as a new socket API for explicit \mptcp \cite{hesmans2016enhanced}, or eBPF plugins in
+Note that several of the features suggested by \tcpls are also suggested on \tcp
+or \quic via research works such as a new socket API for explicit \mptcp
+\cite{hesmans2016enhanced}, or eBPF plugins in
 \quic~\cite{de2019pluginizing}.
 
 \begin{table*}[!t]
@@ -148,7 +149,9 @@ Note that several of the features suggested by \tcpls are also suggested on \tcp
 
 \section{Failover Protocol}
 
-\todo{Describe the protocol}
+Figure~\ref{fig:protocol_example} gives a selected set of messages during the
+establishment of a \tcpls session, a file transfer and a network failure with
+the failover feature enabled by default on both peer.
 
 % Agents
 \def\Client{Client}
