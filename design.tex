@@ -181,18 +181,20 @@ to the right \tcpls session, and discards the cookie).
 
 Upon network outage, \tcpls can recover the session over another \tcp
 connection. When the failover mode is enabled, \tcpls sends stream-level record
-acknowledgements announcing to the peer the records that have been received
+acknowledgments announcing to the peer the records that have been received
 over each stream. Upon network outage, \tcpls \textbf{\textit{moves}} the
 active streams out of the broken \tcp connection to an active one. Furthermore,
 the unacknowledged data records that were sent over a failed \tcp connection are
 \textbf{\textit{sent again}} on a functional \tcp connection.
-\tcpls' Failover mode is optionnal. It needs to be activated by both peers or
-negotiated throught the Secure Control Channel.
+\tcpls' Failover mode is optionnal. Both peers need to activate it or
+negotiate the feature throught the Secure Control Channel.
 We discuss in Sec.~\ref{sec:perf} measurements quantifying the
-performance impact of adding \tcpls record level acknowledgements.
+performance impact of adding \tcpls record level acknowledgments. We also give a
+scenario involving a file transfer and the failover protocol in
+Appendix~\ref{app:failover}
 
 Second, \tcpls also supports the \textit{Application-level Connection Migration}
-mode. Essentialy, it means that \tcpls provides a simple API that enables an
+mode. Essentially, it means that \tcpls provides a simple API that enables an
 application to migrate when it wishes to do so (e.g., a smartphone could migrate
 from LTE to Wi-Fi when the Wi-Fi appears healthy, a client using privacy
 compliant IPv6 addresses~\cite{rfc4941} could restart the underlying \tcp
@@ -218,9 +220,9 @@ this connection. Note that since these messages are \tls records, they are sent
 reliably by the underlying \tcp connection.
 
 This second type of migration does not require application-level
-acknowledgements, but it cannot survive from the failure of one of the
-underlying connections. During such a migration, data is sent over two
-connections, which brings us to explain how multipath is designed
+acknowledgments, but it cannot survive from one of the
+underlying connections' failure. During such a migration, data is sent over two
+connections, which brings us to explain how multipath is designed.
 
 \paragraph*{3) Different Multipath Modes}
 Like \mptcp \cite{raiciu2012hard,rfc6824} or Multipath QUIC \cite{de2017multipath,draft-liu-multipath-quic-02}, \tcpls supports an aggregation mode that maps data over two or more \tcp connections. On multihomed hosts, this can increase the total throughput of a \tcpls session by spreading the data over different network interfaces. In this case, one or more data streams are mapped to two or more underlying \tcp connections and \tcpls schedules different records over different connections.
