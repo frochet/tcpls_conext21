@@ -15,7 +15,37 @@
 %  \label{fig:arch}
 %\end{figure}
 
- \begin{figure}[!t]
+\subsection{Overview}
+%%%%%%%%%%%%%%%%%%%%%%
+Today's applications expect more than a simple bytestream from the transport
+layer. Security is not anymore a requirement for niche application. Applications
+expect secure transport by default. Similarly, applications are not restricted
+anymore on using only one network interface. They need to efficiently deal with
+IPv6 and IPv4 on dual stack hosts and manage the utilization of different
+network interfaces on mobile devices such as smartphones. \tcpls provides a
+fast, flexible, and secure transport protocol that is suited for these modern
+applications. \tcpls is more than the simple addition of the security features
+of \tls and the reliability features of \tcp. \tcpls leverages \tls 1.3 to
+negotiate a security context and uses it to send the user data authenticated and
+encrypted as \tls records. It leverages these records to establish a secure
+control channel between the client and server. This channel is used to manage
+the \tcpls session and exchange all control information without any possible
+middlebox interference. Finally, \tcpls includes a Connection Manager that
+controls the underlying \tcp connection. The TLS records of a \tcpls session can
+be transported over different \tcp connections during the session lifetime. This
+brings several interesting failover and multipath capabilities.
+Fig.~\ref{fig:arch} illustrates the interactions between two \tcpls hosts.
+\tcpls can be implemented in userspace within a library like current \tls
+implementations. It interacts with the \tcp stack that in our prototype resides
+in the kernel. The crypto module negotiates and manages the security context
+while the connection manager (CM) manages the utilization of the underlying \tcp
+connection(s). Closely coupling \tcp and \tls in \tcpls brings opportunities for
+performance improvement (e.g., avoiding records fragmentation with dynamic
+receive buffer auto-tuning and/or with dynamic control of the record length),
+and for connection reliability (e.g., failover).
+
+
+ \begin{figure}[!hbt]
   \begin{center}
 \begin{tikzpicture}[node distance=0 cm,outer sep = 0pt,inner sep = 2pt,  scale=0.80, transform shape]
         \tikzset{application/.style={align=center,minimum height=0.3cm,minimum width=10mm}}
@@ -79,34 +109,6 @@
  \label{fig:arch}
 \end{figure}
 
-\subsection{Overview}
-%%%%%%%%%%%%%%%%%%%%%%
-Today's applications expect more than a simple bytestream from the transport
-layer. Security is not anymore a requirement for niche application. Applications
-expect secure transport by default. Similarly, applications are not restricted
-anymore on using only one network interface. They need to efficiently deal with
-IPv6 and IPv4 on dual stack hosts and manage the utilization of different
-network interfaces on mobile devices such as smartphones. \tcpls provides a
-fast, flexible, and secure transport protocol that is suited for these modern
-applications. \tcpls is more than the simple addition of the security features
-of \tls and the reliability features of \tcp. \tcpls leverages \tls 1.3 to
-negotiate a security context and uses it to send the user data authenticated and
-encrypted as \tls records. It leverages these records to establish a secure
-control channel between the client and server. This channel is used to manage
-the \tcpls session and exchange all control information without any possible
-middlebox interference. Finally, \tcpls includes a Connection Manager that
-controls the underlying \tcp connection. The TLS records of a \tcpls session can
-be transported over different \tcp connections during the session lifetime. This
-brings several interesting failover and multipath capabilities.
-Fig.~\ref{fig:arch} illustrates the interactions between two \tcpls hosts.
-\tcpls can be implemented in userspace within a library like current \tls
-implementations. It interacts with the \tcp stack that in our prototype resides
-in the kernel. The crypto module negotiates and manages the security context
-while the connection manager (CM) manages the utilization of the underlying \tcp
-connection(s). Closely coupling \tcp and \tls in \tcpls brings opportunities for
-performance improvement (e.g., avoiding records fragmentation with dynamic
-receive buffer auto-tuning and/or with dynamic control of the record length),
-and for connection reliability (e.g., failover).
 
 
 \tcp separates control information and data by placing the control information

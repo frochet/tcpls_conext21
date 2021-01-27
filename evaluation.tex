@@ -68,8 +68,7 @@ AES128-GCM-SHA256 peaks at 13.1~Gbps when doing in-memory encrytion/decryption o
 testbed's servers. 
 The next bar shows that with TSO and a
 standard frame size (1500 bytes MTU), the goodput still reaches 10.84 Gbps. These
-results should be compared with the 22~Gbps that TCP reaches in the same
-environment using \texttt{iperf} but without any encryption. 
+results should be compared with the 22~Gbps that TCP reaches in our testbed using \texttt{iperf} but without any encryption. 
 
 %the shows several interesting results. First, while offering similar (and more)
 %capabilities than what QUIC is providing today,
@@ -82,7 +81,7 @@ described in Sec.~\ref{failover} to support failover.
 From a performance viewpoint, they increase the number of control records and
 the number of system calls. Our prototype currently sends a \tcpls-ack for every
 16 received records. Our measurements indicate that with this functionnality,
-\tcpls reaches 9.65 Gbps with a path MTU of $1500$ bytes.
+\tcpls reaches 9.65 Gbps with a $1500$ bytes MTU.
 
 
 \begin{figure}[!t]
@@ -161,7 +160,7 @@ with the tested \quic implementations. The fastest \quic implementation is
 MTU. This result is directly comparable to \tcpls with TSO enabled, which still
 performs more than twice faster at 100\% CPU peak with similar configurations
 for the receiving buffer size. Suprisingly, \quicly's performance decreases with
-jumbo frames but is still faster than when GSO is disabled. In our testbed,
+jumbo frames but is still faster than when GSO is disabled. 
 \msquic could only reach 1.96~Gbps and \mvfst was slower despite GSO.
 
 
@@ -267,7 +266,7 @@ irregularity. Setting a record size around $1500$ bytes would make \mptcp and
 \tcpls' results lookalike, but would be slightly more CPU costly since we need
 to use the encryption/decryption code path more often.
 Appendix~\ref{appendix:aggr} shows the results of the same experiment but using
-a \tls record size of $1500$ bytes instead.
+$1500$ bytes \tls records.
 
 \begin{figure}[!t]
   \begin{center}
@@ -297,10 +296,10 @@ $RST$ and the loss of the interface for \mptcp.
 
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=\columnwidth]{figures/breakage_analysis.png}
+    \includegraphics[width=.9\columnwidth]{figures/breakage_analysis.png}
   \end{center}
 \vspace{-0.5cm}
-  \caption{Recovery speed analysis.}
+  \caption{Recovery delay analysis.}
   \label{fig:recovery}
 \end{figure}
 
@@ -394,7 +393,7 @@ accumulated bandwidth over both paths oduring the migration time window.
 
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=\columnwidth]{figures/migration.png}
+    \includegraphics[width=.9\columnwidth]{figures/migration.png}
   \end{center}
 \vspace{-0.5cm}
   \caption{Application-level connection migration during a 60~MB file download.
@@ -436,7 +435,7 @@ varying from 10ms to 100ms and obtained similar results.
 
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=\columnwidth]{pretty_plotify/plots/vegas_cubic.png}
+    \includegraphics[width=.9\columnwidth]{pretty_plotify/plots/vegas_cubic.png}
   \end{center}
 \vspace{-0.5cm}
   \caption{\tcpls hosts can exchange congestion control schemes compiled into eBPF bytecode and activate them during a \tcpls session.}

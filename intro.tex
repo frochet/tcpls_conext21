@@ -32,8 +32,7 @@ secure emerging e-commerce websites~\cite{draft-hickman-netscape-ssl}. SSL
 evolved in different versions of the Transport Layer Security (\tls) protocol,
 the most recent one being version 1.3~\cite{rfc8446}. Many details of the \tls
 protocol have changed since the first version of SSL~\cite{kotzias2018coming}.
-Nowadays, \tls is almost ubiquitous on web servers~\cite{holz2019era}.
-Furthermore, many non-web applications also rely on \tls~\cite{anderson2019tls}.
+Nowadays, \tls is almost ubiquitous on web servers~\cite{holz2019era} and many non-web applications use it~\cite{anderson2019tls}.
 
 \quic started as a proprietary protocol used by Google to speed up web
 transfers~\cite{roskind2013quic,langley2017quic}. During the last years, it
@@ -44,7 +43,7 @@ of \quic is that it encrypts almost all the packets, including most of their
 headers. Although \quic is essentially a new transport protocol, it does not run
 directly above IP in contrast with \sctp or \tcp. \quic runs above \udp. With
 this choice, \quic can be implemented as a user-space library, and \quic packets
-can pass through most existing middleboxes.
+can pass through middleboxes.
 
 Does the standardization of \quic marks the end of the \tcp era and implies that
 all applications and transport research will move to \quic?  We do not think
