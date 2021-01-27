@@ -72,7 +72,7 @@ unpredictable for an adversary observing the handshake. \tcpls derives it from
 the \tls handshake session secret in a similar fashion as the \tls
 keys~\cite{rfc8446}. The nonce size must range from $96$ bits to $128$ bits
 depending on the underlying cipher used. In all cases, for a nonce of size $N$
-bits, \tls computes the cryptographic nonce given to the underlying \todo{manque un mot} by
+bits, \tls computes the cryptographic nonce by
 concatenating the $N-64$ leftmost bits with the 64 lower bits xored with the
 record's implicit sequence number encoded in 64 bits. The lower 64 bits xoring
 provides more unpredictability to the nonce when the same plaintext is encrypted
@@ -80,17 +80,17 @@ multiple times with the same key~\cite{bellare2016multi,hoang2018multi}. This
 design implies that we give to the underlying cipher the 32 upper bits
 untouched. The resulting value is then incremented at most 1024 times starting
 from the leftmost bits to encrypt a \tls record of maximum size (16384 bytes,
-i.e, 1024 times 128 bits for the the
-\todo{minimum or maximum?} block size). We thus observe that 7 bits among those 32 bits are
-untouchable, leading to at least 25 bits that are available to encode a unique
-stream number. By encoding such a unique number in this part of the
-cryptographic nonce, we enable each stream to start its sequence number at 0
-while encrypting its records with the same key. This observation means that we
-can create independent cryptographic contexts based on a tweak of the
-cryptographic nonce. This implies that stream records can be encrypted and
-decrypted independently of each other, with the same key value. This technique
-maintains AEAD's core assumption (uniqueness of nonce), which means that the
-state of art AEAD's security proof starting from that assumption applies to our
+i.e, 1024 times 128 bits, with 128 bits the size of the minimum AEAD block
+size). We thus observe that 7 bits among those 32 bits are untouchable, leading
+to at least 25 bits that are available to encode a unique stream number. By
+encoding such a unique number in this part of the cryptographic nonce, we enable
+each stream to start its sequence number at 0 while encrypting its records with
+the same key. This observation means that we can create independent
+cryptographic contexts based on a tweak of the cryptographic nonce. This implies
+that stream records can be encrypted and decrypted independently of each other,
+with the same key value. This technique maintains AEAD's core assumption
+(uniqueness of nonce), which means that the state of art AEAD's security proof
+starting from that assumption applies to our
 design~\cite{chatterjee2011another} and guarantees the security of our scheme.
 
 \paragraph*{Carrying Multiple Streams over the Same Transport}
@@ -234,11 +234,36 @@ negotiated throught the Secure Control Channel.
 We discuss in Sec.~\ref{sec:perf} measurements quantifying the
 performance impact of adding \tcpls record level acknowledgements.
 
-Second, \tcpls also supports the \textit{Application-level Connection Migration} mode. Essentialy, it means that \tcpls provides a simple API that enables an application to migrate when it wishes to do so (e.g., a smartphone could migrate from LTE to Wi-Fi when the Wi-Fi appears healthy, a client using privacy compliant IPv6 addresses~\cite{rfc4941} could restart the underlying \tcp connection after the expiration of a temporary address, \ldots). The semantic of the application-level connection migration is built from attaching and closing streams in the multipath bandwidth aggregation mode. The host that wishes to carry such a migration first creates a new \tcp connection and joins the \tcpls session over this connection. Then, it attaches new streams to the new connection by sending one \textsc{Stream\_Attach} message per stream that needs to be migrated. At that moment, the client and the server have potentially multiple streams opened over the two network paths. Then, after having attached all its streams to the new path, the migrating host sends a \textsc{Stream\_Close} message over the old \tcp connection for all old streams. At this point, the migrating host cannot send new stream data anymore over the old connection. Once the remote host has received a
-\textsc{Stream\_Close} message over the old \tcp connection, it knows that the
-connection is not available anymore, and needs to find a (potentially fresh) connection to send its data (i.e., the ones that just opened over the new path). It first sends a \textsc{Stream\_Close\_Ack} message for each received \textsc{Stream\_Close}. The migrating host can close the old connection upon reception of the last \textsc{Stream\_Close\_Ack}, indicating that no more data would be received over this connection. Note that since these messages are \tls records, they are sent reliably by the underlying \tcp connection.
+Second, \tcpls also supports the \textit{Application-level Connection Migration}
+mode. Essentialy, it means that \tcpls provides a simple API that enables an
+application to migrate when it wishes to do so (e.g., a smartphone could migrate
+from LTE to Wi-Fi when the Wi-Fi appears healthy, a client using privacy
+compliant IPv6 addresses~\cite{rfc4941} could restart the underlying \tcp
+connection after the expiration of a temporary address, \ldots). The semantic of
+the application-level connection migration is built from attaching and closing
+streams in the multipath bandwidth aggregation mode. The host that wishes to
+carry such a migration first creates a new \tcp connection and joins the \tcpls
+session over this connection. Then, it attaches new streams to the new
+connection by sending one \textsc{Stream\_Attach} message per stream that needs
+to be migrated. At that moment, the client and the server have potentially
+multiple streams opened over the two network paths. Then, after having attached
+all its streams to the new path, the migrating host sends a
+\textsc{Stream\_Close} message over the old \tcp connection for all old streams.
+At this point, the migrating host cannot send new stream data anymore over the
+old connection. Once the remote host has received a \textsc{Stream\_Close}
+message over the old \tcp connection, it knows that the connection is not
+available anymore, and needs to find a (potentially fresh) connection to send
+its data (i.e., the ones that just opened over the new path). It first sends a
+\textsc{Stream\_Close\_Ack} message for each received \textsc{Stream\_Close}.
+The migrating host can close the old connection upon reception of the last
+\textsc{Stream\_Close\_Ack}, indicating that no more data would be received over
+this connection. Note that since these messages are \tls records, they are sent
+reliably by the underlying \tcp connection.
 
-This second type of migration does not require application-level acknowledgements, but it cannot survive from the failure of one of the underlying connections. During such a migration, data is sent over two connections, which brings us to explain how multipath is designed
+This second type of migration does not require application-level
+acknowledgements, but it cannot survive from the failure of one of the
+underlying connections. During such a migration, data is sent over two
+connections, which brings us to explain how multipath is designed
 
 %Compared to \quic's connection migration and \tcpls's failover,
 %this migration does not has no goodput loss. It even temporaly increases the goodput by aggregating the

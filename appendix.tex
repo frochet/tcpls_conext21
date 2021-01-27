@@ -102,7 +102,6 @@ migration. Note that, HOL-blocking avoidance is incompatible with the
 aggregation of bandwidth with multipathing (the application can do either one
 but not both at the same time).
 
-
 \section{Capability Comparison}
 
 
@@ -115,7 +114,9 @@ transport-layer functionalities on top of \tcp, while exposing a simple but
 powerful API to let the application composes the properties its transport should
 have.
 
-Note that several of the features suggested by \tcpls are also suggested on \tcp or \quic via research works such as a new socket API for explicit \mptcp \cite{hesmans2016enhanced}, or eBPF plugins in
+Note that several of the features suggested by \tcpls are also suggested on \tcp
+or \quic via research works such as a new socket API for explicit \mptcp
+\cite{hesmans2016enhanced}, or eBPF plugins in
 \quic~\cite{de2019pluginizing}.
 
 \begin{table*}[!t]
@@ -148,7 +149,30 @@ Note that several of the features suggested by \tcpls are also suggested on \tcp
 
 \section{Failover Protocol}
 
-\todo{Describe the protocol}
+Figure~\ref{fig:protocol_example} gives a selected set of messages during the
+establishment of a \tcpls session, a file transfer and a network failure with
+the failover feature enabled by default on both peer. First, during the \tcpls
+handshake, we may observe the \tls encrypted extensions \texttt{Cookies}, \texttt{Sessid},
+\texttt{Multihoming v6} and \texttt{User Timeout} sent with the
+\texttt{ServerHello} messages. The multihoming v6 extension announces an
+alternative address to the client, and the User Timeout \tcpls extension
+announces to the peer that it should not wait more than the $X$ ms to expect
+more data to read. In this experiment, the User Timeout is $250ms$, and
+should in practice be an upper bound of the server-to-client path latency.
+After the handshake is finished, the Server proceeds to attach a stream and
+begins to send the file content within TLS APPDATA records. The clients sends
+special \tcpls DATA\_ACK to acknowledge the received records. In this
+experiment, the network suffers a failure after around $16s$ of transfer. The client performs a
+Join \tcpls handshake over the v6 address received during the \tcpls initial
+handshake and play the Failover protocol over the new path. Both peer
+resynchronize their decrypting sequence number and replay the records that have
+been lost on the first network path's failure. When they sent all lost records,
+a FAILOVER\_END message is sent and the stream is recovered. The Server can
+proceed to send the data and finishes by securly closing the stream.
+
+To be extra clear on any security concern, different records are never encrypted
+with the same sequence number, nor any record is encrypted twice or decrypted
+twice.
 
 % Agents
 \def\Client{Client}
@@ -337,7 +361,10 @@ Note that several of the features suggested by \tcpls are also suggested on \tcp
   (\Server 9.north west) rectangle (\Server 9.south east)
   (\Client 9.north west) rectangle (\Client 9.south east)
   (\Server 12.north west) rectangle (\Server 12.south east)
-  (\Client 12.north west) rectangle (\Client 12.south east)
+  (\Client 12.north west) rectangle (\Client 12.south east);
+
+
+\filldraw[fill=red!20]
   (\Server 14.north west) rectangle (\Server 14.south east)
   (\Client 14.north west) rectangle (\Client 14.south east)
   (\Server 15.north west) rectangle (\Server 15.south east)
@@ -356,7 +383,6 @@ Note that several of the features suggested by \tcpls are also suggested on \tcp
   (\Client 23.north west) rectangle (\Client 23.south east)
   (\Server 24.north west) rectangle (\Server 24.south east)
   (\Client 24.north west) rectangle (\Client 24.south east);
-
 
 \draw [-latex] (\Client 1) -- (\Server 1);
 \draw [-latex] (\Server 2) -- (\Client 2);
@@ -389,7 +415,7 @@ Note that several of the features suggested by \tcpls are also suggested on \tcp
     node[above,font=\footnotesize] {\textsc{ServerHello}}
     node[font=\footnotesize, below] {}
     (\Event 3)
-    node[above,font=\footnotesize] {cookies-connid-v6-v4-usertimeout}
+    node[above,font=\footnotesize] {cookies-sessid-v6-usertimeout}
     node[font=\footnotesize, below] {}
     (\Event 4)
     node[above,font=\footnotesize] {certificate}
@@ -416,7 +442,7 @@ Note that several of the features suggested by \tcpls are also suggested on \tcp
     node[above,font=\footnotesize] {\textsc{ClientHello}+\textsc{Join}}
     node[font=\footnotesize, below] {}
     (\Event 15)
-    node[above,font=\footnotesize] {$Transport\_NEW$}
+    node[above,font=\footnotesize] {$TRANSPORT\_NEW$}
     node[font=\footnotesize, below] {}
     (\Event 16)
     node[above,font=\footnotesize] {$USER\_TIMEOUT$}
