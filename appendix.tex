@@ -94,11 +94,11 @@ Figure. \tcpls lets the application explicitly choose the multipath mesh by
 calling several times \texttt{tcpls\_connect(src, dest,timeout)}. The
 application may configure callbacks to connection events that would occur within
 \tcpls, such as a connection establishment, a stream attachment, a multipath
-join, the reception of a \tcp option to tune \tcp, and more. When 
+join, the reception of a \tcp option to tune \tcp, and more. When
 streams are attached to multiple \tcp connections, the application may configure
 various \tcpls behaviours. Among them, we support HOL-blocking avoidance,
 aggregation of bandwidth with multipathing, connection failover, and connection
-migration. Note that, HOL-blocking avoidance is incompatible with 
+migration. Note that, HOL-blocking avoidance is incompatible with
 aggregating bandwidth using multipathing (the application cannot enable both
 features at the same time).
 
@@ -148,12 +148,12 @@ extensions to \quic~\cite{viernickel2018multipath,de2017multipath,draft-liu-mult
 
 \section{Failover Protocol}
 \label{app:failover}
-Figure~\ref{fig:protocol_example} provides a closer look at the operation of \tcpls. It
+Fig.~\ref{fig:protocol_example} provides a closer look at the operation of \tcpls. It
 shows the key \tcpls messages that are exchanged during a \tcpls session using failover
 that transfers a file but suffers from a failure. First, during the \tcpls
 handshake, we observe the \tls encrypted extensions \texttt{Cookies}, \texttt{Sessid},
 \texttt{Multihoming v6} and \texttt{User Timeout} records sent with the
-\texttt{ServerHello} messages. The multihoming v6 extension announces an
+\textsc{ServerHello} messages. The multihoming v6 extension announces an
 alternate address to the client. The User Timeout \tcpls extension
 announces to the peer that it should not wait more than the $X$~ms to expect
 more data to read. In this experiment, the User Timeout is $250ms$, and
@@ -479,20 +479,20 @@ twice.
 \section{Multipath Aggregation}
 \label{appendix:aggr}
 
-Figure~\ref{fig:aggregation_1500bytes_records} shows the same experiment as
+Fig.~\ref{fig:aggregation_1500bytes_records} shows the same experiment as
 the one provided in Section~\ref{sec:bwaggr}. However, we now configure
-\tcpls with a 1500 bytes record size to demonstrate that the
+\tcpls with a 1,500 bytes record size to demonstrate that the
 irregularities are mainly due to the payload chunk size that the reordering
 algorithm has to manipulate. The larger the records, the bigger
 the payload chunk size, and higher irregularities should be observed. We
 observe here a steady goodput with several large irregularities, which is a
-progress compared to Figure~\ref{fig:multipath_aggregation}. However, large
-peaks remain, which are probably linked to the some remaining bugs in our current \tcpls 
-prototype implementation. 
+progress compared to Fig.~\ref{fig:multipath_aggregation}. However, large
+peaks remain, which are probably linked to the some remaining bugs in our current \tcpls
+prototype implementation.
 
 \begin{figure}
-  \includegraphics[width=\columnwidth]{figures/aggregate_1500bytes_records_dual.png}
-  \caption{\tcpls path aggregation with $1500$ bytes record size, compared to
-    \tls over \mptcp with 16384 bytes record size}
+  \includegraphics[width=.8\columnwidth]{figures/aggregate_1500bytes_records_dual.png}
+  \caption{\tcpls path aggregation with 1500, bytes record size, compared to
+    \tls over \mptcp with 16,384 bytes record size}
   \label{fig:aggregation_1500bytes_records}
 \end{figure}
