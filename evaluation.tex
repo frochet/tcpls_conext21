@@ -53,16 +53,17 @@ different \quic implementations.
 For all the \tcpls measurements, we use a custom application that performs
 large memory-to-memory transfers over a \tcpls session using a single stream.
 \tcpls is configured to use the AES128-GCM-SHA256 cipher. Fig.~\ref{fig:perf}
-provides the goodput as measured in our testbed. We report both the bandwidth in
+provides the throughput as measured in our testbed. We report both the bandwidth in
 megabits per second and packets per second. Each bar in Fig.~\ref{fig:perf}
 corresponds to the median measured over 10 seconds of stable throughput. The
-bottom bar (labeled ``\tcpls tso on mtu 9000'') is the highest median goodput
+bottom bar (labeled ``\tcpls tso on mtu 9000'') is the highest median throughput
 that we measured with \tcpls: 12.4~Gbps. This result was obtained with jumbo
-frames (i.e. ,9000 bytes MTU) and using \tcp Segmentation Offload (TSO) on the
+frames (i.e., 9000 bytes MTU) and using \tcp Segmentation Offload (TSO) on the
 NICs. TSO is a standard feature that is enabled by all high-speed NICS. This
 result is impressive given that we measure that AES128-GCM-SHA256 peaks at
 13.1~Gbps when doing in-memory encryption/decryption on our testbed's servers.
-The next bar (labeled ``\tcpls tso on'') shows that with TSO and standard frame size (1,500 bytes MTU), the goodput still reaches 10.84 Gbps. These
+The next bar (labeled ``\tcpls tso on'') shows that with TSO and standard frame
+size (1,500 bytes MTU), the throughput still reaches 10.84 Gbps. These
 results should be compared with the 22~Gbps \tcp reaches in the same
 environment using \texttt{iperf} but without any encryption.
 
@@ -111,7 +112,7 @@ receiver to reorder the received records. \tcpls’s reordering is implemented
 with an efficient heap pushing unordered records in $O(log(n))$
 for $n$ elements in the heap, and retrieving ordered records
 in $O(1)$. Our measurements show that when using two subflows in our testbed,
-\tcpls can reach a goodput of 8.8 Gbps, i.e. less than 10\% below the
+\tcpls can reach a throughput of 8.8 Gbps, i.e. less than 10\% below the
 failover mode. \tcpls' multipath support could be improved by adding some
 of the schedulers adopted by \mptcp. 
 
