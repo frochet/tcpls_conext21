@@ -229,8 +229,8 @@ the unacknowledged data records that were sent over a failed \tcp connection are
 %\todo{FR OB ne comprend pas la phrase qui suit} Moving the streams involves
 %playing a protocol that we designed to re-synchronize the implicit stream-level
 %sequence number that is used to encrypt and decrypt records.
-\tcpls' Failover mode is optionnal. It needs to be activated by both peers.
-\todo{FR: why both ? this failover and failover ok exchange. If so, we should menton this and say that it works over the secure channel}
+\tcpls' Failover mode is optionnal. It needs to be activated by both peers or
+negotiated throught the Secure Control Channel.
 We discuss in Sec.~\ref{sec:perf} measurements quantifying the
 performance impact of adding \tcpls record level acknowledgements.
 
