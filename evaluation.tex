@@ -78,9 +78,13 @@ results should be compared with the 22~Gbps that TCP reaches in our testbed usin
 We also compared \tcpls's native bandwidth aggregation using two streams with a single stream
 produced by our \tcpls client on the top of the \mptcp kernel creating two
 \mptcp subflows. Our \tcpls scheduler is a simple round-robin. The \mptcp
-scheduler is the lowest-RTT scheduler enabled by default. \mptcp needs less
-re-ordoring, thus achieves better performance. In the future, \tcpls could also
-take advantage of smarter schedulers.
+scheduler is the lowest-RTT scheduler enabled by default. Both measurements are
+taken over the same 0.94.7 \mptcp kernel with a path MTU of 1500, in which
+\mptcp is disabled  when the \tcpls native experiment is performed.
+Surprisingly, \tcpls's native bandwidth aggregation outperforms \mptcp. Both
+experiments are CPU limited, and suffers from a raw throughput degradation
+compared to the single-path experiment.  However, \tcpls seems to handle it
+quite well despite the naive scheduler.
 
 We then evaluated the impact of adding the \tcpls-level acknowledgements
 described in Sec.~\ref{failover} to support failover.
