@@ -82,6 +82,7 @@ from the peer to enable an efficient scheduling against particular sending patte
 the \tcpls receives the records in order, the more \tcpls can deliver them in a zero-copy
 fashion to the application. When some record number is not the next expected
 record, there is a copy of the record content made within a reordering buffer.
+Our multipath bandwidth aggregation is evaluated in Section~\ref{sec:bwaggr}
 
 \subsubsection{Failover}\label{failover}
 Failover is a binary mode (on/off) fully internal to \tcpls. Once activated,
