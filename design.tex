@@ -53,27 +53,27 @@ of the Authenticated Encryption with Associated Data (AEAD) schemes used by \tls
 1.3. To preserve AEAD security, the AEAD nonce used by \tcpls must be of unique
 use when encrypting and decrypting a record. The initial nonce must also be
 unpredictable for an adversary observing the handshake. \tcpls derives it from
-the \tls handshake session secret in a similar fashion as the \tls
-keys~\cite{rfc8446}. The nonce size must range from $96$ bits to $128$ bits
+the \tls handshake session secret in a similar fashion to the \tls
+keys~\cite{rfc8446}. The nonce size ranges from $96$ bits to $128$ bits
 depending on the underlying cipher used. In all cases, for a nonce of size $N$
 bits, \tls computes the cryptographic nonce by
-concatenating the $N-64$ leftmost bits with the 64 lower bits xored with the
-record's implicit sequence number encoded in 64 bits. The lower 64 bits xoring
+concatenating the $N-64$ leftmost bits with the 64 lower bits XORed with the
+record's implicit sequence number encoded in 64 bits. XORing the lower 64 bits
 provides more unpredictability to the nonce when the same plaintext is encrypted
 multiple times with the same key~\cite{bellare2016multi,hoang2018multi}. This
-design implies that we give to the underlying cipher the 32 upper bits
+design implies that we give the underlying cipher the 32 upper bits
 untouched. The resulting value is then incremented at most 1024 times starting
 from the leftmost bits to encrypt a \tls record of maximum size (16384 bytes,
-i.e, 1024 times 128 bits, with 128 bits the size of the minimum AEAD block
+i.e, 1024 times 128 bits, with 128 bits the minimum AEAD block
 size). We thus observe that 7 bits among those 32 bits are untouchable, leading
 to at least 25 bits that are available to encode a unique stream number. By
 encoding such a unique number in this part of the cryptographic nonce, we enable
 each stream to start its sequence number at 0 while encrypting its records with
 the same key. This observation means that we can create independent
-cryptographic contexts based on a tweak of the cryptographic nonce. This implies
+cryptographic contexts based on a cryptographic nonce's tweak. This implies
 that stream records can be encrypted and decrypted independently of each other,
 with the same key value. This technique maintains AEAD's core assumption
-(uniqueness of nonce), which means that the state of art AEAD's security proof
+(uniqueness of nonce), which means that state of art AEAD's security proof
 starting from that assumption applies to our
 design~\cite{chatterjee2011another} and guarantees the security of our scheme.
 
@@ -81,25 +81,25 @@ design~\cite{chatterjee2011another} and guarantees the security of our scheme.
 Thanks to those separate cryptographic contexts, \tcpls can perform concurrent
 encryption and decryption between streams while maintaining decryption
 correctness and security, and potentially also use this capability to process
-different streams over different cores.
-Finally, if different streams are carried
-over the same \tcp connection, \tcpls does not explicitely know which
-received record belongs to which stream. To retrieve this information,
+different streams over different CPU cores.
+Finally, when different streams are carried
+over the same \tcp connection, \tcpls does not explicitely know which stream
+a received record belongs to. To retrieve this information,
 we also
 leverage the AEAD cipher and check the authentication tag of the incoming record
 until we find the stream that properly verifies this tag. This operation is
 lightweight: it does not require full decryption of the record because the AEAD
 ciphers used by \tls 1.3 do Encrypt then MAC (and MAC then Decrypt). This
 implies that they first check the tag and only decrypt the record
-if the tag is correct.
+if it is correct.
 Looking for the right stream that succeeds the tag verification needs to be
 performed once each time the application writes to another stream over the same
 \tcp connection.
 
-Note that, security-wise, each failed decryption is considered as a
+Note that, security-wise, each failed decryption is considered a
 forgery attempt. However, we have large limits on the confidentiality and
 integrity with all AEAD ciphers~\cite{luykx2015limits, aeadlimits} before a
-successful forgery may be considered as a non-negligeable probability. For
+successful forgery may be considered as a non-negligible probability. For
 example, in the case of ChaCha20+Poly1305, an adversary making $2^{60}$ forgery
 attempts succeeds with probability $2^{-33}$.
 
