@@ -62,11 +62,9 @@ encoded in 64 bits. XORing the lower 64 bits provides more unpredictability to
 the nonce when the same plaintext is encrypted multiple times with the same
 key~\cite{bellare2016multi,hoang2018multi}. This design implies that we give to
 the underlying cipher the 32 upper bits untouched. The resulting value is then
-incremented at most 1,024 times starting from the leftmost bits to encrypt a
-\tls record of maximum size (16,384 bytes,
-i.e, 1,024 $\times$ 128 bits, with 128 bits the size of the minimum AEAD block
-size). We thus observe that 7 bits among those 32 bits are untouchable, leading
-to at least 25 bits that are available to encode a unique stream number. By
+concatenated with an internal counter in GCM and used as the blocksize-bits (128
+or 256 bits) stream's counter.
+We observe that the leftmost N-64 bits are available to encode a unique stream number. By
 encoding such a unique number in this part of the cryptographic nonce, we enable
 each stream to start its sequence number at 0 while encrypting its records with
 the same key. This observation means that we can create independent
