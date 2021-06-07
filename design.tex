@@ -1,52 +1,44 @@
 % !TEX root = ./paper.tex
-\subsection{The Secure Control Channel}\label{sec:extending}
 
-\tls 1.3~\cite{rfc8446} has been designed with careful consideration for
-potential extensions and to prevent middlebox interference. A \tcpls client
-indicates its willingness to use \tcpls with a transport parameter in the
-\textsc{ClientHello} message. Upon reception of this parameter, the server
-replies with a \textsc{ServerHello} messages. It can opportunistically add
-lightweight \tcpls data and \tcp options as \textsc{EncryptedExtensions}. Any
-extension sent with the \textsc{ServerHello} message is encrypted with the
-handshake key, and is not part of the context used to derive the eventual
-application key. If the client does not support some extension, it echoes back
-an alert with the value of the option it does not recognize, letting the connection
-continues.
+\subsection{Transport Services}
 
-A reasonable approach to design extensibility mechanisms in today's Internet
-is to avoid leaking any information that could help an on-path attacker
-recognize specific users or applications. Indeed, censorship~\cite{Morshed2017a,
-Gosain2017a,Chai2019a} can be easily implemented when protocol messages can be
-distinguished. Avoiding trivial opportunities to implement censorship should
-become the bare minimum in designing a new protocol. \tcpls's control protocol
-considers those problems by avoiding plaintext extensions data in the
-\textsc{ClientHello} as most as possible.
-
-Once the secure handshake has succeeded, the hosts can exchange \tls records.
-To prevent middlebox interference, the \tls 1.3 Record Protocol ensures that any
-new message appears as an \textsc{AppData} message type. \tls stores the true
-content type (TType) at the end of the encrypted payload. \tcpls uses this
-feature of \tls 1.3 to encode the control messages that are sent over the secure
-channel as new \tls record types.
-
-\subsection{The \tcpls Streams}\label{sec:datastreams}
+\subsection{Multiplexing in \tcpls}\label{sec:datastreams}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The classical solution to support streams in a transport protocol is to assign
-an identifier to each stream and send the data from stream $x$ as a tuple
-$x,seq,data$ where $seq$ is a sequence number. This is the solution chosen by
-\sctp~\cite{rfc4960} and \quic~\cite{draft-ietf-quic-transport}. \tcpls relies
-on cryptographic properties to support several streams.
+\todo{Choose one way to represent the stream id}
 
-\paragraph*{Cryptographic Details and Tricks} In \tcpls, each stream has its own
-cryptographic context. All streams use the same key but derive a specific
-Initial Vector (IV - also called cryptographic nonce) such that nonce-misuse
-cannot happen. Furthermore, \tcpls derives the IV such that the record sequence
-numbers can securely start at $0$ within each stream.
+Multiplexing is a modern transport service that has been part of recent protocols such
+as \sctp, \quic and HTTP/2.0. The latter also proposed multiplexing with an independent
+framing system atop the TLS-encrypted TCP bytestream. In our approach, we choose 
+to implement multiplexing with \tcpls records. We dedicate a \tcpls record type to
+\tcpls stream data. Each stream has a separate cryptographic context which has several
+advantages when combined with connection migration and multipath.
 
-\tcpls uses only one application-level key for $N$ streams, for each direction.
-We selected this approach to avoid security degradation with the usage of
-multiple keys (by a factor $k$ with $k$ keys)~\cite{chatterjee2011another}.
+One simple way to provide separate cryptographic contexts is to use multiple application-level
+keys. But this is known to degrade the security properties proportionally to the number of
+keys used~\cite{chatterjee2011another}. To overcome this, we propose an
+Initial Vector (IV) derivation technique from the \tls session secret.
+It maintains the IV uniqueness for all streams and related \tcpls records of a \tcpls connection,
+which preserves the security of AEAD algorithms.
+
+\todo{Do a figure to explain the derivation, TLS 1.3 IV construct vs TCPLS IV derivation}
+\todo{Update the following explanation with the figure}
+
+%The classical solution to support streams in a transport protocol is to assign
+%an identifier to each stream and send the data from stream $x$ as a tuple
+%$x,seq,data$ where $seq$ is a sequence number. This is the solution chosen by
+%\sctp~\cite{rfc4960} and \quic~\cite{draft-ietf-quic-transport}. \tcpls relies
+%on cryptographic properties to support several streams.
+
+%\paragraph*{Cryptographic Details and Tricks} In \tcpls, each stream has its own
+%cryptographic context. All streams use the same key but derive a specific
+%Initial Vector (IV - also called cryptographic nonce) such that nonce-misuse
+%cannot happen. Furthermore, \tcpls derives the IV such that the record sequence
+%numbers can securely start at $0$ within each stream.
+%
+%\tcpls uses only one application-level key for $N$ streams, for each direction.
+%We selected this approach to avoid security degradation with the usage of
+%multiple keys (by a factor $k$ with $k$ keys)~\cite{chatterjee2011another}.
 
 To enable all stream sequence numbers to start at 0, we rely on some properties
 of the Authenticated Encryption with Associated Data (AEAD) schemes used by \tls
@@ -75,31 +67,32 @@ with the same key value. This technique maintains AEAD's core assumption
 starting from that assumption applies to our
 design~\cite{chatterjee2011another} and guarantees the security of our scheme.
 
-\paragraph*{Carrying Multiple Streams over the Same Transport}
-Thanks to those separate cryptographic contexts, \tcpls can perform concurrent
-encryption and decryption between streams while maintaining decryption
-correctness and security, and potentially also use this capability to process
-different streams over different CPU cores.
-Finally, when different streams are carried
-over the same \tcp connection, \tcpls does not explicitely know which stream
-a received record belongs to. To retrieve this information,
-we also
-leverage the AEAD cipher and check the incoming record's authentication tag
-until we find the stream that properly verifies this tag. This operation is
-lightweight: it does not require full decryption of the record because the AEAD
-ciphers used by \tls 1.3 do Encrypt then MAC (and MAC then Decrypt).
-Looking for the right stream that succeeds the tag verification needs to be
-performed once each time the application writes to another stream over the same
-\tcp connection.
+%\paragraph*{Carrying Multiple Streams over the Same Transport}
+%Thanks to those separate cryptographic contexts, \tcpls can perform concurrent
+%encryption and decryption between streams while maintaining decryption
+%correctness and security, and potentially also use this capability to process
+%different streams over different CPU cores.
+%Finally, when different streams are carried
+%over the same \tcp connection, \tcpls does not explicitely know which stream
+%a received record belongs to. To retrieve this information,
+%we also
+%leverage the AEAD cipher and check the incoming record's authentication tag
+%until we find the stream that properly verifies this tag. This operation is
+%lightweight: it does not require full decryption of the record because the AEAD
+%ciphers used by \tls 1.3 do Encrypt then MAC (and MAC then Decrypt).
+%Looking for the right stream that succeeds the tag verification needs to be
+%performed once each time the application writes to another stream over the same
+%\tcp connection.
+%
+%Note that, security-wise, each failed decryption is considered a
+%forgery attempt. However, we have large limits on the confidentiality and
+%integrity with all AEAD ciphers~\cite{luykx2015limits, aeadlimits} before a
+%successful forgery may be considered as a non-negligible probability. For
+%example, in the case of ChaCha20 + Poly1305, an adversary making $2^{60}$ forgery
+%attempts succeeds with probability $2^{-33}$.
 
-Note that, security-wise, each failed decryption is considered a
-forgery attempt. However, we have large limits on the confidentiality and
-integrity with all AEAD ciphers~\cite{luykx2015limits, aeadlimits} before a
-successful forgery may be considered as a non-negligible probability. For
-example, in the case of ChaCha20 + Poly1305, an adversary making $2^{60}$ forgery
-attempts succeeds with probability $2^{-33}$.
 
-\subsection{Connection Management}\label{sec:multipath}
+\subsection{Connection Migration}\label{sec:multipath}
 
 \tcpls includes a Connection Manager (CM) that controls the underlying \tcp
 connections.
@@ -222,13 +215,15 @@ acknowledgments, but it cannot survive from one of the
 underlying connections' failure. During such a migration, data is sent over two
 connections, which brings us to explain how multipath is designed.
 
+\subsection{Multipath}
+
 \paragraph*{3) Different Multipath Modes}
 Like \mptcp \cite{raiciu2012hard,rfc6824} or Multipath QUIC \cite{de2017multipath,draft-liu-multipath-quic-02}, \tcpls supports an aggregation mode that maps data over two or more \tcp connections. On multihomed hosts, this can increase the total throughput of a \tcpls session by spreading the data over different network interfaces. In this case, one or more data streams are mapped to two or more underlying \tcp connections and \tcpls schedules different records over different connections.
 
 In addition, \tcpls allows the application to attach its streams to the
 underlying \tcp connections in a non-aggrega-ted bandwidth mode. This is a choice left to the application using the API. It has several advantages and drawbacks compared to the aggregation mode. For example, the aggregation mode is simple to use and can potentially saturate the available network paths but can lead to Head-Of-Line (HOL) blocking, since records sent over different \tcp connections need to be eventually re-ordered. The aggregation mode is also more CPU costly, since a zero-copy codepath is technically possible only when the records arrive in order. In the non-aggregated multipath mode, the application needs to take care to fully send an application-level object over the same stream, since the ordering is only guaranteed per-stream in this mode. However, our \tcpls implementation guarantees that this mode will benefit from zero-copy of the decrypted application data, which makes this mode potentially quite interesting for application protocols such as HTTP that need to fetch multiple application objects at the same time.
 
-\subsection{Improving \tcp's Extensibility}
+\subsection{Improving \tcp's Extensibility}\todo{Move this to the beginning of the design as a simple example of tcpls records}
 
 %\label{sec:tcpoptions}
 %% Discussing the lack of extensibility of TLS 1.3;
@@ -267,7 +262,7 @@ carry TCP options that need to be exchanged reliably such as the \tcp User
 Timeout option \cite{rfc5482}, \mptcp's \texttt{ADD\_ADDR} and
 \texttt{REMOVE\_ADDR} option and experimental \tcp options \cite{rfc6994}.
 
-\subsection{Secure Connection Closing}
+\subsection{Finishing a \tcpls connection}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \tcpls's semantic offers a secure stream abstraction to the application.
 Streams can be attached to and closed from what we call a \texttt{transportid}

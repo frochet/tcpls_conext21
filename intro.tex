@@ -1,8 +1,9 @@
 % !TEX root = ./paper.tex
 The Transmission Control Protocol (\tcp) \cite{rfc793} is one of the most
-critical protocols in today's Internet. A wide range of applications uses it for
-reliable transfers. During the last four decades, \tcp evolved under the
-pressure of competing protocols. During the 1980s, software-based \tcp
+critical protocols in today's Internet. It has been designed following a 
+layer approach and now serves a wide range of 
+applications. During the last four decades, \tcp evolved under 
+the pressure of competing protocols. During the 1980s, software-based \tcp
 implementations were considered too slow. Researchers proposed new transport
 protocols such as \xtp~\cite{sanders1990xpress} which could be implemented in
 hardware. Meanwhile, \tcp implementations got a considerable speed
@@ -16,7 +17,7 @@ alternatives to \tcp. The IETF standardized two new transport protocols:
 \dccp~\cite{kohler2006designing} and \sctp~\cite{rfc4960}. We rarely use \dccp
 today. Despite its benefits (support for multihoming, better design, and
 extensibility), only niche applications use it. This limited deployment is
-probably due to two different factors. First, \sctp forced the applications to
+probably due to two different factors. First, \sctp forced the applications to %<--(mp): c'est aussi ce qu'a fait quic et tcpls
 use a new API. Second, the Internet contains various middleboxes (NAT,
 firewalls, etc.) that often block packets that do not carry \tcp or
 \udp~\cite{honda2011still}.  \sctp initially supported multihoming by switching
@@ -27,46 +28,82 @@ included a coupled congestion control scheme~\cite{wischik2011design}, later
 brought to \sctp as well. This particular succession of events shows how
 different designs can collaborate to advance each other.
 
-In the mid-nineties, the Secure Socket Layer (SSL) protocol was proposed to
+In the mid-nineties, the Secure Socket Layer (SSL) protocol was proposed as an
+additional layer to \tcp to
 secure emerging e-commerce websites~\cite{draft-hickman-netscape-ssl}. SSL
 evolved in different versions of the Transport Layer Security (\tls) protocol,
 the most recent one being version 1.3~\cite{rfc8446}. Many details of the \tls
 protocol have changed since the first version of SSL~\cite{kotzias2018coming}.
 Nowadays, \tls is almost ubiquitous on web servers~\cite{holz2019era} and many non-web applications use it~\cite{anderson2019tls}.
 
-\quic started as a proprietary protocol used by Google to speed up web
+\quic started as an experimental protocol used by Google to speed up web
 transfers~\cite{roskind2013quic,langley2017quic}. During the last years, it
-evolved into a complete transport protocol whose standardization is being
-finalized within the IETF~\cite{draft-ietf-quic-transport}. \quic combines the
-functions that are usually found in \tcp, \tls, and HTTP/2. A key characteristic
-of \quic is that it encrypts almost all the packets, including most of their
-headers. Although \quic is essentially a new transport protocol, it does not run
-directly above IP in contrast with \sctp or \tcp. \quic runs above \udp. With
-this choice, \quic can be implemented as a user-space library, and \quic packets
-can pass through middleboxes.
+evolved into a complete transport protocol~\cite{rfc9000}. 
+%whose standardization is being finalized within the IETF
+\quic proposes to
+revisit the layer model of the Internet to improve the transport services.
+It combines the functions that are usually found in \tcp, \tls, and HTTP/2. This results in
+latency reduction, more security and better extensibility. Indeed, the integration of
+\tls 1.3 allows 1-RTT secure handshakes and extensive packet encryption, 
+providing more security and preventing middlebox interference.
+%A key characteristic of \quic is that it encrypts almost all the packets, including most of their
+%headers. 
+As \quic runs atop \udp, it can be implemented and deployed as a user-space library.
+%Although \quic is essentially a new transport protocol, it does not run
+%directly above IP in contrast with \sctp or \tcp. \quic runs above \udp, enabling
+%user-space implementation as a library and overcoming middleboxes that filter IP.
+%With this choice, \quic can be implemented as a user-space library, and \quic packets
+%can pass through middleboxes.
 
-Does the standardization of \quic marks the end of the \tcp era and implies that
-all applications and transport research will move to \quic?  We do not think
-so. History tells us that \tcp has evolved with competing transport protocols.
-\quic is today's competitor, but there is still plenty of room to improve \tcp.
+Does the standardization of \quic marks the end of the \tcp era, moving
+all applications and transport research to \quic?  We do not think
+so. Today, QUIC is mainly used for HTTP/3 and TCP still serves many applications.
+In the future, TCP will remain the fallback for QUIC because of its greater support
+in networks.
+%
+%History tells us that \tcp has evolved with competing transport protocols.
+In the light of those recent advances, we revisit how transport services can be
+provided with \tcp and \tls today. The design of QUIC integrates services
+that were found in the security and application layers, e.g. encryption and multiplexing.
+\tcp and \tls have been designed in strict layers separating the two.
+%\quic is today's competitor and but there is still plenty of room to improve \tcp.
+In this paper, we reconsider this separation with the following research questions:
 
-In this paper, we take a step back. As \quic closely couples the reliability and
-security mechanisms, we reconsider the separation between \tcp and \tls.  In
-this paper, we combine both \tcp and \tls 1.3 in a single fast, flexible, and
-secure protocol called \textbf{\tcpls}\footnote{We presented a preliminary version of this work in a workshop paper~\cite{rochet2020tcpls}.}. We have
-designed \tcpls with three goals in mind. First, \tcpls exposes modern transport
-features, such as multipath capabilities, to the application. Second, \tcpls
-solves \tcp's extensibility issues in \tcp by relying on the \tls handshake for
-\tcp options negotiation and by including \tcp options inside \tls records.
-Finally, we draw a path to make \tcpls an excellent challenger to \quic.  With that in mind, we have implemented \tcpls as a user-space library that exposes a powerful API to applications but still relies on the high-performance in-kernel \tcp stack. Our implementation uses \tls' flexible record layer to create a secure control channel that the \tcpls session endpoints can use to exchange
-control information. This channel enables different use cases such as connection
-migration or seamless failovers without risking middlebox interference. Our lab
-measurements indicate that our \tcpls prototype outperforms existing \quic
-implementations in terms of raw performance while allowing more flexibility
-for recovery and connection migration. Our \tcpls has been thought
-with open access in mind and will be released upon this paper acceptance.
+\begin{itemize}
+	\item Can TCP and TLS be combined ?
+	\item What are the new transport services this combination can offer ? 
+	\item How do these services compete with other protocols ?
+\end{itemize}
 
-The remainder of this paper is organized as follows: Sec.~\ref{sec:background}
+To answer these questions, we design and implement an approach to combine 
+\tcp and \tls 1.3 into a fast, flexible and secure transport protocol called \textbf{\tcpls}
+%
+%In this paper, we take a step back. As \quic closely couples the reliability and
+%security mechanisms, we reconsider the separation between \tcp and \tls.  In
+%this paper, we combine both \tcp and \tls 1.3 in a single fast, flexible, and
+%secure protocol called \textbf{\tcpls}
+\footnote{We presented a preliminary version of this work in a workshop paper~\cite{rochet2020tcpls}.}. 
+At the heart of our approach, we illustrate how \tls records can be leveraged to build new transport services. In \tcp/\tls, \tls \texttt{AppData} records are solely used to securely convey the \tcp bytestream. In \tcpls, we extend their use to convey both application and control data.\todo{more detail needed?}
+
+We demonstrate that this combination allows secure extensibility that can also be used with techniques such as TCP Fast Open \cite{rfc7413} to lower the handshake latency. We leverage this new extensibility implement modern transport services such as multiplexing, connection migration and multipath capabilities without risking middlebox interference. Our \tcpls prototype is implemented as a user-space library exposing a powerful API to applications while leveraging the high-performance Linux kernel \tcp stack. Our lab measurements indicate that \tcpls can be implemented at a low cost while providing more bulk throughput and flexibility than the \quic implementations we tested.
+%(mp): Je n'aime pas trop cette notion de flexibilité que l'on ne définit jamais vraiment
+ 
+%We have
+%designed \tcpls with three goals in mind. First, \tcpls exposes modern transport
+%features, such as multipath capabilities, to the application. Second, \tcpls
+%solves \tcp's extensibility issues in \tcp by relying on the \tls handshake for
+%\tcp options negotiation and by including \tcp options inside \tls records.
+%Finally, we draw a path to make \tcpls an excellent challenger to \quic.  With that in mind, we have implemented \tcpls as a user-space library that exposes a powerful API to applications but still relies on the high-performance in-kernel \tcp stack. Our implementation uses \tls' flexible record layer to create a secure control channel that the \tcpls session endpoints can use to exchange
+%control information. This channel enables different use cases such as connection
+%migration or seamless failovers without risking middlebox interference. 
+
+%Our lab
+%measurements indicate that our \tcpls prototype outperforms existing \quic
+%implementations in terms of raw performance while allowing more flexibility
+%for recovery and connection migration. Our \tcpls has been thought
+%with open access in mind and will be released upon this paper acceptance.
+
+The rest of this paper is organized as follows: Sec.~\ref{sec:background}
 provides the required technical background; Sec.~\ref{sec:background-design}
 discusses how we designed \tcpls, while Sec.~\ref{sec:prototype} focuses on how
 we implemented \tcpls; Sec.~\ref{sec:evaluation} evaluates the performance and

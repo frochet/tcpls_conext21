@@ -16,7 +16,10 @@
 %\end{figure}
 
 
-\subsection{Overview}
+\todo{Répondre à la première question de recherche}
+
+
+\subsection{\tls Records and Extensions}
 %%%%%%%%%%%%%%%%%%%%%%
 %Today's applications expect more than a simple bytestream from the transport
 %layer. Security is not anymore a requirement for niche application. Applications
@@ -28,21 +31,76 @@
 %fast, flexible, and secure transport protocol that is suited for these modern
 %applications.
 
-\tcpls is more than the simple addition of the security features
-of \tls and the reliability features of \tcp. \tcpls leverages \tls 1.3 to
-negotiate a security context and uses it to send the user data authenticated and
-encrypted as \tls records. These records create a secure
-control channel between the client and server. This channel is used to manage
-the \tcpls session and exchange all control information without any possible
-middlebox interference. \tcpls includes a Connection Manager (CM) that
-controls the underlying \tcp connections. The \tls records of a \tcpls session can
-be transported over different \tcp connections during the session lifetime. This
-brings several interesting failover and multipath capabilities.
-Fig.~\ref{fig:arch} illustrates the interactions between two \tcpls hosts.
-\tcpls can be implemented in userspace within a library like current \tls
-implementations. It interacts with the \tcp stack that in our prototype resides
-in the kernel. The crypto module negotiates and manages the security context
-while the CM manages the utilization of the underlying \tcp connection(s).
+Each protocol has a basic unit for exchanging application and control data.
+For instance for \tcp it is \tcp segments which are split in two with only
+a small part dedicated to control data.
+\tls is more flexible with \tls records of different types and lengths.
+In \quic, the basic unit is are \quic packets which can be composed of any number and type
+of \quic frames. In \tcpls we leverage the \tls encrypted records which hide from middleboxes
+their true type and content in opaque \texttt{Application Data} records.
+In this way, we can extend the messages exchanged with \tls in a secure and
+flexible manner.
+
+\todo{Discuss the (performances) advantages of framing our protocol at the record layer}
+\todo{Maybe refine "secure" to the application key}
+
+\tls also offers a mean for requesting extended functionalities in a \tls session through
+request/response messages called \tls \texttt{Extensions}. They are exchanged during
+the \tls handshake with some security guarantees. \todo{state them briefly}
+\tcpls extends these messages to negotiate the new transport services it offers.
+
+\subsection{Starting a \tcpls connection}
+
+A \tcpls connection starts with a \tcp handshake followed by a \tls handshake.
+This process can be safely accelerated through the use of TCP Fast Open~\cite{rfc7413}.
+%\tls 1.3~\cite{rfc8446} has been designed with careful consideration for
+%potential extensions and to prevent middlebox interference. 
+A \tcpls client
+indicates its willingness to use \tcpls with the \tcpls \texttt{Hello} extension
+in its \tls \textsc{ClientHello} message. Upon reception of this extension, the \tcpls server
+replies with a \tls \textsc{ServerHello} message echoing the \tcpls \texttt{Hello} extension in \tls \textsc{EncryptedExtensions}.
+%It can opportunistically add
+%lightweight \tcpls data and \tcp options as \textsc{EncryptedExtensions}. 
+These are encrypted with the handshake key which is not part of the context used to derive the eventual
+application key. 
+%If the client does not support some extension, it echoes back
+%an alert with the value of the option it does not recognize, letting the connection
+%continues.
+Once the \tls handshake has succeeded, the peers can exchange \tcpls records.
+
+\todo{Is the following best here? -> Background ?}
+A reasonable approach to design extensibility mechanisms in the Internet
+is to avoid leaking any information that could help an on-path attacker
+recognize specific users or applications. Indeed, censorship~\cite{Morshed2017a,
+	Gosain2017a,Chai2019a} can be easily implemented when protocol messages can be
+distinguished. Researchers advocates that avoiding trivial opportunities to
+implement censorship should become the bare minimum in designing a new protocol.
+\tcpls%'s control protocol 
+considers these problems by restricting the use of
+plaintext extensions data in the \textsc{ClientHello} as much as possible.
+
+
+%To prevent middlebox interference, the \tls 1.3 Record Protocol ensures that any
+%new message appears as an \textsc{AppData} message type. \tls stores the true
+%content type (TType) at the end of the encrypted payload. \tcpls uses this
+%feature of \tls 1.3 to encode the control messages that are sent over the secure
+%channel as new \tls record types.
+
+%\tcpls is more than the simple addition of the security features
+%of \tls and the reliability features of \tcp. \tcpls leverages \tls 1.3 to
+%negotiate a security context and uses it to send the user data authenticated and
+%encrypted as \tls records. These records create a secure
+%control channel between the client and server. This channel is used to manage
+%the \tcpls session and exchange all control information without any possible
+%middlebox interference. \tcpls includes a Connection Manager (CM) that
+%controls the underlying \tcp connections. The \tls records of a \tcpls session can
+%be transported over different \tcp connections during the session lifetime. This
+%brings several interesting failover and multipath capabilities.
+%Fig.~\ref{fig:arch} illustrates the interactions between two \tcpls hosts.
+%\tcpls can be implemented in userspace within a library like current \tls
+%implementations. It interacts with the \tcp stack that in our prototype resides
+%in the kernel. The crypto module negotiates and manages the security context
+%while the CM manages the utilization of the underlying \tcp connection(s).
 %Closely coupling \tcp and \tls in \tcpls brings opportunities for performance improvement (e.g., avoiding records fragmentation with dynamic receive buffer auto-tuning and/or with dynamic control of the record length), and for connection reliability (e.g., failover).
 
 
@@ -107,63 +165,63 @@ while the CM manages the utilization of the underlying \tcp connection(s).
 \end{tikzpicture}
 \end{center}
 \vspace{-0.5cm}
-\caption{\tcpls is implemented as a user space library. The application controls the streams and the underlying \tcp connections through the API. The crypto module manages the security context and the Connetion Manager (CM) controls the utilization of one or more \tcp connections using the kernel stack.}
+\caption{\tcpls is implemented as a user space library. The application controls the streams and the underlying \tcp connections through the API. The crypto module manages the security context and the Connection Manager (CM) controls the utilization of one or more \tcp connections using the kernel stack.}
 \label{fig:arch}
 \end{figure}
 
-\tcp separates control information and data by placing the control information
-in the packet header and the data in the payload. This separation worked well
-until middleboxes started to interfere with \tcp~\cite{10.1145/1064413.1064418,
-  honda2011still}. On a fraction of Internet paths, including e.g., some
-enterprise and cellular networks, some middleboxes interfere by adding,
-removing, or changing \tcp
-options~\cite{wang2011untold,honda2011still,xu2015investigating} and, in some
-cases, also transparently terminating \tcp connections.
-
-%These middleboxes have
-%slowed down the evolution of \tcp in recent years.
-
-\tcpls also uses the packet
-header to exchange \tcp control information, but it leverages the extensibility
-of \tls 1.3 to place control information including some \tcp options inside the
-\tls handshake messages and new \tls records. Since this information is
-encrypted and authenticated, the communicating hosts can exchange new control
-information without encountering middlebox interference. We refer to this
-exchange of control information as the \textit{secure channel} between the two hosts.
-
-A \tcpls session starts with a secure \tls 1.3 handshake~\cite{rfc8446}. The
-client adds a new \tcpls transport parameter in its \textsc{ClientHello}
-message. A \tcpls server replies with a \textsc{ServerHello} message that
-negotiates the security keys and may include additional \tcpls information as
-\textsc{EncryptedExtensions}. After this secure handshake, the client and the
-server have a shared security context.
-
-As \sctp~\cite{rfc4960} or \quic~\cite{draft-ietf-quic-transport}, \tcpls
-supports one or more streams over a single \tcpls session. An application can
-open, attach, and close streams to an existing \tcpls session. Each stream is an
-independent cryptographic context derived from the \tcpls security context. The
-\tcpls streams can carry application data or control information.
-Streams are attached over the Secure Control Channel. Since each stream is an
-independent cryptographic context, the recipient can immediately start to
-decrypt and extract data from the new stream. No round-trip is wasted to attach
-a new stream.
-
-\tcpls' CM controls the utilization of the underlying \tcp connections. It can open, close, or reestablish failed \tcp connections. Each of the connections that composes a \tcpls session is identified by a \emph{transport identifier}. By default, the data from a stream can be sent over any of the underlying \tcp connections. The applications that require finer control over the utilization of the underlying \tcp connections can use the \tcpls API to map a stream on a specific underlying connection. In this case, all the data of this stream is exchanged over this specific connection. By placing two streams on different connections, an application can prevent Head-Of-Line (HOL) blocking among these streams.
-
-\tcpls also supports failover and multipath. To support these features, data
-from a given stream is sent over different \tcp connections. In
-this case, the \tcp level sequence numbers and acknowledgements are not
-sufficient anymore to enable the receiver to reorder the data and \tcpls
-adds its own sequence numbers and acknowledgements that are exchanged as
-new \tls records over the secure control channel. Thanks to these \tcpls acknowledegments, a \tcpls session can survive to the failure of an underlying \tcp connection by reestablishing a new \tcp connection to continue the data transfer and replaying the lost records.
-
-A \tcp connection ends with the exchange of \fin or \rst packets. However, some
-middleboxes force the termination of \tcp connections by sending \rst
-packets~\cite{rfc3360,weaver2009detecting}. \tcpls can preserve established
-session by automatically restarting the underlying \tcp connection upon
-reception of a spurious reset. \tcpls defines the connection termination at the
-stream level: a \tcp connection is closed once the last stream attached to a
-\tcp connection is securely closed.
+%\tcp separates control information and data by placing the control information
+%in the packet header and the data in the payload. This separation worked well
+%until middleboxes started to interfere with \tcp~\cite{10.1145/1064413.1064418,
+%  honda2011still}. On a fraction of Internet paths, including e.g., some
+%enterprise and cellular networks, some middleboxes interfere by adding,
+%removing, or changing \tcp
+%options~\cite{wang2011untold,honda2011still,xu2015investigating} and, in some
+%cases, also transparently terminating \tcp connections.
+%
+%%These middleboxes have
+%%slowed down the evolution of \tcp in recent years.
+%
+%\tcpls also uses the packet
+%header to exchange \tcp control information, but it leverages the extensibility
+%of \tls 1.3 to place control information including some \tcp options inside the
+%\tls handshake messages and new \tls records. Since this information is
+%encrypted and authenticated, the communicating hosts can exchange new control
+%information without encountering middlebox interference. We refer to this
+%exchange of control information as the \textit{secure channel} between the two hosts.
+%
+%A \tcpls session starts with a secure \tls 1.3 handshake~\cite{rfc8446}. The
+%client adds a new \tcpls transport parameter in its \textsc{ClientHello}
+%message. A \tcpls server replies with a \textsc{ServerHello} message that
+%negotiates the security keys and may include additional \tcpls information as
+%\textsc{EncryptedExtensions}. After this secure handshake, the client and the
+%server have a shared security context.
+%
+%As \sctp~\cite{rfc4960} or \quic~\cite{draft-ietf-quic-transport}, \tcpls
+%supports one or more streams over a single \tcpls session. An application can
+%open, attach, and close streams to an existing \tcpls session. Each stream is an
+%independent cryptographic context derived from the \tcpls security context. The
+%\tcpls streams can carry application data or control information.
+%Streams are attached over the Secure Control Channel. Since each stream is an
+%independent cryptographic context, the recipient can immediately start to
+%decrypt and extract data from the new stream. No round-trip is wasted to attach
+%a new stream.
+%
+%\tcpls' CM controls the utilization of the underlying \tcp connections. It can open, close, or reestablish failed \tcp connections. Each of the connections that composes a \tcpls session is identified by a \emph{transport identifier}. By default, the data from a stream can be sent over any of the underlying \tcp connections. The applications that require finer control over the utilization of the underlying \tcp connections can use the \tcpls API to map a stream on a specific underlying connection. In this case, all the data of this stream is exchanged over this specific connection. By placing two streams on different connections, an application can prevent Head-Of-Line (HOL) blocking among these streams.
+%
+%\tcpls also supports failover and multipath. To support these features, data
+%from a given stream is sent over different \tcp connections. In
+%this case, the \tcp level sequence numbers and acknowledgements are not
+%sufficient anymore to enable the receiver to reorder the data and \tcpls
+%adds its own sequence numbers and acknowledgements that are exchanged as
+%new \tls records over the secure control channel. Thanks to these \tcpls acknowledegments, a \tcpls session can survive to the failure of an underlying \tcp connection by reestablishing a new \tcp connection to continue the data transfer and replaying the lost records.
+%
+%A \tcp connection ends with the exchange of \fin or \rst packets. However, some
+%middleboxes force the termination of \tcp connections by sending \rst
+%packets~\cite{rfc3360,weaver2009detecting}. \tcpls can preserve established
+%session by automatically restarting the underlying \tcp connection upon
+%reception of a spurious reset. \tcpls defines the connection termination at the
+%stream level: a \tcp connection is closed once the last stream attached to a
+%\tcp connection is securely closed.
 
 %In summary, \tcpls provides a flexible abstraction to the
 %upper layer that supports various new features such as streams, connection
