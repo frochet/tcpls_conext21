@@ -1,18 +1,32 @@
 % !TEX root = ./paper.tex
 
-\subsection{Transport Services}
+\subsection{\tcpls Transport Services}
 
-\subsection{Multiplexing in \tcpls}\label{sec:datastreams}
+\todo{Intro RQ2}
+
+\subsubsection{Multiplexing}\label{sec:datastreams}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\todo{Choose one way to represent the stream id}
+\begin{figure}
+	\centering
+	\begin{bytefield}[bitheight=\widthof{ab}]{32}
+		\bitbox[]{1}{\small N} & \bitbox[]{9}{} & \bitbox[]{3}{\small N-32} &
+		& \bitbox[]{7}{} &
+		\bitbox[]{1}{\small 64} & \bitbox[]{9}{} & \bitbox[]{3}{\small 0} \\
+		\bitbox{32}{TLS 1.3 AEAD Initial Vector}  \\
+		\bitbox[]{12}{+} & \bitbox[]{8}{} & \bitbox[]{12}{$\oplus$} \\
+		\bitbox{12}{\tcpls Stream ID} & \bitbox[]{8}{} & \bitbox{12}{Record sequence}
+	\end{bytefield}
+	\caption{The AEAD IV of \tcpls Streams is derived from \tls 1.3}
+	\label{fig:aead-iv}
+\end{figure}
 
 Multiplexing is a modern transport service that has been part of recent protocols such
 as \sctp, \quic and HTTP/2.0. The latter also proposed multiplexing with an independent
 framing system atop the TLS-encrypted TCP bytestream. In our approach, we choose 
 to implement multiplexing with \tcpls records. We dedicate a \tcpls record type to
 \tcpls stream data. Each stream has a separate cryptographic context which has several
-advantages when combined with connection migration and multipath.
+advantages when combined with connection migration and multipath. \todo{state the advantages?}
 
 One simple way to provide separate cryptographic contexts is to use multiple application-level
 keys. But this is known to degrade the security properties proportionally to the number of
@@ -21,8 +35,11 @@ Initial Vector (IV) derivation technique from the \tls session secret.
 It maintains the IV uniqueness for all streams and related \tcpls records of a \tcpls connection,
 which preserves the security of AEAD algorithms.
 
-\todo{Do a figure to explain the derivation, TLS 1.3 IV construct vs TCPLS IV derivation}
-\todo{Update the following explanation with the figure}
+Figure~\ref{fig:aead-iv} illustrates how the AEAD nonce is computed for a 
+given \tcpls record of a \tcpls stream. First the left-most bits of the IV derived from the \tls handshake
+is summed with the \tcpls Stream ID. Then the right-most bits are XORed with the
+stream record sequence number. Each \tcpls stream has a separate record sequence number space,
+which guarantees that the resulting IV is unique for all records of all \tcpls streams.
 
 %The classical solution to support streams in a transport protocol is to assign
 %an identifier to each stream and send the data from stream $x$ as a tuple
@@ -40,32 +57,32 @@ which preserves the security of AEAD algorithms.
 %We selected this approach to avoid security degradation with the usage of
 %multiple keys (by a factor $k$ with $k$ keys)~\cite{chatterjee2011another}.
 
-To enable all stream sequence numbers to start at 0, we rely on some properties
-of the Authenticated Encryption with Associated Data (AEAD) schemes used by \tls
-1.3. To preserve AEAD security, the AEAD nonce used by \tcpls must be of unique
-use when encrypting and decrypting a record. The initial nonce must also be
-unpredictable for an adversary observing the handshake. \tcpls derives it from
-the \tls handshake session secret in a similar fashion to the \tls
-keys~\cite{rfc8446}. The nonce size ranges from $96$ bits to $128$ bits
-depending on the underlying cipher used. In all cases, for a nonce of size $N$
-bits, \tls computes the cryptographic nonce by concatenating the $N-64$ leftmost
-bits with the 64 lower bits XORed with the record's implicit sequence number
-encoded in 64 bits. XORing the lower 64 bits provides more unpredictability to
-the nonce when the same plaintext is encrypted multiple times with the same
-key~\cite{bellare2016multi,hoang2018multi}. This design implies that we give to
-the underlying cipher the 32 upper bits untouched. The resulting value is then
-concatenated with an internal counter in GCM and used as the blocksize-bits (128
-or 256 bits) stream's counter.
-We observe that the leftmost N-64 bits are available to encode a unique stream number. By
-encoding such a unique number in this part of the cryptographic nonce, we enable
-each stream to start its sequence number at 0 while encrypting its records with
-the same key. This observation means that we can create independent
-cryptographic contexts based on a cryptographic nonce's tweak. This implies
-that stream records can be encrypted and decrypted independently of each other,
-with the same key value. This technique maintains AEAD's core assumption
-(uniqueness of nonce), which means that state of art AEAD's security proof
-starting from that assumption applies to our
-design~\cite{chatterjee2011another} and guarantees the security of our scheme.
+%To enable all stream sequence numbers to start at 0, we rely on some properties
+%of the Authenticated Encryption with Associated Data (AEAD) schemes used by \tls
+%1.3. To preserve AEAD security, the AEAD nonce used by \tcpls must be of unique
+%use when encrypting and decrypting a record. The initial nonce must also be
+%unpredictable for an adversary observing the handshake. \tcpls derives it from
+%the \tls handshake session secret in a similar fashion to the \tls
+%keys~\cite{rfc8446}. The nonce size ranges from $96$ bits to $128$ bits
+%depending on the underlying cipher used. In all cases, for a nonce of size $N$
+%bits, \tls computes the cryptographic nonce by concatenating the $N-64$ leftmost
+%bits with the 64 lower bits XORed with the record's implicit sequence number
+%encoded in 64 bits. XORing the lower 64 bits provides more unpredictability to
+%the nonce when the same plaintext is encrypted multiple times with the same
+%key~\cite{bellare2016multi,hoang2018multi}. This design implies that we give to
+%the underlying cipher the 32 upper bits untouched. The resulting value is then
+%concatenated with an internal counter in GCM and used as the blocksize-bits (128
+%or 256 bits) stream's counter.
+%We observe that the leftmost N-64 bits are available to encode a unique stream number. By
+%encoding such a unique number in this part of the cryptographic nonce, we enable
+%each stream to start its sequence number at 0 while encrypting its records with
+%the same key. This observation means that we can create independent
+%cryptographic contexts based on a cryptographic nonce's tweak. This implies
+%that stream records can be encrypted and decrypted independently of each other,
+%with the same key value. This technique maintains AEAD's core assumption
+%(uniqueness of nonce), which means that state of art AEAD's security proof
+%starting from that assumption applies to our
+%design~\cite{chatterjee2011another} and guarantees the security of our scheme.
 
 %\paragraph*{Carrying Multiple Streams over the Same Transport}
 %Thanks to those separate cryptographic contexts, \tcpls can perform concurrent
