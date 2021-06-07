@@ -15,8 +15,26 @@
 %  \label{fig:arch}
 %\end{figure}
 
+The slow pace of innovation in \tcp-based transport services can be explained by 
+several factors. First, the amount of bytes for extensions in the \tcp header is
+limited to 40 bytes. Second, it is exchanged in cleartext and is known to have heavily
+ossified due to middleboxes, strongly restraining changes in the header semantics 
+and to \tcp \texttt{Options}. Third, TCP is often implemented in the kernel, 
+which adds complexity to implement and deploy these modifications. Following the
+recent advances in the transport layer, we go back to {\small{\textit{RQ1}}}
+and ask \textit{Can TCP and TLS be combined to address these issues} ?
 
-\todo{Répondre à la première question de recherche}
+Yes, by leveraging the
+flexible encrypted \tls records, we can supplement the \tls-encrypted application data
+with transport-level control data allowing to extend the offered transport services.
+Existing \tcp \texttt{Options} can be securely conveyed in new \tls records and 
+new transport services can leverage this new secure control channel.
+
+In this section, we explain how we combined \tcp and \tls into \tcpls. We first explain how
+a \tcpls connection starts. We introduce
+\tcpls records which are the basic unit of communication in \tcpls. We then explain
+how they can be leveraged to provide modern transport services such as multiplexing,
+connection migration and multipath.
 
 
 \subsection{\tls Records and Extensions}
@@ -31,18 +49,43 @@
 %fast, flexible, and secure transport protocol that is suited for these modern
 %applications.
 
+\definecolor{lightgray}{gray}{0.8}
+\newcommand{\colorbitbox}[4]{%
+	\sbox0{\bitbox[#4]{#2}{#3}}%
+	\makebox[0pt][l]{\textcolor{#1}{\rule[-\dp0]{\wd0}{\ht0}}}%
+	\bitbox[#4]{#2}{#3}%
+}
+\begin{figure}
+\begin{bytefield}[bitheight=\widthof{abcde}]{24}
+	\begin{rightwordgroup}{\tls 1.3 Records}
+	\bitbox{8}{\small Opaque Type \\ \scriptsize AppData} & \bitbox{8}{\small TLS Version && \scriptsize \texttt{0x303}} & \bitbox{8}{Length} \\
+	%\wordbox[tlr]{2}{Encrypted and \\ authenticated payload} \\
+	\colorbitbox{lightgray}{16}{Encrypted payload}{tlb} & \colorbitbox{lightgray}{8}{\small Record type \\ \scriptsize e.g. AppData}{trb}
+	\end{rightwordgroup}
+\end{bytefield}
+\begin{bytefield}[bitheight=\widthof{abcde}]{24}
+	\begin{rightwordgroup}{\tcpls Records}
+	\bitbox{8}{\small Opaque Type \\ \scriptsize AppData} & \bitbox{8}{\small TLS Version && \scriptsize \texttt{0x303}} & \bitbox{8}{Length} \\
+	%\wordbox[tlr]{2}{Encrypted and \\ authenticated payload} \\
+	\colorbitbox{lightgray}{16}{\small Encrypted control \\ or app. data}{tlb} & \colorbitbox{lightgray}{8}{\small Record type \\ \scriptsize TCPLS}{trb}
+	\end{rightwordgroup}
+\end{bytefield}
+
+	\caption{\tcpls extends the encrypted \tls records to convey control and application data.}
+	\label{fig:tls-tcpls-records}
+\end{figure}
+
 Each protocol has a basic unit for exchanging application and control data.
 For instance for \tcp it is \tcp segments which are split in two with only
 a small part dedicated to control data.
 \tls is more flexible with \tls records of different types and lengths.
 In \quic, the basic unit is are \quic packets which can be composed of any number and type
-of \quic frames. In \tcpls we leverage the \tls encrypted records which hide from middleboxes
+of \quic frames. As illustrated in Figure~\ref{fig:tls-tcpls-records}, in \tcpls we leverage the \tls encrypted records which hide from middleboxes
 their true type and content in opaque \texttt{Application Data} records.
 In this way, we can extend the messages exchanged with \tls in a secure and
 flexible manner.
 
-\todo{Discuss the (performances) advantages of framing our protocol at the record layer}
-\todo{Maybe refine "secure" to the application key}
+\todo{Discuss the (performances) advantages of framing our protocol at the record layer?}
 
 \tls also offers a mean for requesting extended functionalities in a \tls session through
 request/response messages called \tls \texttt{Extensions}. They are exchanged during
