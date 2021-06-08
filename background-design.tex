@@ -92,6 +92,17 @@ request/response messages called \tls \texttt{Extensions}. They are exchanged du
 the \tls handshake with some security guarantees. \todo{state them briefly}
 \tcpls extends these messages to negotiate the new transport services it offers.
 
+These record and extensions can be leveraged to exchange \tcp \texttt{Options}. They can
+be negotiated at the start of the connection using \tls extensions, and exchanged later
+throughout the connection in \tcpls records.
+Since \tls messages are conveyed in the \tcp payload, there is more space to carry them.
+They are also exchanged reliably, which is a requirement of many \tcp \texttt{Options} such
+as \tcp User Timeout option \cite{rfc5482}, \mptcp's \texttt{ADD\_ADDR} and
+\texttt{REMOVE\_ADDR} option and experimental \tcp options \cite{rfc6994}.
+They also cannot be modified by middleboxes as they are secured by \tls. Detecting \tcp proxies
+preventing an end-to-end \tcp connection is also easy. One could echo a part of the \tcp header
+in a \tcpls record to detect them.
+
 \subsection{Starting a \tcpls connection}
 
 A \tcpls connection starts with a \tcp handshake followed by a \tls handshake.

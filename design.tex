@@ -4,7 +4,7 @@
 
 By leveraging \tcpls records and extensions, we can design new modern transport
 services atop the combination of \tcp and \tls. In this subsection, we answer our
-second research question {\small\textit{RQ2}} and present three transport services:
+second research question {\small\textit{RQ2}} by presenting three transport services:
 multiplexing, connection migration and multipath. We leverage the \tcpls records
 to multiplex concurrent encrypted bytestreams. By extending the \tls handshake, \tcpls
 allows joining several \tcp connections to a single \tcpls session to achieve
@@ -160,7 +160,7 @@ subflows to an existing \mptcp connection~\cite{rfc6181}.
 \end{figure}
 
 
-\textbf{Joining \tcp connections}. \tcpls leverages its secure records and extensions to
+\textbf{Joining \tcp connections}. \tcpls leverages its secure records and extensions
 to solve this problem in a more secure
 manner. Figure~\ref{fig:join-example} illustrates the \tls and \tcpls messages 
 exchanged when a client connects to a server over IPv4 and joins another connection
@@ -301,44 +301,45 @@ Like \mptcp \cite{raiciu2012hard,rfc6824} or Multipath QUIC \cite{de2017multipat
 In addition, \tcpls allows the application to attach its streams to the
 underlying \tcp connections in a non-aggrega-ted bandwidth mode. This is a choice left to the application using the API. It has several advantages and drawbacks compared to the aggregation mode. For example, the aggregation mode is simple to use and can potentially saturate the available network paths but can lead to Head-Of-Line (HOL) blocking, since records sent over different \tcp connections need to be eventually re-ordered. The aggregation mode is also more CPU costly, since a zero-copy codepath is technically possible only when the records arrive in order. In the non-aggregated multipath mode, the application needs to take care to fully send an application-level object over the same stream, since the ordering is only guaranteed per-stream in this mode. However, our \tcpls implementation guarantees that this mode will benefit from zero-copy of the decrypted application data, which makes this mode potentially quite interesting for application protocols such as HTTP that need to fetch multiple application objects at the same time.
 
-\subsection{Improving \tcp's Extensibility}\todo{Move this to the beginning of the design as a simple example of tcpls records}
+\subsection{Improving \tcp's Extensibility}
 
 %\label{sec:tcpoptions}
 %% Discussing the lack of extensibility of TLS 1.3;
 %\begin{figure}[!t]
-  %\begin{bytefield}[bitwidth=0.47em]{40}
-    %%\bitheader[lsb=0,bitformatting={\tiny\rotatebox[origin=B]{90}}]{0,7,8,15,16,23,24,31,32,39} \\
-    %\bitheader[lsb=0,bitformatting={\tiny}]{0,7,15,23,31,39} \\
-    %\begin{rightwordgroup}{Header}
-      %\bitbox{8}{Type} & \bitbox{16}{Version} & \bitbox{16}{Length}
-    %\end{rightwordgroup}\\
-    %\begin{rightwordgroup}{Payload}
-      %\bitbox{16}{Option Type} & \bitbox{16}{User Timeout} & \bitbox{8}{TType}
-     %%&\wordbox[lrb]{1}{Padding... (to match the AEAD block size)}
-    %\end{rightwordgroup}\\
-  %\end{bytefield}
-  %\caption{All \tcpls records have the same type but differ in their encrypted TType. This sample record contains the User Timeout \tcp option.}
-  %\label{fig:ex_record}
+%  \begin{bytefield}[bitwidth=0.47em]{40}
+%    %\bitheader[lsb=0,bitformatting={\tiny\rotatebox[origin=B]{90}}]{0,7,8,15,16,23,24,31,32,39} \\
+%    \bitheader[lsb=0,bitformatting={\tiny}]{0,7,15,23,31,39} \\
+%    \begin{rightwordgroup}{Header}
+%      \bitbox{8}{Type} & \bitbox{16}{Version} & \bitbox{16}{Length}
+%    \end{rightwordgroup}\\
+%    \begin{rightwordgroup}{Payload}
+%      \bitbox{16}{Option Type} & \bitbox{16}{User Timeout} & \bitbox{8}{TType}
+%     %&\wordbox[lrb]{1}{Padding... (to match the AEAD block size)}
+%    \end{rightwordgroup}\\
+%  \end{bytefield}
+%  \caption{All \tcpls records have the same type but differ in their encrypted TType. This sample record contains the User Timeout \tcp option.}
+%  \label{fig:ex_record}
 %\end{figure}
 
+\todo{Move this into the section 2 or intro}
 \tcp~\cite{rfc793} limits the size of the entire \tcp header (including options) to 64 bytes. Unfortunately, the \tcp designers did not foresee that many \tcp extensions would be standardized. Today, the \tcp header size becomes a constraint.
 %For example, it severely limits the number of gaps that
 %can be covered by selective acknowledgments.
 The restriction gets more strict with extensions such as \mptcp~\cite{rfc6824} that consume more space in the \tcp header. The IETF has discussed this problem for several years, but the latest attempt to solve it~\cite{draft-ietf-tcpm-tcp-edo-10} has not yet been implemented by major \tcp stacks.
-
-\tcpls provides more space for \tcp options. First, with \tcpls, \tcp
-options can be negotiated during the \tls handshake. Since the \tls messages are
-included in the \tcp payload, there is more space to carry them. Another
-advantage of this approach is that the \tcp options are secured by \tls. This
-implies that they cannot be modified by middleboxes. This could be an advantage,
-but could also prevent \tcpls from correctly working through some types of
-transparent \tcp proxies.
-
-Second, \tcpls can also carry \tcp options inside \tls records. \tcpls includes
-one record type to carry \tcp options. This new type of records can be used to
-carry TCP options that need to be exchanged reliably such as the \tcp User
-Timeout option \cite{rfc5482}, \mptcp's \texttt{ADD\_ADDR} and
-\texttt{REMOVE\_ADDR} option and experimental \tcp options \cite{rfc6994}.
+%
+%\tcpls provides more space for \tcp options. First, with \tcpls, \tcp
+%options can be negotiated during the \tls handshake. Since the \tls messages are
+%included in the \tcp payload, there is more space to carry them. Another
+%advantage of this approach is that the \tcp options are secured by \tls. This
+%implies that they cannot be modified by middleboxes. This could be an advantage,
+%but could also prevent \tcpls from correctly working through some types of
+%transparent \tcp proxies.
+%
+%Second, \tcpls can also carry \tcp options inside \tls records. \tcpls includes
+%one record type to carry \tcp options. This new type of records can be used to
+%carry TCP options that need to be exchanged reliably such as the \tcp User
+%Timeout option \cite{rfc5482}, \mptcp's \texttt{ADD\_ADDR} and
+%\texttt{REMOVE\_ADDR} option and experimental \tcp options \cite{rfc6994}.
 
 \subsection{Finishing a \tcpls connection}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
