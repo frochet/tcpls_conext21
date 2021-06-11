@@ -123,9 +123,9 @@ Stream ID is unique and no sequence number is used twice in a given stream.
 \tcpls allows joining several \tcp connections to an existing \tcpls session.
 We leverage this mechanism to implement several multipath transport services
 such as connection migration.
-Our design is more secure than the subflow joining mechanism of
-\mptcp~\cite{raiciu2012hard,hesmans2015smapp,hesmans2016enhanced}.
-To secure the association of new \mptcp subflows, peers exchange short keys
+Compared to the subflow joining mechanism of
+\mptcp~\cite{raiciu2012hard,hesmans2015smapp,hesmans2016enhanced}, our design is
+secure. Indeed, \mptcp enables additional subflows by initially exchanging short keys
 inside cleartext \tcp \texttt{Options} during the \tcp handshake~\cite{rfc6824, rfc8684}.
 These keys are then used to authenticate the association of subflows.
 An attacker that has observed the key exchange during the \tcp handshake can associate
@@ -259,24 +259,31 @@ trace example involving a file transfer and the failover protocol in
 Appendix~\ref{app:failover}.
 
 \textbf{Active Connection Migration}. \tcpls also enables the application
-to trigger a connection migration.
+to trigger a different type of connection migration, expected to be used over
+healthy networks and leveraging a transient usage of bandwidth aggregation. The
+decision to migrate from a healthy network to another one is an application one.
+The TCPLS protocol and implementation's job is to make it quite simple by
+supporting the exchange of interface's related meta-information to help the decision
+making and by offering a simple API.
 %Essentially, it means that \tcpls provides a simple API that enables an
 %application to migrate when it wishes to do so (e.g., 
-For instance, a smartphone could migrate from LTE to Wi-Fi 
+For instance, a smartphone could migrate from LTE to Wi-Fi.
 %when the Wi-Fi appears healthy,
-and a client using privacy compliant IPv6 addresses~\cite{rfc4941} could restart the underlying \tcp
-connection after the expiration of a temporary address. 
 %The semantic of
 %the application-level connection migration is built from attaching and closing
 %streams in the multipath bandwidth aggregation mode. 
 %The client that wishes to
 %carry such a migration first creates a new \tcp connection and joins the \tcpls
 %session over this connection.
-To achieve it, the client willing to migrate creates a new \tcp connection and join it to the \tcpls
+To achieve it, the client can essentially \textit{compose} with independent
+features offered by \tcpls. In a client/server implementation using \tcpls, the
+following protocol composition is realised with only 4 API calls (4 lines of
+code). The client willing to migrate creates a new \tcp connection and join it to the \tcpls
 session. Then, it attaches new streams to the new
 connection by sending one \textsc{Stream\_Attach} message per stream that needs
 to be migrated. At that moment, the client and the server have potentially
-multiple streams opened over the two network paths. Then, after having attached
+multiple streams opened over the two network paths and can temporally aggregate
+the bandwidth offered by both paths. Then, after having attached
 all its streams to the new path, the migrating host sends a
 \textsc{Stream\_Close} message over the old \tcp connection for all old streams.
 At this point, the migrating host cannot send new stream data anymore over the
@@ -285,7 +292,7 @@ message over the old \tcp connection, it knows that the connection is not
 available anymore\todo{?}, and can switch to the other connections. It first sends a
 \textsc{Stream\_Close\_Ack} message for each received \textsc{Stream\_Close}.
 The migrating host can close the old connection upon reception of the last
-\textsc{Stream\_Close\_Ack}, indicating that no more data would be received over
+T\textsc{Stream\_Close\_Ack}, indicating that no more data would be received over
 this connection. Note that these messages are \tls records and are thus sent
 securely and reliably.% by the underlying \tcp connection.
 
@@ -300,7 +307,20 @@ connections, which brings us to explain how multipath is designed.
 Like \mptcp \cite{raiciu2012hard,rfc6824} or Multipath QUIC \cite{de2017multipath,draft-liu-multipath-quic-02}, \tcpls supports an aggregation mode that maps data over two or more \tcp connections. On multihomed hosts, this can increase the total throughput of a \tcpls session by spreading the data over different network interfaces. In this case, one or more data streams are mapped to two or more underlying \tcp connections and \tcpls schedules different records over different connections.
 
 In addition, \tcpls allows the application to attach its streams to the
-underlying \tcp connections in a non-aggrega-ted bandwidth mode. This is a choice left to the application using the API. It has several advantages and drawbacks compared to the aggregation mode. For example, the aggregation mode is simple to use and can potentially saturate the available network paths but can lead to Head-Of-Line (HOL) blocking, since records sent over different \tcp connections need to be eventually re-ordered. The aggregation mode is also more CPU costly, since a zero-copy codepath is technically possible only when the records arrive in order. In the non-aggregated multipath mode, the application needs to take care to fully send an application-level object over the same stream, since the ordering is only guaranteed per-stream in this mode. However, our \tcpls implementation guarantees that this mode will benefit from zero-copy of the decrypted application data, which makes this mode potentially quite interesting for application protocols such as HTTP that need to fetch multiple application objects at the same time.
+underlying \tcp connections in a non-aggrega-ted bandwidth mode. This is a
+choice left to the application using the API. It has several advantages and
+drawbacks compared to the aggregation mode. For example, the aggregation mode is
+simple to use and can potentially saturate the available network paths but can
+lead to Head-Of-Line (HOL) blocking, since records sent over different \tcp
+connections need to be eventually re-ordered. The aggregation mode is also more
+CPU costly, since a zero-copy codepath is technically possible only when the
+records arrive in order. In the non-aggregated multipath mode, the application
+needs to take care to fully send an application-level object over the same
+stream, since the ordering is only guaranteed per-stream in this mode. However,
+our \tcpls implementation guarantees that this mode will benefit from zero-copy
+of the decrypted application data, which makes this mode potentially quite
+interesting for application protocols such as HTTP that need to fetch multiple
+application objects at the same time.
 
 \subsection{Improving \tcp's Extensibility}
 
@@ -360,3 +380,7 @@ enabled and records were in flight while receiving an illegitimate \rst or \fin
 (e.g., sent by a middlebox), \tcpls may suffer from a decryption error, and
 report a critical error to the application leading to the termination of the
 session.
+
+\subsection{Limitations}
+
+\todo{Discussing here finding the right cryptography context; CC not done; etc}

@@ -34,7 +34,7 @@ In this section, we explain how we combined \tcp and \tls into \tcpls. We first 
 a \tcpls connection starts. We introduce
 \tcpls records which are the basic unit of communication in \tcpls. We then explain
 how they can be leveraged to provide modern transport services such as multiplexing,
-connection migration and multipath.
+connection migration and a novel multipath approach.
 
 
 \subsection{\tls Records and Extensions}
@@ -79,7 +79,8 @@ Each protocol has a basic unit for exchanging application and control data.
 For instance for \tcp it is \tcp segments which are split in two with only
 a small part dedicated to control data.
 \tls is more flexible with \tls records of different types and lengths.
-In \quic, the basic unit is are \quic packets which can be composed of any number and type
+In \quic, the basic unit is a \quic packet which can be composed of several and
+different type
 of \quic frames. As illustrated in Figure~\ref{fig:tls-tcpls-records}, in \tcpls we leverage the \tls encrypted records which hide from middleboxes
 their true type and content in opaque \texttt{Application Data} records.
 In this way, we can extend the messages exchanged with \tls in a secure and
@@ -88,9 +89,11 @@ flexible manner.
 \todo{Discuss the (performances) advantages of framing our protocol at the record layer?}
 
 \tls also offers a mean for requesting extended functionalities in a \tls session through
-request/response messages called \tls \texttt{Extensions}. They are exchanged during
-the \tls handshake with some security guarantees. \todo{state them briefly}
-\tcpls extends these messages to negotiate the new transport services it offers.
+request/response messages called \tls \texttt{Encrypted} \texttt{Extensions}. 
+%They are exchanged during
+%the \tls handshake with some security guaranteesa. \todo{state them briefly}
+\tcpls extends these messages to negotiate in the handshake some of the new
+transport services it offers.
 
 These record and extensions can be leveraged to exchange \tcp \texttt{Options}. They can
 be negotiated at the start of the connection using \tls extensions, and exchanged later
