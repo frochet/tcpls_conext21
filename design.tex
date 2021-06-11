@@ -39,15 +39,16 @@ context.
 One simple way to provide separate cryptographic contexts is to use multiple application-level
 keys. But this is known to degrade the security properties proportionally to the number of
 additional keys~\cite{chatterjee2011another}. To overcome this, we propose an
-Initial Vector (IV) derivation technique from the \tls session secret.
-It maintains the IV uniqueness for all streams and related \tcpls records of a \tcpls connection,
-which preserves the security of AEAD algorithms.
+Initial Vector (IV) derivation technique to offer independent
+encryption/decryption to each stream without the security degradation.
 
 Figure~\ref{fig:aead-iv} illustrates how the AEAD IV is computed for a 
 given \tcpls record of a \tcpls stream. First the left-most bits of the IV derived from the \tls handshake
 is summed with the 32-bit \tcpls Stream ID. Then the right-most bits are XORed with the
-stream 64-bit record sequence number. Each \tcpls stream has a separate record sequence number space,
-which guarantees that the resulting IV is unique for all records of all \tcpls streams.
+stream 64-bit record sequence number. Each \tcpls stream has a separate record
+sequence number space. This combination of IV manipulation guarantees that the
+resulting IV is unique for all records of all \tcpls streams as long as the
+Stream ID is unique and no sequence number is used twice in a given stream.
 
 %The classical solution to support streams in a transport protocol is to assign
 %an identifier to each stream and send the data from stream $x$ as a tuple
