@@ -13,3 +13,4 @@ paper.pdf
 *~
 # python
 pretty_plotify/__pycache__
+.DS_Store
