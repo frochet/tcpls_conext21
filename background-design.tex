@@ -18,15 +18,14 @@
 The slow pace of innovation in \tcp-based transport services can be explained by 
 several factors. First, the amount of bytes for extensions in the \tcp header is
 limited to 40 bytes. Second, it is exchanged in cleartext and is known to have heavily
-ossified due to middleboxes, strongly restraining changes in the header semantics 
-and to \tcp \texttt{Options}. Third, TCP is often implemented in the kernel, 
+ossified due to middleboxes, strongly restraining changes in the header semantics, and to \tcp \texttt{Options}. Third, TCP is often implemented in the kernel, 
 which adds complexity to implement and deploy these modifications. Following the
 recent advances in the transport layer, we go back to {\small{\textit{RQ1}}}
-and ask \textit{Can TCP and TLS be combined to address these issues} ?
+and ask \textit{Can TCP and TLS be combined to address these issues}?
 
 Yes, by leveraging the
 flexible encrypted \tls records, we can supplement the \tls-encrypted application data
-with transport-level control data allowing to extend the offered transport services.
+with transport-level control data allowing us to extend the offered transport services.
 Existing \tcp \texttt{Options} can be securely conveyed in new \tls records and 
 new transport services can leverage this new secure control channel.
 
@@ -34,7 +33,7 @@ In this section, we explain how we combined \tcp and \tls into \tcpls. We first 
 a \tcpls connection starts. We introduce
 \tcpls records which are the basic unit of communication in \tcpls. We then explain
 how they can be leveraged to provide modern transport services such as multiplexing,
-connection migration and a novel multipath approach.
+connection migration, and a novel multipath approach.
 
 
 \subsection{\tls Records and Extensions}
@@ -76,11 +75,11 @@ connection migration and a novel multipath approach.
 \end{figure}
 
 Each protocol has a basic unit for exchanging application and control data.
-For instance for \tcp it is \tcp segments which are split in two with only
+For instance, for \tcp, it is \tcp segments that are split in two with only
 a small part dedicated to control data.
 \tls is more flexible with \tls records of different types and lengths.
 In \quic, the basic unit is a \quic packet which can be composed of several and
-different type
+different types
 of \quic frames. As illustrated in Figure~\ref{fig:tls-tcpls-records}, in \tcpls we leverage the \tls encrypted records which hide from middleboxes
 their true type and content in opaque \texttt{Application Data} records.
 In this way, we can extend the messages exchanged with \tls in a secure and
@@ -96,7 +95,7 @@ request/response messages called \tls \texttt{Encrypted} \texttt{Extensions}.
 transport services it offers.
 
 These record and extensions can be leveraged to exchange \tcp \texttt{Options}. They can
-be negotiated at the start of the connection using \tls extensions, and exchanged later
+be negotiated at the start of the connection using \tls extensions and exchanged later
 throughout the connection in \tcpls records.
 Since \tls messages are conveyed in the \tcp payload, there is more space to carry them.
 They are also exchanged reliably, which is a requirement of many \tcp \texttt{Options} such

@@ -6,12 +6,12 @@
 \todo{cite secure stream, tcpcrypt}
 
 \tcp~\cite{rfc793} enables a client and a server to exchange data
-over a connection that exposes a reliable bidirectional bytestream.
+over a connection that exposes a reliable bidirectional bytes stream.
 Dozens of \tcp extensions have been standardized and implemented~\cite{RFC7414}
 while still preserving the same packet format. Most of these extensions rely on
 \tcp options whose usage is negotiated during the three-way handshake.
 
-\tcp was designed as an end-to-end protocol that is only used on endhosts.
+\tcp was designed as an end-to-end protocol that is only used on end-hosts.
 Despite this architectural principle, network operators have deployed a variety
 of middleboxes (e.g., firewalls, NATs, transparent proxies)~\cite{mCloud} that
 sometimes interfere with \tcp or its extensions~\cite{medina2004measuring,
@@ -19,7 +19,7 @@ honda2011still, edeline2019bottom}. These in-path network functions make
 assumptions about the content of \tcp packets, invalidating the initial
 end-to-end paradigm of \tcp. Moreover, they do not always strictly follow the
 \tcp specifications~\cite{honda2011still, hesmans2013tcp}, which may negatively
-affect \tcp evolution and performances~\cite{edeline2020evaluating}.
+affect \tcp's evolution and performances~\cite{edeline2020evaluating}.
 
 
 In the 1990s and early 2000s, \tcp was mainly used directly by applications such
@@ -33,11 +33,11 @@ a performance viewpoint. During the last two decades, the situation completely
 changed. Modern CPUs include specialized instructions that enable fast
 encryption. Furthermore, the SSL standardization improved the protocol security.
 The most recent version (\tls 1.3~\cite{rfc8446}) is considered to be more
-secure than the previous ones, and initatives such as Let's Encrypt~\cite{aas2019let} have simplified the distribution of certificates.
+secure than the previous ones, and initiatives such as Let's Encrypt~\cite{aas2019let} have simplified the distribution of certificates.
 
 \tls 1.3 brings several essential features compared to the previous versions. It
 includes a secure handshake that allows negotiating the security parameters and
-keys within one round-trip-time. Thanks to \tcp Fast Open
+keys within one round-trip time. Thanks to \tcp Fast Open
 \cite{radhakrishnan2011tcp}, it is also possible to perform the secure handshake
 during the \tcp handshake. Furthermore, it is also possible to exchange
 application data during the handshake. The \tls 1.3 record layer protects all
