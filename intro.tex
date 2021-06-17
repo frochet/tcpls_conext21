@@ -82,10 +82,24 @@ To answer these questions, we design and implement an approach to combine
 %security mechanisms, we reconsider the separation between \tcp and \tls.  In
 %this paper, we combine both \tcp and \tls 1.3 in a single fast, flexible, and
 %secure protocol called \textbf{\tcpls}
-\footnote{We presented a preliminary version of this work in a workshop paper~\cite{rochet2020tcpls}.}. 
-At the heart of our approach, we illustrate how \tls records can be leveraged to build new transport services. In \tcp/\tls, \tls \texttt{AppData} records are solely used to securely convey the \tcp bytestream. In \tcpls, we extend their use to convey both application and control data.\todo{more detail needed?}
+\footnote{We presented a preliminary version of this work in a workshop
+  paper~\cite{rochet2020tcpls}.}.  At the heart of our approach, we illustrate
+how \tls records can be leveraged to build new transport services. In \tcp/\tls,
+\tls \texttt{AppData} records are solely used to securely convey the \tcp
+bytestream. In \tcpls, we extend their use to convey both application and
+control data such as encrypted \tcp options.
+%\todo{more detail needed?}
 
-We demonstrate that this combination allows secure extensibility that can also be used with techniques such as TCP Fast Open \cite{rfc7413} to lower the handshake latency. We leverage this new extensibility implement modern transport services such as multiplexing, connection migration and multipath capabilities without risking middlebox interference. Our \tcpls prototype is implemented as a user-space library exposing a powerful API to applications while leveraging the high-performance Linux kernel \tcp stack. Our lab measurements indicate that \tcpls can be implemented at a low cost while providing more bulk throughput and flexibility than the \quic implementations we tested.
+We demonstrate that this combination allows secure extensibility that can also
+be used with techniques such as TCP Fast Open \cite{rfc7413} to lower the
+handshake latency. We leverage this new extensibility to implement modern transport
+services such as multiplexing, connection migration and multipath capabilities
+without risking middlebox interference. Our \tcpls prototype is implemented as a
+user-space library exposing a powerful API to applications around a Stream
+Steering mechanic while leveraging the
+high-performance Linux kernel \tcp stack. Our lab measurements indicate that
+\tcpls can be implemented at a low cost while providing more bulk throughput and
+features than the \quic implementations we tested.
 %(mp): Je n'aime pas trop cette notion de flexibilité que l'on ne définit jamais vraiment
  
 %We have
@@ -108,5 +122,5 @@ provides the required technical background; Sec.~\ref{sec:background-design}
 discusses how we designed \tcpls, while Sec.~\ref{sec:prototype} focuses on how
 we implemented \tcpls; Sec.~\ref{sec:evaluation} evaluates the performance and
 behavior of \tcpls; Sec.~\ref{sec:related} discusses the related work;  finally, Sec.~\ref{sec:conclusion} concludes this paper by
-summarizing its main achievements and discussing further directions.  This work
-does not raise any ethical issues.
+summarizing its main achievements and discussing further directions.  
+%This work does not raise any ethical issues.
