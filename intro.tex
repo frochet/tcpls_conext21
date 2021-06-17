@@ -93,10 +93,11 @@ control data such as encrypted \tcp options.
 We demonstrate that this combination allows secure extensibility that can also
 be used with techniques such as TCP Fast Open \cite{rfc7413} to lower the
 handshake latency. We leverage this new extensibility to implement modern transport
-services such as multiplexing, connection migration and multipath capabilities
+services such as multiplexing, connection migration and stream steering capabilities
 without risking middlebox interference. Our \tcpls prototype is implemented as a
-user-space library exposing a powerful API to applications around a Stream
-Steering mechanic while leveraging the
+user-space library exposing a powerful API to applications% around a Stream
+%Steering mechanic 
+while leveraging the
 high-performance Linux kernel \tcp stack. Our lab measurements indicate that
 \tcpls can be implemented at a low cost while providing more bulk throughput and
 features than the \quic implementations we tested.
