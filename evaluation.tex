@@ -212,7 +212,7 @@ plaintext encryptions (\quic) vs 16384-byte plaintext encryption for \tls and
 \tcpls (higher is better),
 3) Pacing in userspace for \quic, 4) Segmentation in the kernel for \quic using GSO not as good as TSO
 (hardware, on the NIC for \tls/\tcp and \tcpls), 5) transport
-acknowledgments in userspace for \quic increasing the number context-switches. While some of these shortcomings may
+acknowledgments in userspace for \quic increasing the number of context-switches. While some of these shortcomings may
 still be improved, several are carved in \quic's choice to use UDP. There isn't likely enough room to match \tcpls performance
 without offloading everything, which inherently breaks \quic's flexibility
 argument and would be uncompliant regarding the end users' threat model (untrusted
