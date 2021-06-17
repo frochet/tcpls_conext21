@@ -5,10 +5,11 @@
 By leveraging \tcpls records and extensions, we can design new modern transport
 services atop the combination of \tcp and \tls. In this subsection, we answer our
 second research question {\small\textit{RQ2}} by presenting three transport services:
-multiplexing, connection migration and multipath. We leverage the \tcpls records
+multiplexing, connection migration and Stream Steering. We leverage the \tcpls records
 to multiplex concurrent encrypted bytestreams. By extending the \tls handshake, \tcpls
 allows joining several \tcp connections to a single \tcpls session to achieve
-connection migration and multipath transport.
+connection migration and Stream Steering techniques, including bandwidth
+aggregation and Head-of-Line blocking resilience.
 
 \subsubsection{Multiplexing}\label{sec:datastreams}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -31,8 +32,8 @@ Multiplexing is a modern transport service that has been part of recent protocol
 as \sctp, \quic and HTTP/2.0. The latter also proposed multiplexing with an independent
 framing system atop the TLS-encrypted TCP bytestream. In our approach, we choose 
 to implement multiplexing with \tcpls records. We dedicate a \tcpls record type to
-\tcpls stream data. Each stream has a separate cryptographic context which has several
-advantages when combined with connection migration and multipath. \todo{state the advantages?}
+\tcpls stream data. Each stream has a separate cryptographic context allowing
+concurrent encryption and decryption of data within the same session.
 A \tcpls stream consists of a sequence of \tcpls stream data records encrypted with its cryptographic
 context.
 
@@ -47,7 +48,7 @@ given \tcpls record of a \tcpls stream. First the left-most bits of the IV deriv
 is summed with the 32-bit \tcpls Stream ID. Then the right-most bits are XORed with the
 stream 64-bit record sequence number. Each \tcpls stream has a separate record
 sequence number space. This combination of IV manipulation guarantees that the
-resulting IV is unique for all records of all \tcpls streams as long as the
+resulting IV is unique for each record of all \tcpls streams as long as the
 Stream ID is unique and no sequence number is used twice in a given stream.
 
 %The classical solution to support streams in a transport protocol is to assign
@@ -275,11 +276,12 @@ For instance, a smartphone could migrate from LTE to Wi-Fi.
 %The client that wishes to
 %carry such a migration first creates a new \tcp connection and joins the \tcpls
 %session over this connection.
-To achieve it, the client can essentially \textit{compose} with independent
+To achieve it, the client can essentially use Stream Streering, i.e., the client
+\textit{composes} with independent
 features offered by \tcpls. In a client/server implementation using \tcpls, the
 following protocol composition is realised with only 4 API calls (4 lines of
 code). The client willing to migrate creates a new \tcp connection and join it to the \tcpls
-session. Then, it attaches new streams to the new
+session. Then, it steers the \tcpls stream abstraction, attaching new streams to the new
 connection by sending one \textsc{Stream\_Attach} message per stream that needs
 to be migrated. At that moment, the client and the server have potentially
 multiple streams opened over the two network paths and can temporally aggregate

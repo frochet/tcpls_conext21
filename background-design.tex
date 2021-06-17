@@ -81,7 +81,7 @@ a small part dedicated to control data.
 In \quic, the basic unit is a \quic packet which can be composed of several and
 different types
 of \quic frames. As illustrated in Figure~\ref{fig:tls-tcpls-records}, in \tcpls we leverage the \tls encrypted records which hide from middleboxes
-their true type and content in opaque \texttt{Application Data} records.
+their true type and content in opaque \texttt{AppData} records.
 In this way, we can extend the messages exchanged with \tls in a secure and
 flexible manner. Some \tcpls control information may sometimes be packaged
 within a record containing Application Data, such as a sequence number for
@@ -109,7 +109,7 @@ transport services it offers.
 
 These record and extensions can be leveraged to exchange \tcp \texttt{Options}. They can
 be negotiated at the start of the connection using \tls extensions and exchanged later
-throughout the connection in \tcpls records.
+throughout the connection in \tcpls encrypted control records.
 Since \tls messages are conveyed in the \tcp payload, there is more space to carry them.
 They are also exchanged reliably, which is a requirement of many \tcp \texttt{Options} such
 as \tcp User Timeout option \cite{rfc5482}, \mptcp's \texttt{ADD\_ADDR} and
