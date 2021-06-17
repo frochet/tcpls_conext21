@@ -83,12 +83,25 @@ different types
 of \quic frames. As illustrated in Figure~\ref{fig:tls-tcpls-records}, in \tcpls we leverage the \tls encrypted records which hide from middleboxes
 their true type and content in opaque \texttt{Application Data} records.
 In this way, we can extend the messages exchanged with \tls in a secure and
-flexible manner.
+flexible manner. Some \tcpls control information may sometimes be packaged
+within a record containing Application Data, such as a sequence number for
+bandwidth aggregation. Any control information is always encrypted and located
+at the end of the record for performance reasons: it guarantees the availability
+of a zero-copy codepath after decryption. In our implementation, a contiguous
+zero-copy to the receiver is made possible thanks to this careful protocol
+consideration.
 
-\todo{Discuss the (performances) advantages of framing our protocol at the record layer?}
+Note that in contrast, \quic only supports encrypting to the size of the \quic
+packet. Moreover, the fact that DATA frames can be sandwitched within control frames 
+prevents a contiguous memory blob to be given to the application in zero-copy.
+Assuming everything else being equal, these facts lower the expected performance
+and make the design of the API more challenging for a \quic implementation,
+requiring multiple pointers and sizes to be passed to the application to
+efficiently read the decrypted data.
 
-\tls also offers a mean for requesting extended functionalities in a \tls session through
-request/response messages called \tls \texttt{Encrypted} \texttt{Extensions}. 
+\tls also offers a mean for requesting extended functionalities in a \tls
+session through request/response messages called \tls \texttt{Encrypted}
+\texttt{Extensions}. 
 %They are exchanged during
 %the \tls handshake with some security guaranteesa. \todo{state them briefly}
 \tcpls extends these messages to negotiate in the handshake some of the new
