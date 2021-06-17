@@ -304,7 +304,13 @@ connections, which brings us to explain how multipath is designed.
 \subsubsection{Multipath}
 
 %\paragraph*{3) Different Multipath Modes}
-Like \mptcp \cite{raiciu2012hard,rfc6824} or Multipath QUIC \cite{de2017multipath,draft-liu-multipath-quic-02}, \tcpls supports an aggregation mode that maps data over two or more \tcp connections. On multihomed hosts, this can increase the total throughput of a \tcpls session by spreading the data over different network interfaces. In this case, one or more data streams are mapped to two or more underlying \tcp connections and \tcpls schedules different records over different connections.
+Like \mptcp \cite{raiciu2012hard,rfc6824} or Multipath QUIC
+\cite{de2017multipath,draft-liu-multipath-quic-02}, \tcpls supports an
+aggregation mode that maps data over two or more \tcp connections. On multihomed
+hosts, this can increase the total throughput of a \tcpls session by spreading
+the data over different network interfaces. In this case, one or more data
+streams are mapped to two or more underlying \tcp connections and \tcpls
+schedules different records over different connections.
 
 In addition, \tcpls allows the application to attach its streams to the
 underlying \tcp connections in a non-aggrega-ted bandwidth mode. This is a
@@ -383,4 +389,5 @@ session.
 
 \subsection{Limitations}
 
-\todo{Discussing here finding the right cryptography context; CC not done; etc}
+\todo{Discussing here design limitations: finding the right cryptography
+  context; privacy (different session identifier per networks)}
