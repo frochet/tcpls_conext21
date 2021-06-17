@@ -298,21 +298,27 @@ features offered by \tcpls. In a client/server implementation using \tcpls, the
 following protocol composition is realised with only 4 API calls (4 lines of
 code). The client willing to migrate creates a new \tcp connection and join it to the \tcpls
 session. Then, it steers the \tcpls stream abstraction, attaching new streams to the new
-connection by sending one \textsc{Stream\_Attach} message per stream that needs
-to be migrated. At that moment, the client and the server have potentially
-multiple streams opened over the two network paths and can temporally aggregate
-the bandwidth offered by both paths. Then, after having attached
-all its streams to the new path, the migrating host sends a
-\textsc{Stream\_Close} message over the old \tcp connection for all old streams.
-At this point, the migrating host cannot send new stream data anymore over the
-old connection. Once the remote host has received a \textsc{Stream\_Close}
-message over the old \tcp connection, it knows that the connection is not
-available anymore\todo{?}, and can switch to the other connections. It first sends a
-\textsc{Stream\_Close\_Ack} message for each received \textsc{Stream\_Close}.
-The migrating host can close the old connection upon reception of the last
-\textsc{Stream\_Close\_Ack}, indicating that no more data would be received over
-this connection. Note that these messages are \tls records and are thus sent
-securely and reliably.% by the underlying \tcp connection.
+connection using the stream opening protocol and closing the stream attached to
+the first connection from which the client is migrating. This stream steering
+mechanism may temporally takes advantage of bandwidth aggregation during the
+fraction of seconds required to open the second stream and close the first one.
+These properties are latter demonstrated in Section~\ref{sec:app-migration}.
+
+%by sending one \textsc{Stream\_Attach} message per stream that needs
+%to be migrated. At that moment, the client and the server have potentially
+%multiple streams opened over the two network paths and can temporally aggregate
+%the bandwidth offered by both paths. Then, after having attached
+%all its streams to the new path, the migrating host sends a
+%\textsc{Stream\_Close} message over the old \tcp connection for all old streams.
+%At this point, the migrating host cannot send new stream data anymore over the
+%old connection. Once the remote host has received a \textsc{Stream\_Close}
+%message over the old \tcp connection, it knows that the connection is not
+%available anymore\todo{?}, and can switch to the other connections. It first sends a
+%\textsc{Stream\_Close\_Ack} message for each received \textsc{Stream\_Close}.
+%The migrating host can close the old connection upon reception of the last
+%\textsc{Stream\_Close\_Ack}, indicating that no more data would be received over
+%this connection. Note that these messages are \tls records and are thus sent
+%securely and reliably.% by the underlying \tcp connection.
 
 This second type of migration does not require application-level
 acknowledgments, but it cannot survive from one of the
@@ -323,12 +329,15 @@ connections, which brings us to explain how multipath is designed.
 
 \tcpls enables the application to combine multiplexing with the ability to join
 several \tcp connections to a \tcpls session. This allows to steer \tcpls
-streams over the different \tcp connections. While connection migration moves
-\tcpls streams from a connection to another, stream steering allows the
-application to distribute the streams over the different \tcp connections of a
-\tcpls session. This provides a service similar to Multipath QUIC
-\cite{de2017multipath,draft-liu-multipath-quic-02} when several QUIC streams are
-assigned to paths.
+streams over the different \tcp connections. While the failover protocol moves
+\tcpls streams from a connection to another when a \tcp connection fails, stream
+steering allows the application to distribute the streams over the different
+\tcp connections of a \tcpls session. This provides various types of services,
+such as easily performing active migration as discussed in the previous
+Section~\ref{sec:multipath}. Bandwidth aggregation can also be activated. It is
+also possible not to activate aggregation and reording to obtain
+independent streams carrying independent application-level objects, which would
+prevent head-of-line blocking similarly to \quic.
 
 %Like \mptcp \cite{raiciu2012hard,rfc6824} or Multipath QUIC
 %\cite{de2017multipath,draft-liu-multipath-quic-02}, \tcpls supports an
@@ -347,7 +356,8 @@ the \tcp connection for the stream of each response based on the content type of
 the response. Latency-critical objects, such as HTML pages could be sent over
 low-latency connections.  By sending each application-level object in a separate
 stream, the application can benefit from multiple network paths while
-maintaining the ability to process each stream in a zero-copy manner.
+maintaining the ability to process each stream in a zero-copy manner, and
+with no head-of-line blocking.
 
 %In addition, \tcpls allows the application to attach its streams to the
 %underlying \tcp connections in a non-aggrega-ted bandwidth mode. This is a

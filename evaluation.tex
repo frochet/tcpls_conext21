@@ -339,6 +339,7 @@ multiple failures with spurious \rst, but \mptcp indefinitely stalled after the 
 expected, similarly to the drop and \rst outage studied in Fig.~\ref{fig:recovery}. Moreover, since those connections are fresh, they can quickly use the available bandwidth.
 
 \subsection{Application-Level Migration}
+\label{sec:app-migration}
 
 When there are multiple IP paths, connection migration might be a
 powerful tool to improve the application's resilience to network problems. Applications can take advantage of the \tcpls API to migrate their traffic from one network path to another. Fig.~\ref{fig:conn_migration} shows the result of an Application-level connection migration demo using the API (i.e., the application decides when to migrate, and we expose a simplistic code flow to perform it). In this experiment, we reuse the Mininet topology introduced in Sec.~\ref{sec:bwaggr}. We set a bandwidth of 30Mbps on each path, a 40ms round-trip-time for the v4 link, and 80ms for the v6 link. Our application downloads
