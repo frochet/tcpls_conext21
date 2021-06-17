@@ -111,22 +111,23 @@
   We propose \tcpls, a modern and secure transport that is wire-compatible with
   \tcp and transparent for middleboxes. It suggests a new approach for \tcp
   extensibility and leverages \tls 1.3 to support modern services such as
-  connection migration, seamless handovers, and bandwidth aggregation. We build
-  a novel API to abstract the socket interface and we expose a
-  Stream Steering mechanic to let the application steers and combines
-  features offered by the protocol, easily managing the session from a
-  single-path stream connection to features similar to \mptcp's bandwidth
-  aggregation or \quic's Head-of-Line blocking resilience. The
-  Stream Steering mechanic exposed to the applications allows it to easily program
-  complex transport mechanisms with interesting properties, such as what we call
-  the Application-level Connection Migration having different properties than
-  the passive connection migration.
+  connection migration, seamless handovers, and bandwidth aggregation. To expose
+  the new capabilities, we build a new API and research a method to express
+  novel transport services. We desgined a Stream Steering mechanic to let the
+  application steers and combines features offered by the protocol, easily
+  managing the session from a single-path stream connection to features similar
+  to \mptcp's bandwidth aggregation or \quic's Head-of-Line blocking resilience.
+  The Stream Steering mechanic exposed to the applications allows it to easily
+  program complex transport mechanisms with interesting properties, such as a
+  new transport capability called the Application-level Connection Migration
+  having different properties than the passive connection migration, and
+  more adapted for several connection migration scenarios.
   
   Compared with \mptcp and \quic, \tcpls offers much more control to the
   application than \mptcp does, is easy to deploy as an extension to the
   userspace \tls libraries and provides high performance by leveraging the
   existing \tcp support in the network interface cards.  Measurements with our
-  \tcpls prototype show that it offers higher performance than existing \quic
+  \tcpls implementation show that it offers higher performance than existing \quic
   libraries with similar protocol features.
 
 \end{abstract} \maketitle
