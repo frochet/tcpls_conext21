@@ -112,6 +112,7 @@ attempts succeeds with probability $2^{-33}$.
 %design~\cite{chatterjee2011another} and guarantees the security of our scheme.
 
 %\paragraph*{Carrying Multiple Streams over the Same Transport}
+%(mp): TODO Multicore decryption could be listed as an improvement
 %Thanks to those separate cryptographic contexts, \tcpls can perform concurrent
 %encryption and decryption between streams while maintaining decryption
 %correctness and security, and potentially also use this capability to process
@@ -128,7 +129,6 @@ attempts succeeds with probability $2^{-33}$.
 %performed once each time the application writes to another stream over the same
 %\tcp connection.
 %
-%(mp): TODO
 %Note that, security-wise, each failed decryption is considered a
 %forgery attempt. However, we have large limits on the confidentiality and
 %integrity with all AEAD ciphers~\cite{luykx2015limits, aeadlimits} before a
