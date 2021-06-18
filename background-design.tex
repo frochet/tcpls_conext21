@@ -83,21 +83,38 @@ different types
 of \quic frames. As illustrated in Figure~\ref{fig:tls-tcpls-records}, in \tcpls we leverage the \tls encrypted records which hide from middleboxes
 their true type and content in opaque \texttt{AppData} records.
 In this way, we can extend the messages exchanged with \tls in a secure and
-flexible manner. Some \tcpls control information may sometimes be packaged
-within a record containing Application Data, such as a sequence number for
-bandwidth aggregation. Any control information is always encrypted and located
-at the end of the record for performance reasons: it guarantees the availability
-of a zero-copy codepath after decryption. In our implementation, a contiguous
-zero-copy to the receiver is made possible thanks to this careful protocol
-consideration.
+flexible manner. 
+%Some \tcpls control information may sometimes be packaged
+%within a record containing Application Data, such as a sequence number for
+%bandwidth aggregation.
 
-Note that in contrast, \quic only supports encrypting to the size of the \quic
-packet. Moreover, the fact that DATA frames can be sandwitched within control frames 
-prevents a contiguous memory blob to be given to the application in zero-copy.
-Assuming everything else being equal, these facts lower the expected performance
-and make the design of the API more challenging for a \quic implementation,
-requiring multiple pointers and sizes to be passed to the application to
-efficiently read the decrypted data.
+\todo{Is the following enough regarding Olivier email?}
+We chose to design the \tcpls framing at the \tls record level so that 
+encryption and decryption operations can be performed atomically and that they 
+enable a zero-copy codepath.
+Any \tcpls control information that is not relevant to the application is 
+%always encrypted and 
+located at the end of the record so that adjusting the offset when decrypting
+the \tcpls records can overwrite them and achieve a zero-copy codepath.
+% for performance reasons: it 
+%guarantees the 
+%availability
+%of a zero-copy codepath after decryption. 
+%(mp) implementation: -> section 4
+%In our implementation, a contiguous
+%zero-copy to the receiver is made possible thanks to this careful protocol
+%consideration.
+
+%(mp): TODO To discuss when comparing to QUIC IMO
+%Note that in contrast, \quic only supports encrypting to the size of the \quic
+%packet. Moreover, the fact that DATA frames can be sandwitched within control 
+%frames 
+%prevents a contiguous memory blob to be given to the application in zero-copy.
+%Assuming everything else being equal, these facts lower the expected 
+%performance
+%and make the design of the API more challenging for a \quic implementation,
+%requiring multiple pointers and sizes to be passed to the application to
+%efficiently read the decrypted data.
 
 \tls also offers a mean for requesting extended functionalities in a \tls
 session through request/response messages called \tls \texttt{Encrypted}
@@ -135,7 +152,8 @@ application key.
 %If the client does not support some extension, it echoes back
 %an alert with the value of the option it does not recognize, letting the connection
 %continues.
-Once the \tls handshake has succeeded, the peers can exchange \tcpls records.
+Once the \tls handshake has succeeded, the endpoints can exchange \tcpls 
+records.
 
 %\todo{Is the following best here? -> Background ?}
 %A reasonable approach to design extensibility mechanisms in the Internet
