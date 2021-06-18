@@ -135,6 +135,18 @@ They also cannot be modified by middleboxes as they are secured by \tls. Detecti
 preventing an end-to-end \tcp connection is also easy. One could echo a part of the \tcp header
 in a \tcpls record to detect them.
 
+Our design ensures that middleboxes cannot distinguish
+\tcpls from \tls past the handshake. This ease its deployment and
+hardens censorship attempts. Whenever a middlebox block the client
+\tcpls's handshake extensions, it could choose to enable \tcpls after the 
+handshake using \tcpls control records, provided that the server announced 
+\tcpls support.
+The censor would not be able to 
+trivially distinguish this behaviour from classical \tls, hardening potential 
+attempts for censoring applications using \tcpls.
+The server handshake extensions are 
+encrypted and thus cannot be target by such attacks.
+
 \subsection{Starting a \tcpls connection}
 
 A \tcpls connection starts with a \tcp handshake followed by a \tls handshake.

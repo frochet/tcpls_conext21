@@ -353,19 +353,17 @@ acknowledgments, but it cannot survive from one of the
 underlying connections' failure. During such a migration, data is sent over two
 connections, which brings us to explain how multipath is designed.
 
-\subsubsection{Stream Steering}
+\subsubsection{Multipath capabilities}
 
 \tcpls enables the application to combine multiplexing with the ability to join
 several \tcp connections to a \tcpls session. This allows to steer \tcpls
-streams over the different \tcp connections. While the failover protocol moves
+streams over the different \tcp connections. While Failover moves
 \tcpls streams from a connection to another when a \tcp connection fails, stream
-steering allows the application to distribute the streams over the different
-\tcp connections of a \tcpls session. This provides various types of services,
-such as easily performing active migration as discussed in the previous
-Section~\ref{sec:multipath}. Bandwidth aggregation can also be activated. It is
-also possible not to activate aggregation and reording to obtain
-independent streams carrying independent application-level objects, which would
-prevent head-of-line blocking similarly to \quic.
+steering allows the application to distribute at any time the streams over the 
+different
+\tcp connections of a \tcpls session. We already discussed a very simple use of
+stream steering when performing Application Connection Migration, which is to 
+move all streams from one connection to the other.
 
 %Like \mptcp \cite{raiciu2012hard,rfc6824} or Multipath QUIC
 %\cite{de2017multipath,draft-liu-multipath-quic-02}, \tcpls supports an
@@ -375,9 +373,11 @@ prevent head-of-line blocking similarly to \quic.
 %streams are mapped to two or more underlying \tcp connections and \tcpls
 %schedules different records over different connections.
 
-
-The choice of assigning to the \tcpls streams to the \tcp connections is left to
-the application through the \tcpls API. It can be used for instance by a video
+Applications assign \tcpls streams to \tcp connections through the \tcpls 
+API.
+%The choice of assigning to the \tcpls streams to the \tcp connections is left 
+%to the application through the \tcpls API.
+It can be used for instance by a video
 streaming application that would send its different type of video frames over
 separate streams.  Also, an HTTP server sending several responses could choose
 the \tcp connection for the stream of each response based on the content type of
@@ -386,6 +386,31 @@ low-latency connections.  By sending each application-level object in a separate
 stream, the application can benefit from multiple network paths while
 maintaining the ability to process each stream in a zero-copy manner, and
 with no head-of-line blocking.
+
+Applications that benefit from more bandwidth for when transmitting a single 
+application object can leverage \tcpls \textit{coupled streams}. \todo{This 
+abstraction could be surprising if we didn't mention yet that streams cannot be 
+put on more than one connection.} When coupling 
+streams 
+together, the sending application can schedule chunks of an application object 
+over several 
+streams assigned to different \tcp connections while the receiving application 
+receives the application object in order, as \tcpls handles the reordering. 
+This provides a level of service similar to MPTCP and MPQUIC. Coupled streams 
+can also be used when performing Application Connection Migration to smoothly 
+transition from one network path to another without impacting the application 
+goodput.
+
+%In this subsection, we also present how streams can be coupled to aggregate 
+%the 
+%bandwidth of several \tcp connections.
+%This provides various types of services,
+%such as easily performing active migration as discussed in the previous
+%Section~\ref{sec:multipath}. Bandwidth aggregation can also be activated. It is
+%also possible not to activate aggregation and reording to obtain
+%independent streams carrying independent application-level objects, which would
+%prevent head-of-line blocking similarly to \quic.
+
 
 %In addition, \tcpls allows the application to attach its streams to the
 %underlying \tcp connections in a non-aggrega-ted bandwidth mode. This is a
@@ -465,16 +490,16 @@ When Failover is enabled, in-flight records that were lost after receiving
 an illegitimate \rst or \fin, e.g. sent by a middlebox, can be transmitted again by \tcpls
 on this new \tcp connection.
 
-\subsection{Limitations}
-\todo{(mp): Move that into the text}
-\tcpls's design ensures that middleboxes are not going to distinguish
-\tcpls from \tls past the handshake. We chose this method to ease deployment and
-to harden censorship attempts since, even if some middlebox comes to block
-\tcpls's handshake extensions, a \tcpls host can
-opportunistically try to upgrade to \tcpls after the handshake, using \tcpls
-control records. The censor would not be able to trivially distinguish this
-behaviour from classical \tls, hardening potential attemps for censoring
-applications using \tcpls.
+%\subsection{Limitations}
+%\tcpls's design ensures that middleboxes are not going to distinguish
+%\tcpls from \tls past the handshake. We chose this method to ease deployment 
+%and
+%to harden censorship attempts since, even if some middlebox comes to block
+%\tcpls's handshake extensions, a \tcpls host can
+%opportunistically try to upgrade to \tcpls after the handshake, using \tcpls
+%control records. The censor would not be able to trivially distinguish this
+%behaviour from classical \tls, hardening potential attemps for censoring
+%applications using \tcpls.
 
 
 %(mp): this is already part of the text
