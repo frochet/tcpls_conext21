@@ -3,15 +3,19 @@
 %Notion de streams
 %Expliquer comment TLS et QUIC sont intégrés.
 
-\todo{cite secure stream, tcpcrypt}
-
-\tcp~\cite{rfc793} enables a client and a server to exchange data
-over a connection that exposes a reliable bidirectional bytes stream.
-Dozens of \tcp extensions have been standardized and implemented~\cite{RFC7414}
-while still preserving the same packet format. Most of these extensions rely on
-\tcp options whose usage is negotiated during the three-way handshake.
-
 \tcp was designed as an end-to-end protocol that is only used on end-hosts.
+\tcp includes flow-control, supports various retransmission techniques to cope with packet losses and congestion control mechanisms. \tcp stacks have evolved a lot during the last decades. Modern applications rarely use \tcp alone. They
+often combine \tcp with Transport Layer Security (\tls). 
+\tls 1.3 \cite{rfc8446} brings several essential features compared to the previous versions. It
+includes a secure handshake that allows negotiating the security parameters and
+keys within one round-trip time. Thanks to \tcp Fast Open
+\cite{radhakrishnan2011tcp}, it is also possible to perform the secure handshake
+during the \tcp handshake. Furthermore, it is also possible to exchange
+application data during the handshake. The \tls 1.3 record layer protects all
+application data with encryption and authentication. This record layer is
+extensible, and the \tls record types are also encrypted to prevent
+ossification.
+
 Despite this architectural principle, network operators have deployed a variety
 of middleboxes (e.g., firewalls, NATs, transparent proxies)~\cite{mCloud} that
 sometimes interfere with \tcp or its extensions~\cite{medina2004measuring,
@@ -19,51 +23,106 @@ honda2011still, edeline2019bottom}. These in-path network functions make
 assumptions about the content of \tcp packets, invalidating the initial
 end-to-end paradigm of \tcp. Moreover, they do not always strictly follow the
 \tcp specifications~\cite{honda2011still, hesmans2013tcp}, which may negatively
-affect \tcp's evolution and performances~\cite{edeline2020evaluating}.
+affect \tcp's evolution and performances~\cite{edeline2020evaluating}. These
+middleboxes severely limit the extensibility of TCP. Multipath TCP \cite{rfc8684,raiciu2012hard}
+managed to cope with this interference, but at the price of increased complexity
+with notably the utilization of a second level of checksum to detect middlebox
+interference \cite{raiciu2012hard,hesmans2013tcp}.
 
-
-In the 1990s and early 2000s, \tcp was mainly used directly by applications such
-as HTTP, SMTP, FTP, telnet,~\ldots~However, when an application exchanges
-plaintext using \tcp, it exposes its users to various privacy problems and
-attacks. Initially, only banks and e-commerce websites considered the usage of
-plaintext to be problematic and used cryptographic techniques to encrypt and
-authenticate the information exchanged using Secure Socket Layer
-(SSL)~\cite{draft-hickman-netscape-ssl}. At that time, using SSL was costly from
-a performance viewpoint. During the last two decades, the situation completely
-changed. Modern CPUs include specialized instructions that enable fast
-encryption. Furthermore, the SSL standardization improved the protocol security.
-The most recent version (\tls 1.3~\cite{rfc8446}) is considered to be more
-secure than the previous ones, and initiatives such as Let's Encrypt~\cite{aas2019let} have simplified the distribution of certificates.
-
-\tls 1.3 brings several essential features compared to the previous versions. It
-includes a secure handshake that allows negotiating the security parameters and
-keys within one round-trip time. Thanks to \tcp Fast Open
-\cite{radhakrishnan2011tcp}, it is also possible to perform the secure handshake
-during the \tcp handshake, matching \quic's handshake latency. Furthermore, it is also possible to exchange
-application data during the \tls handshake. The \tls 1.3 record layer protects
-all application data with encryption and authentication. This record layer is
-extensible, and the \tls record types are also encrypted to prevent
-ossification.
-
-During the last five years, the IETF has put a lot of effort
-into designing and deploying a new transport protocol targeted at web
-applications: \quic \cite{langley2017quic}. \quic provides a secure and
-reliable delivery like the \tls/\tcp stack, but on top of \udp.
-\quic
-version 1.0 is being finalised~\cite{draft-ietf-quic-transport} and there are
-more than a dozen implementations~\cite{quicimplem,marx2020same}. \quic is
+To counter middlebox interference, Google took a different approach by developing an
+entirely new secure transport protocol called QUIC \cite{langley2017quic} that
+combines the features of TCP, TLS and HTTP in a single protocol that is implemented
+in a userspace library and runs above UDP. QUIC prevents middlebox interference
+by encrypting and authenticating the data, but also most of the control
+information such as the acknowledgements except a very small header. \quic
+leverages \tls 1.3 \cite{rfc8446} and negotiate the security keys and authenticate
+the server. Each \quic packet is encoded and encrypted as a \tls record. \quic allows the
+application to use different datastreams over a single
+connection such as protocols like
+SCTP \cite{rfc4960} or Structured Streams \cite{ford2007structured}.
+\quic has
+been adopted by industry and standardized within the IETF \cite{rfc9000}.
+There are more than a dozen \quic implementations~\cite{quicimplem,marx2020same}. \quic is
 already used in production as shown by recent measurement
 studies~\cite{trevisan2020five}.
 
-A growing number of applications are used on devices such as smartphones
-attached to two or more networks. Users expect their applications to be
-resilient to network failures.  With regular \tcp, applications need to
-reestablish their connections when one of their network connection fails.
-Multipath \tcp (\mptcp)~\cite{rfc8684,raiciu2012hard} is a \tcp extension
-enabling a connection to use different paths. One of the main use cases for
-\mptcp is to provide fast failovers on iPhones~\cite{bonaventure2016multipath}.
-It also provides bandwidth aggregation by simultaneously using two or more
-network paths to support one connection. Multipath extensions have also been
-proposed for \quic~\cite{viernickel2018multipath,de2017multipath}. \quic version
-1~\cite{draft-ietf-quic-transport} includes a connection migration capability
-that supports failovers but not bandwidth aggregation.
+Table~\ref{tcpquictcpls} summarises the main features of \tcp, TLS over \tcp and \quic. All protocols include reliability and congestion control. \tls and \quic provide the same security features. \mptcp efficiently supports failovers and \quic includes a connection migration capability. \quic supports streams and this enables it to prevent Head Of Line blocking. \mptcp is the only standardised protocol that is able to aggregate the bandwidth of different paths. \mptcp implementations include different path management strategies \cite{hesmans2015smapp,hesmans2016enhanced} to control the utilization of different paths. \quic implementations enable the applications to decide when connections should be migrated.
+
+
+
+
+\begin{table*}[!t]
+  \small
+  \begin{tabular}{lccccc}
+    \toprule
+    & \tcp & \mptcp & \tls/\tcp & \quic & \tcpls \\
+    \midrule
+    Reliability \& cong. control & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+    Message conf. and auth.&  \xmark & \xmark & \checkmark & \checkmark & \checkmark \\
+    Failover &  \xmark & \checkmark &\xmark & (\checkmark) & \checkmark \\
+    Resilience to HOL blocking & \xmark & \xmark & \xmark & \checkmark & (\checkmark) \\
+    \multicolumn{5}{l}{Application-exposed features} \\
+    \hspace{2em} Streams & \xmark &  \xmark & \xmark & \checkmark & \checkmark \\
+    \hspace{2em} Using multiple paths & \xmark & \checkmark & \xmark & \xmark & \checkmark \\
+    \hspace{2em} Path management & \xmark & (\checkmark) & \xmark & (\checkmark) & \checkmark \\
+
+    \bottomrule
+  \end{tabular}
+  \caption{Protocol features comparison. (\xmark) means that the feature is
+    available, but not straightforward to use. (\checkmark) means that the
+  feature is partially available and under development. \checkmark means that
+  the feature is available, and \xmark means that it is not.}
+  \label{table:tcpquictcpls}
+\end{table*}
+
+
+
+%A growing number of applications are used on devices such as smartphones
+%attached to two or more networks. Users expect their applications to be
+%resilient to network failures.  With regular \tcp, applications need to
+%reestablish their connections when one of their network connection fails.
+%Multipath \tcp (\mptcp)~\cite{rfc8684,raiciu2012hard} is a \tcp extension
+%enabling a connection to use different paths. One of the main use cases for
+%\mptcp is to provide fast failovers on iPhones~\cite{bonaventure2016multipath}.
+%It also provides bandwidth aggregation by simultaneously using two or more
+%network paths to support one connection. Multipath extensions have also been
+%proposed for \quic~\cite{viernickel2018multipath,de2017multipath}. \quic version
+%1~\cite{draft-ietf-quic-transport} includes a connection migration capability
+%that supports failovers but not bandwidth aggregation.
+
+%\todo{cite secure stream, tcpcrypt}
+
+%\todo{Explain TLS1.3 and what it brings}
+%\todo{Explain QUIC and how it uses TLS1.3}
+%\todo{discuss middleboxes and mention that QUIC is blocked in some parts of the Internet - do we have numbers ?}
+
+%\tcp~\cite{rfc793} enables a client and a server to exchange data
+%over a connection that exposes a reliable bidirectional bytes stream.
+%Dozens of \tcp extensions have been standardized and implemented~\cite{RFC7414}
+%while still preserving the same packet format. Most of these extensions rely on
+%\tcp options whose usage is negotiated during the three-way handshake.
+
+
+
+
+%In the 1990s and early 2000s, \tcp was mainly used directly by applications such
+%as HTTP, SMTP, FTP, telnet,~\ldots~However, when an application exchanges
+%plaintext using \tcp, it exposes its users to various privacy problems and
+%attacks. Initially, only banks and e-commerce websites considered the usage of
+%plaintext to be problematic and used cryptographic techniques to encrypt and
+%authenticate the information exchanged using Secure Socket Layer
+%(SSL)~\cite{draft-hickman-netscape-ssl}. At that time, using SSL was costly from
+%a performance viewpoint. During the last two decades, the situation completely
+%changed. Modern CPUs include specialized instructions that enable fast
+%encryption. Furthermore, the SSL standardization improved the protocol security.
+%The most recent version (\tls 1.3~\cite{rfc8446}) is considered to be more
+%secure than the previous ones, and initiatives such as Let's Encrypt~\cite{aas2019let} have simplified the distribution of certificates.
+
+
+%into designing and deploying a new transport protocol targeted at web
+%applications: \quic \cite{langley2017quic}. \quic provides a secure and
+%reliable delivery like the \tls/\tcp stack, but on top of \udp.
+%\quic
+
+
+
