@@ -2,7 +2,8 @@
 
 \subsection{\tcpls Transport Services}
 
-\todo{parler de secure control channel ?}
+\todo{parler de secure control channel ? (mp): Pour moi non, c'est une vue de 
+l'esprit, ça équivaut a dire qu'on peut utiliser des nouveaux records tls}
 
 By leveraging \tcpls records and extensions, we can design new modern transport
 services atop the combination of \tcp and \tls. In this subsection, we answer our
@@ -57,14 +58,17 @@ sequence number space. This combination of IV manipulation guarantees that the
 resulting IV is unique for each record of all \tcpls streams as long as the
 Stream ID is unique and no sequence number is used twice in a given stream.
 
-\todo{Il faut expliquer comment les stream id sont choisis pour garantir l'unicité}
+\todo{Il faut expliquer comment les stream id sont choisis pour garantir 
+l'unicité}
 
 To avoid possible middleboxes interference, in addition to the record sequence number, 
 the \tcpls Stream ID is kept implicit as well. When an endpoint receives a 
 \tcpls Record, 
 we leverage the AEAD cipher to check the authentication tag repeatedly until the
 correct \tcpls Stream ID is found. This operation is lightweight as it does not
-involve a complete decryption as all TLS 1.3 AEAD ciphers use an Encrypt-then-MAC construct. \todo{citer rfc7366 ? ou les références de ce rfc ?}
+involve a complete decryption as all TLS 1.3 AEAD ciphers use an 
+Encrypt-then-MAC construct~\cite{rfc7366, rfc8446}. 
+%\todo{citer rfc7366 ? ou les références de ce rfc ?}
 
 From a security standpoint, each failed decryption is considered as a
 forgery attempt. However, the limits on confidentiality and
@@ -430,7 +434,7 @@ goodput.
 %interesting for application protocols such as HTTP that need to fetch multiple
 %application objects at the same time.
 
-\subsection{Improving \tcp's Extensibility}
+%\subsection{Improving \tcp's Extensibility}
 
 %\label{sec:tcpoptions}
 %% Discussing the lack of extensibility of TLS 1.3;
@@ -450,14 +454,25 @@ goodput.
 %  \label{fig:ex_record}
 %\end{figure}
 
-\todo{OB: déjà couvert au début à mon avis}
-
-\todo{Move this into the section 2 or intro}
-\tcp~\cite{rfc793} limits the size of the entire \tcp header (including options) to 64 bytes. Unfortunately, the \tcp designers did not foresee that many \tcp extensions would be standardized. Today, the \tcp header size becomes a constraint.
-%For example, it severely limits the number of gaps that
-%can be covered by selective acknowledgments.
-The restriction gets more strict with extensions such as \mptcp~\cite{rfc6824} that consume more space in the \tcp header. The IETF has discussed this problem for several years, but the latest attempt to solve it~\cite{draft-ietf-tcpm-tcp-edo-10} has not yet been implemented by major \tcp stacks.
+%\todo{OB: déjà couvert au début à mon avis}
 %
+%\todo{Move this into the section 2 or intro. (mp): c'est fait, pour garder la 
+%ref a EDO}
+%\tcp~\cite{rfc793} limits the size of the entire \tcp header (including 
+%options) to 64 bytes. Unfortunately, the \tcp designers did not foresee that 
+%many \tcp extensions would be standardized. Today, the \tcp header size 
+%becomes 
+%a constraint.
+%%For example, it severely limits the number of gaps that
+%%can be covered by selective acknowledgments.
+%The restriction gets more strict with extensions such as \mptcp~\cite{rfc6824} 
+%that consume more space in the \tcp header. The IETF has discussed this 
+%problem 
+%for several years, but the latest attempt to solve 
+%it~\cite{draft-ietf-tcpm-tcp-edo-10} has not yet been implemented by major 
+%\tcp 
+%stacks.
+%%
 %\tcpls provides more space for \tcp options. First, with \tcpls, \tcp
 %options can be negotiated during the \tls handshake. Since the \tls messages are
 %included in the \tcp payload, there is more space to carry them. Another

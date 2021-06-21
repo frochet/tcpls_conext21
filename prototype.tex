@@ -1,28 +1,48 @@
 % !TEX root = ./paper.tex
 \label{sec:content}
 
-\todo{(mp): There is a bit too much detail in here to quickly get the big 
-picture, I'll trim it}
-In this section, we describe our \tcpls implementation. In a nutshell, it provides the following benefits.
-($i$) Applications can use parallel streams with different cryptographic contexts and multiplex them over a \tcp connection.
+In this section, we describe our \tcpls implementation which provides the 
+following benefits.
+(\textit{Sec. \ref{sec:prot-multiplexing}}) Applications can use parallel 
+streams with 
+different cryptographic 
+contexts and multiplex them over a \tcp connection.
 %(mp): TODO reintegrate this whenever the API has substantial text in the body of the paper
 %($ii$) An experimental API that wraps \tls and \tcp and enables applications to
 %    handle multihoming, multipathing, and various transport layer mechanisms.
-($ii$) An improved \tcp extensibility mechanism that sends \tcp options
-   through the secure \tcpls records (as described in
-   Sec.~\ref{sec:background-design}). We demonstrate this possibility by
+\todo{MP: en faire une petite section qui présente l'implémentation}
+($ii$) \tcp options can be sent through the secure \tcpls records, improving 
+the extensibility of \tcp. 
+%(as described in
+   %Sec.~\ref{sec:background-design})
+   . We demonstrate this possibility by
    implementing the \tcp User Timeout option%, which is a building block for
    %our Failover protocol
-   . Supporting another \tcp option is only a matter of
-   extending the sender's API and processing the option on the receiver side.
-   \tcpls's internal machinery allows to the server (resp. client) to send any
-   TCP option during (resp. after) the \tls handshake.
-($iii$) Multipath capabilities enabling stream steering over several \tcp connections and bandwidth aggregation.
-($iv$) Remote and secure eBPF bytecode injection from the server to the client to upgrade its \tcp congestion control scheme or tune other \tcp mechanisms~\cite{brakmo2017tcp,tran2019beyond}. Variable-length options (e.g., eBPF bytecode) can be sent within streams to take advantage of bandwidth aggregation or Failover when these features are enabled.
-($v$) Different connection migration modes: Failover and Application-level
-Connection Migration.
+   .
+   %(mp): TODO move this to a section describe secure TCP options, with maybe 
+   %the exchange of eBPF code somehow
+   % Supporting another \tcp option is only a matter of
+   %extending the sender's API and processing the option on the receiver side.
+   %\tcpls's internal machinery allows to the server (resp. client) to send any
+   %TCP option during (resp. after) the \tls handshake.
+(\textit{Sec. \ref{sec:prot-migration}}) Applications can enable Failover and 
+trigger Connection Migration.
+(\textit{Sec. \ref{sec:prot-multipath}}) Application can leverage multipath 
+capabilities such as enabling stream 
+steering over several \tcp connections and bandwidth aggregation.
+\todo{MP: en faire une petite section qui présente l'implémentation, a combiner 
+p-ê avec (ii)}
+($iv$) The server can securely inject eBPF bytecode to the client 
+to upgrade its \tcp congestion control scheme or tune other \tcp 
+mechanisms~\cite{brakmo2017tcp,tran2019beyond}.
+%Variable-length options (e.g., eBPF bytecode) can be sent within streams to 
+%take advantage of bandwidth aggregation or Failover when these features are 
+%enabled.
+%($v$) Different connection migration modes: Failover and Application-level
+%Connection Migration.
 
 \subsection{Multiplexing}
+\label{sec:prot-multiplexing}
 
 We leverage the \tcpls records and the \tcpls stream cryptographic contexts to 
 build our prototype with a zero-copy receive path. When a record is received,
@@ -74,9 +94,9 @@ which builds upon good practices proposed by the outlined research.
 %Note, those features are not stable yet, and many bugs remain to be fixed.
 
 \subsection{Connection Migration}
+\label{sec:prot-migration}
 
-\subsubsection{Failover}
-
+\textbf{Failover}.
 We leverage the \tcpls records to securely exchange the \tcp User Timeout option.
 This option enables endpoints to detect blackholed and failed \tcp connections
 after a given time threshold. We use this as one trigger of the Failover.
@@ -94,11 +114,11 @@ to gain in performance. They can also enable Failover during a \tcpls session
 by sending a message on the secure channel. 
 We evaluate the performance impact of Failover in Sec.~\ref{sec:eval_failover}
 
-\subsubsection{Application Connection Migration}
-
+\textbf{Application Connection Migration}.
 \todo{Is there something to write implementation-wise?}
 
-\subsection{Multipathing}
+\subsection{Multipath}
+\label{sec:prot-multipath}
 
 \subsubsection{Bandwidth Aggregation}
 The application can create and join several \tcp connections to
