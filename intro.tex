@@ -72,7 +72,8 @@ In this paper, we reconsider this separation with the following research questio
 \begin{itemize}
 	\item[{\small{\textit{RQ1}}} -] Can TCP and TLS be combined ?
 	\item[{\small{\textit{RQ2}}} -] What are the new transport services this combination can offer ? 
-	\item[{\small{\textit{RQ3}}} -] How do these services compete with other protocols ?
+	%\item[{\small{\textit{RQ3}}} -] How do these services compete with other 
+	%protocols ?
 \end{itemize}
 
 To answer these questions, we design and implement an approach to combine 
@@ -95,7 +96,7 @@ be used with techniques such as TCP Fast Open \cite{rfc7413} to lower the
 handshake latency. We leverage this new extensibility to implement modern transport
 services such as multiplexing, connection migration and stream steering capabilities
 without risking middlebox interference. Our \tcpls prototype is implemented as a
-user-space library exposing a powerful API to applications% around a Stream
+user-space library exposing a powerful API to applications % around a Stream
 %Steering mechanic 
 while leveraging the
 high-performance Linux kernel \tcp stack. Our lab measurements indicate that

@@ -31,12 +31,15 @@ interference \cite{raiciu2012hard,hesmans2013tcp}.
 
 To counter middlebox interference, Google took a different approach by developing an
 entirely new secure transport protocol called QUIC \cite{langley2017quic} that
-combines the features of TCP, TLS and HTTP in a single protocol that is implemented
-in a userspace library and runs above UDP. QUIC prevents middlebox interference
+combines the features of TCP, TLS and HTTP in a single protocol implemented
+in a userspace library and running above UDP. QUIC prevents middlebox 
+interference
 by encrypting and authenticating the data, but also most of the control
-information such as the acknowledgements except a very small header. \quic
-leverages \tls 1.3 \cite{rfc8446} and negotiate the security keys and authenticate
-the server. Each \quic packet is encoded and encrypted as a \tls record. \quic allows the
+information such as the acknowledgments except a very small header. \quic
+leverages \tls 1.3 \cite{rfc8446} to negotiate the security keys and 
+authenticate
+the server. \quic packets have a flexible framing system and are 
+encrypted separately, in a similar manner to \tls records. \quic allows the
 application to use different datastreams over a single
 connection such as protocols like
 SCTP \cite{rfc4960} or Structured Streams \cite{ford2007structured}.
@@ -46,7 +49,21 @@ There are more than a dozen \quic implementations~\cite{quicimplem,marx2020same}
 already used in production as shown by recent measurement
 studies~\cite{trevisan2020five}.
 
-Table~\ref{tcpquictcpls} summarises the main features of \tcp, TLS over \tcp and \quic. All protocols include reliability and congestion control. \tls and \quic provide the same security features. \mptcp efficiently supports failovers and \quic includes a connection migration capability. \quic supports streams and this enables it to prevent Head Of Line blocking. \mptcp is the only standardised protocol that is able to aggregate the bandwidth of different paths. \mptcp implementations include different path management strategies \cite{hesmans2015smapp,hesmans2016enhanced} to control the utilization of different paths. \quic implementations enable the applications to decide when connections should be migrated.
+Table~\ref{tcpquictcpls} summarises the main features of \tcp, TLS over \tcp 
+and \quic. All protocols include reliability and congestion control. \tls and 
+\quic provide the same security features. \mptcp efficiently supports failovers 
+and \quic includes a connection migration capability. \quic supports streams 
+preventing Head-of-Line blocking. \mptcp is the only 
+standardised protocol that is able to aggregate the bandwidth of different 
+paths. \mptcp implementations include several path management strategies 
+\cite{hesmans2015smapp,hesmans2016enhanced} to control the utilization of 
+different paths. \quic allows the client to migrate its 
+connection, although it is rarely exposed to applications in current 
+implementations.
+%(mp): Actually, none really offer that to my knowledge. I guess that's why 
+%Florentin 
+%added the (v).
+%enable the applications to decide when connections should be migrated.
 
 
 
@@ -62,16 +79,25 @@ Table~\ref{tcpquictcpls} summarises the main features of \tcp, TLS over \tcp and
     Failover &  \xmark & \checkmark &\xmark & (\checkmark) & \checkmark \\
     Resilience to HOL blocking & \xmark & \xmark & \xmark & \checkmark & (\checkmark) \\
     \multicolumn{5}{l}{Application-exposed features} \\
-    \hspace{2em} Streams & \xmark &  \xmark & \xmark & \checkmark & \checkmark \\
-    \hspace{2em} Using multiple paths & \xmark & \checkmark & \xmark & \xmark & \checkmark \\
-    \hspace{2em} Path management & \xmark & (\checkmark) & \xmark & (\checkmark) & \checkmark \\
+    \hspace{2em} Streams & \xmark &  \xmark & \xmark & \checkmark & \checkmark 
+    \\
+    \hspace{2em} Connection migration & \xmark & (\checkmark) & \xmark & 
+    (\checkmark) & \checkmark \\
+    \hspace{2em} Concurrent paths & \xmark & \checkmark & \xmark & 
+    \xmark & \checkmark \\
 
     \bottomrule
   \end{tabular}
-  \caption{Protocol features comparison. (\xmark) means that the feature is
-    available, but not straightforward to use. (\checkmark) means that the
-  feature is partially available and under development. \checkmark means that
-  the feature is available, and \xmark means that it is not.}
+  \caption{Comparison of \xmark\ the features not 
+  offered 
+  , (\checkmark)\
+  partially available or under development, and \checkmark\ offered by a 
+  given 
+  protocol stack.}
+%  \caption{Protocol features comparison. (\xmark) means that the feature is
+%    available, but not straightforward to use. (\checkmark) means that the
+%  feature is partially available and under development. \checkmark means that
+%  the feature is available, and \xmark means that it is not.}
   \label{table:tcpquictcpls}
 \end{table*}
 

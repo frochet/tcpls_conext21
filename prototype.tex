@@ -1,6 +1,8 @@
 % !TEX root = ./paper.tex
 \label{sec:content}
 
+\todo{(mp): There is a bit too much detail in here to quickly get the big 
+picture, I'll trim it}
 In this section, we describe our \tcpls implementation. In a nutshell, it provides the following benefits.
 ($i$) Applications can use parallel streams with different cryptographic contexts and multiplex them over a \tcp connection.
 %(mp): TODO reintegrate this whenever the API has substantial text in the body of the paper
@@ -24,10 +26,11 @@ Connection Migration.
 
 We leverage the \tcpls records and the \tcpls stream cryptographic contexts to 
 build our prototype with a zero-copy receive path. When a record is received,
-\tcpls finds first the corresponding cryptographic context, i.e. the
+\tcpls first finds the corresponding cryptographic context, i.e. the
 corresponding \tcpls stream for which the derived IV leads to a successful
 authentication of the tag. At this stage, prior to full decryption, the 
-corresponding stream is found. Our prototype can then locate the corresponding buffer
+\tcpls stream of the record is known. Our prototype can then locate the 
+corresponding buffer
 to perform full decryption at the expected offset without any extra copy.
 Applications can benefit from large contiguous
 buffers to perform reads instead of receiving stream data on a per-packet basis,
@@ -87,7 +90,7 @@ stream has processed more than $249600$ bytes since the last acknowledgment. \to
 Our prototype handles failover over IPv4 and IPv6 \tcp connections, and by default, chooses different source and destination addresses than the failed \tcp connection if possible.
 
 Application running on more constrained devices can choose to disable Failover
-to gain in performance. They can also activate Failover during a \tcpls session 
+to gain in performance. They can also enable Failover during a \tcpls session 
 by sending a message on the secure channel. 
 We evaluate the performance impact of Failover in Sec.~\ref{sec:eval_failover}
 
@@ -102,7 +105,8 @@ The application can create and join several \tcp connections to
 the same \tcpls session. As soon as one of the peers attaches streams to
 different \tcp connections of the session, and enables the aggregation mode,
 \tcpls adds a sequence number encrypted in the \tls record payload. This
-sequence number is used to reorder the received records after decryption. Our
+sequence number is used to reorder the received records after decryption. 
+Our
 current implementation supports one global ordering, but
 we envision for the \tcpls protocol to have streams potentially detached from
 the global orderings. For example, a HTTP application may want to use an
@@ -150,8 +154,9 @@ and the \tcp Fast Open option (TFO)~\cite{radhakrishnan2011tcp}. By combining bo
 the \tcpls handshake can be sent together with the \tcp \texttt{SYN} starting 
 the three way handshake. This provides a low-latency and secure connection establishment.
 It is not enabled by default in \tcpls, as TFO trades off some privacy~\cite{sy2020enhanced}.
-More advanced techniques such as \tcp Fast Open Privacy~\cite{sy2020enhanced} could be
-integrated into \tcpls.
+More advanced techniques such as \tcp Fast Open Privacy~\cite{sy2020enhanced} 
+could be
+integrated into \tcpls to solve this issue.
 
 %One notable feature of \quic is its ability to establish a secure connection within one round-trip-time with a new server. For subsequent connections with the same server, \quic can even include data during the handshake.
 
