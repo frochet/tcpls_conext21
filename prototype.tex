@@ -99,7 +99,10 @@ which builds upon good practices proposed by the outlined research.
 \textbf{Failover}.
 We leverage the \tcpls records to securely exchange the \tcp User Timeout option.
 This option enables endpoints to detect blackholed and failed \tcp connections
-after a given time threshold. We use this as one trigger of the Failover.
+after a given time threshold. We use this as one trigger of the Failover. The 
+sender configures this time threshold at the receiver side by sending this \tcp 
+option in a \tcpls record. The receiver can then notice when it stops receiving 
+data and trigger the Failover.
 Receiving a \tcp \texttt{RST} or \texttt{FIN} over a \tcp connection for which
 \tcpls streams are attached to also triggers the Failover.
 
