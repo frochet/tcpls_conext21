@@ -188,10 +188,10 @@ if __name__ == "__main__":
     axis_aesthetic(ax3)
 
     ax1.set_xlabel(latex_label("Time (s)"), fontsize=24)
-    ax1.set_ylabel(latex_label("Bandwidth (Mbits)"), fontsize=24)
+    ax1.set_ylabel(latex_label("Bandwidth (Mbps)"), fontsize=24)
 
     ax3.set_xlabel(latex_label("Time (s)"), fontsize=24)
-    ax3.set_ylabel(latex_label("Bandwidth (Mbits)"), fontsize=24)
+    ax3.set_ylabel(latex_label("Bandwidth (Mbps)"), fontsize=24)
 
     subplots_adjust(hspace=0.4)
 

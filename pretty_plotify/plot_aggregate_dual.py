@@ -172,7 +172,7 @@ if __name__ == "__main__":
         ax.set_xlim(0, x_max)
         ax.set_ylim(0, 65)
         ax.set_xlabel(latex_label("Time (s)"), fontsize=24)
-        ax.set_ylabel(latex_label("Bandwidth (Mbits)"), fontsize=24)
+        ax.set_ylabel(latex_label("Bandwidth (Mbps)"), fontsize=24)
         ax.grid(True, color='gray', linestyle='dashed', which='major')
 
     axs[0].set_title(latex_label('MPTCP 0.94.7'), fontsize=18)

@@ -94,7 +94,7 @@ if __name__ == "__main__":
     axis_aesthetic(ax)
 
     ax.set_xlabel(latex_label('Time (s)'), fontsize=20)
-    ax.set_ylabel(latex_label('Bandwidth (Mbits)'), fontsize=20)
+    ax.set_ylabel(latex_label('Bandwidth (Mbps)'), fontsize=20)
 
     breakage = parse_time(args.breakage_at)
     plt.axvline(x=(breakage-minimum)/1000000, ymin=0, ymax=0.91, color="k", ls='--', lw=2)
