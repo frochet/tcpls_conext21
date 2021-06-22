@@ -361,8 +361,24 @@ connections, which brings us to explain how multipath is designed.
 
 \subsubsection{Multipath capabilities}
 
-\tcpls enables the application to combine multiplexing with the ability to join
-several \tcp connections to a \tcpls session. This allows to steer \tcpls
+Like \mptcp, \tcpls allows an application to control different \tcp connections 
+that are used to exchange data. \mptcp was designed to be a drop-in replacement 
+for \tcp. A regular application that uses the socket API can use \mptcp without 
+any modification. \mptcp uses a path manager to control the underlying \tcp 
+connections. Several path managers were proposed in the Linux kernel 
+implementation \cite{TODO}. However, few advanced applications have taken 
+advantage of these advanced path managers. Apple's \mptcp stack was tuned for 
+specific applications. For example, the Siri voice recognition application can 
+use both cellular and Wi-Fi to optimize performance. Apple Music mainly 
+performs handovers. As applications have very different requirements, \tcpls 
+exposes the underlying \tcp connections to the application through its API. The 
+applications use this API to implement their own policy to manage the 
+underlying \tcp connections. 
+
+\textbf{Stream Steering}. \tcpls enables the application to combine 
+multiplexing with the ability to join
+several \tcp connections to a \tcpls session. This allows the application to 
+steer \tcpls
 streams over the different \tcp connections. While Failover moves
 \tcpls streams from one connection to another when a \tcp connection fails, stream
 steering allows the application to distribute at any time the streams over the 
@@ -383,7 +399,8 @@ Applications assign \tcpls streams to \tcp connections through the \tcpls
 API.
 %The choice of assigning to the \tcpls streams to the \tcp connections is left 
 %to the application through the \tcpls API.
-An interactive game could use different streams for chat messages and player's commandes.  Also, an HTTP server could choose
+An interactive game could use different streams for chat messages and player's 
+commands.  Also, an HTTP server could choose
 the \tcp connection for the stream of each response based on the content type of
 the response. Latency-critical objects could be sent over
 low-latency connections. By sending each application-level object in a separate
@@ -391,21 +408,53 @@ stream, the application can benefit from multiple network paths while
 maintaining the ability to process each stream in a zero-copy manner, and
 with no head-of-line blocking.
 
-\todo{OB: paragraphe ci-dessous pas clair}
+\todo{OB: paragraphe ci-dessous pas clair. (mp): C'est m-à-j}
 
-Applications that benefit from more bandwidth for when transmitting a single 
-application object can leverage \tcpls \textit{coupled streams}. \todo{This 
+\textbf{Coupling streams for aggregated bandwidths}. Applications that benefit 
+from the aggregated bandwidth of several network paths when transmitting a 
+single 
+application object can use \tcpls \textit{coupled streams}. \todo{This 
 abstraction could be surprising if we didn't mention yet that streams cannot be 
 put on more than one connection.} When coupling 
-streams 
-together, the sending application can schedule chunks of an application object 
-over several 
-streams assigned to different \tcp connections while the receiving application 
-receives the application object in order, as \tcpls handles the reordering. 
-This provides a level of service similar to MPTCP and MPQUIC. Coupled streams 
-can also be used when performing Application Connection Migration to smoothly 
-transition from one network path to another without impacting the application 
-goodput.
+streams assigned to different \tcp connections
+together, the sending application can schedule \tcpls records of application 
+object over these 
+streams and benefit from their aggregated bandwidth. The receiving application 
+reads the application object in order, as \tcpls handles the reordering. 
+%This provides a level of service similar to MPTCP and MPQUIC. 
+
+Dozens of packet schedulers were proposed for \mptcp. The default one is the 
+RTT-based scheduler that favors the subflow with the lowest RTT 
+~\cite{paasch2014experimental}. Other schedulers include the redundant 
+scheduler 
+that sends data over both subflows~\cite{frommgen2016remp}, schedulers that 
+help to minimize reordering on the receiver side~
+\cite{lim2017ecf,hurtig2018low}, schedulers specialized for mobile 
+applications~\cite{de2018tuning}, \ldots
+The most flexible approach remains the application-defined Multipath TCP 
+scheduler~\cite{frommgen2017programming}, but this solution has never been 
+integrated in \mptcp implementations.
+
+\tcpls takes a different viewpoint. It exposes the underlying \tcp connections 
+and the sender side \tcpls record scheduler to the application. This enables 
+the application to actively decide the \tcp connection that it will use to send 
+each record. A remote terminal application running over \tcpls could send the 
+screen updates over a high bandwidth but high latency connection and the 
+keyboard input over the lower latency one. 
+%(mp): On ne peut pas il me semble
+It could even duplicate the most latency sensitive data over two paths.
+Using socket options such as 
+\texttt{tcp\_info}, an application can retrieve useful statistics about the 
+performance of the underlying \tcp connections (e.g. RTT, congestion window, 
+\ldots). %If required, it is also possible to 
+A more advanced application could also define \tcpls records to actively 
+probe a connection, e.g. with an echo/request record to actively measure 
+delays, or retrieve information from the remote host, e.g. by retrieving the 
+remote host's \texttt{tcp\_info} structure.
+
+Coupled streams can also be used when performing Application Connection 
+Migration to smoothly transition from one network path to another without 
+impacting the application goodput.
 
 %In this subsection, we also present how streams can be coupled to aggregate 
 %the 
