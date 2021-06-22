@@ -35,6 +35,12 @@ on each machine to run the client and server.
 	\label{fig:perf_testbed}
 \end{figure}
 
+In the emulated experiments of Sections~\ref{sec:bwaggr}, 
+\ref{sec:eval_failover} and \ref{sec:app-migration} we use a Mininet 
+network~\cite{handigol2012reproducible} composed of a client and a server, both 
+dual-stacks. The IPv4 and IPv6 paths are completely disjoint in this emulated 
+network, each offering 25Mbps and 10ms latency. 
+
 
 
 %Our objective is to evaluate whether our design and implementation are indeed
@@ -310,26 +316,47 @@ outside the scope of this paper and left for further work.
 \subsection{Bandwidth Aggregation}
 \label{sec:bwaggr}
 We compare the \tcpls bandwidth aggregation capability to the state-of-the-art
-\mptcp. To this end, we build a Mininet network~\cite{handigol2012reproducible}
-composed of a client and a server, both dual-stacks. The IPv4 and IPv6 paths are
-completely disjoint in this emulated network. Both protocols run in the same
-Mininet topology with two IP paths available, each offering 25Mbps and 10ms
-latency. The experiment consists in transfering a 60MB file over a single path
-and then enabling the second one after $5$ seconds. \mptcp automatically detects
-the new path once we enable the Client's seconde network interface. For \tcpls,
-managing paths is easier: the application can use the API to add local or
+\mptcp. 
+%To this end, we build a Mininet network~\cite{handigol2012reproducible}
+%composed of a client and a server, both dual-stacks. The IPv4 and IPv6 paths 
+%are
+%completely disjoint in this emulated network. Both protocols run in the same
+%Mininet topology with two IP paths available, each offering 25Mbps and 10ms
+%latency. 
+Our experiment consists in transfering a 60MB file over a single path
+and enabling the second one after $5$ seconds. \mptcp automatically detects
+the new path once we enable the Client's second network interface. For \tcpls,
+managing paths is different: the application can use the API to add local or
 peer-related addresses at any point of the session. In this experiment, we send
 this information at $5$ seconds, create a new \tcp connection to the peer, and
-attach a new stream to this new connection. Our results appear in
-Fig.~\ref{fig:multipath_aggregation}. Both stacks aggregate the two paths and
-reach a goodput of $\approx$ 50 Mbps. There are two major differences between
-the two stacks. First, when a new network interface comes up, the Linux kernel
-takes some time to configure its IP address, add the required routes, and
-finally inform \mptcp~\cite{paasch2012exploring}.
-This explains the time that \mptcp needs to start to use the new path.
-Second, \tcpls's aggregated goodput seems less stable than \mptcp. We may explain this discrepancy by the difference of chunk size manipulated by the reordering algorithm: \mptcp reorders packets with a payload of 1,460 bytes, while \tcpls in this experiment reorders records with the maximum payload size of 16,384 bytes. That means that \tcpls, upon unordered records, would need to reorder and deliver much larger chunks of data, leading to larger goodput irregularities than \mptcp. However, \tcpls might negotiate the record size to smooth out this irregularity. Setting a record size around 1,500 bytes would make \mptcp and \tcpls' results lookalike but would be slightly more CPU costly since we need to use the encryption/decryption code path more often.
+attach a new stream to it. The two streams are coupled together. Our results 
+appear in Fig.~\ref{fig:multipath_aggregation}. Both protocols aggregate the 
+two paths and reach a goodput of $\approx$ 50 Mbps. 
+
+There are two major differences between
+the two. First, for MPTCP, there is a delay before it becomes fully utilized. 
+This delay is the time required by the Linux kernel
+configures the new network interface IP address, adds the required routes, and
+finally informs \mptcp~\cite{paasch2012exploring}.
+%This explains the time that \mptcp needs to start to use the new path.
+Second, \tcpls's aggregated goodput seems less stable than \mptcp. We explain 
+this discrepancy by the difference of chunk size manipulated by the reordering 
+algorithms in our experiment: \mptcp reorders packets with a payload of 1,460 
+bytes, while \tcpls reorders records with the maximum 
+payload size of 16,384 bytes. As concurrent network paths introduce reordering, 
+which is reordered back by both \mptcp and \tcpls, a larger chunk size 
+leads to larger goodput irregularities. 
+
+%However, \tcpls might negotiate the record 
+%size to smooth out this irregularity. 
+Running the experiment with a record size 
+of 1,500 bytes smooths out the irregularity at a slightly higher CPU cost since 
+encryption and decryption are performed more often.
 Appendix~\ref{appendix:aggr} shows the results of the same experiment but using
 a \tls record size of 1,500 bytes instead.
+
+\todo{Manque un takeaway qui cloture la section}
+\todo{Quid des spikes qui restent?}
 
 \begin{figure}[!t]
   \begin{center}
@@ -344,29 +371,51 @@ a \tls record size of 1,500 bytes instead.
 \subsection{Failover}
 \label{sec:eval_failover}
 
-The failover feature is designed to provide resilience to \tcpls connection
-failures. From middlebox interference to mobile clients losing
-their connection to the access point (LTE or Wi-Fi), network outages may happen
-for various reasons. We first discuss and compare the recovery speed
-after a network outage for different types of outages. Fig.~\ref{fig:recovery}
-compares the goodput achieved by both \mptcp and \tcpls when they suffer an
-outage on their main path and fallback to their secondary path. Both the client and the server are configured with two interfaces, with one of them set to the backup mode in the case of \mptcp (no connections are made to the backup interface unless an issue is detected on the first path). We consider three types of outages: a middlebox blackholing all the traffic, the reception of a spurious \rst, and the loss of the interface for \mptcp.
+Failover is designed to provide resilience to \tcpls connection
+failures. Network outages may happen
+for several reasons, e.g. middlebox interference or mobile clients losing
+one access network (LTE or Wi-Fi). 
+We first discuss and compare the recovery time
+for different types of outages during a file transfer. We configure the client 
+and the server with two interfaces, with one set to the 
+backup mode in the case of \mptcp, i.e. no subflows are opened on the backup 
+interface unless an issue is detected on the first interface. 
+We consider three 
+types of outages: a middlebox blackholing all the traffic, the reception of a 
+spurious \rst, and the loss of the interface for \mptcp.
+\todo{Why evaluate the loss of an interface if we can't compare it?}
+Fig.~\ref{fig:recovery}
+compares the goodput achieved by \mptcp and \tcpls over time when encountering 
+these events.
 
 \begin{figure}[!t]
   \begin{center}
     \includegraphics[width=.8\columnwidth]{figures/breakage_analysis.png}
   \end{center}
 \vspace{-0.5cm}
-  \caption{Recovery delay analysis.}
+  \caption{Recovery delays of \tcpls compared to \mptcp during a single outage.}
+  \todo{Refaire la légende}
   \label{fig:recovery}
 \end{figure}
 
-Our results show different behaviours: upon reception of a \rst, both
-\tcpls and \mptcp react fast. A network outage
-is more difficult to handle: both stacks rely on timers and base their
-decision to switch the path on their expiration. In the case of \tcpls, we
-configure a timer using the $TCP\_USER\_TIMEOUT$ \tcp option. The scenario is as
-follows: when the server enables failover, it sends a $USER\_TIMEOUT$ to protect the transfer. This option is sent through the secure control channel to indicate to the client \tcpls's stack that it should not wait more than $X ms$ between successful reads of data, with $X$ a parameter of this option. For this experiment, the $USER\_TIMEOUT$ is set to $250~ms$. When the timer expires, \tcpls creates a connection over the other path and joins the session. It then replays the unacknowledged records. Once these steps have succeeded, the transfer can continue. In our experiments, it took around $\approx 1$ second to recover from the outage.
+We can observe that upon reception of a \tcp \rst, both
+\tcpls and \mptcp react fast. This is an explicit signal they both act on 
+quickly and resume the transfer. However, a network outage
+is more difficult to detect. Both stacks rely on timers to decide to switch 
+paths. In the case of \tcpls, we
+configure a timer using the \tcp \texttt{User} \texttt{Timeout} 
+option, which is set to $250~ms$ in our experiment.
+%(mp): (should) already been explained in sec. prototype
+%When the server enables failover, it sets a timeout to protect 
+%the transfer. This option is sent in encrypted \tcpls records to 
+%indicate to the client \tcpls's stack that it should not wait more than $X ms$ 
+%between successful reads of data, with $X$ a parameter of this option. For 
+%this experiment, the $USER\_TIMEOUT$ is set to $250~ms$.
+When the timer expires, the client creates a connection over the other path and 
+joins it to the session. The server then replays the unacknowledged records. 
+Once these steps have succeeded, the transfer can continue. We can observe that 
+this process take $\approx 1$ second to recover from this single outage in our 
+experiment.
 
 
 \begin{figure}[!t]
@@ -374,25 +423,45 @@ follows: when the server enables failover, it sends a $USER\_TIMEOUT$ to protect
     \includegraphics[width=\columnwidth]{figures/tcpls_mptcp.png}
   \end{center}
 \vspace{-0.5cm}
-  \caption{\mptcp has difficulties to react to successive network outages. \tcpls reacts quickly to such outages.}
+  \caption{\mptcp has difficulties to react to successive network outages. 
+  \tcpls reacts quickly to such outages.}
   \label{fig:failover}
 \end{figure}
 
-The second experiment involves observing how different multipath
-implementations behave when several failures occur during a data transfer. We
-tested several multipath implementations: \mptcp, PQUIC with the multipath
+We now extend our first experiment by adding periodic outages during the 
+transfer in a 4-path network topology.
+%The second experiment involves observing how different multipath
+%implementations behave when several failures occur during a data transfer.
+We tested several multipath transport implementations: \mptcp, PQUIC with the 
+multipath
 plugin~\cite{de2019pluginizing}, and MPQUIC~\cite{de2017multipath}.
-The results with PQUIC and MPQUIC were disappointing. We dug into these implementations and observed that they were not programmed to detect network failures and correctly switch the network path, thus we preferred to ignore those results. \mptcp has a longer development background and is used in production and maintained. Fig.~\ref{fig:failover} shows how \mptcp and \tcpls perform when three paths out of four are blackholed every five seconds. The protocol has first to find the healthy path and recover the session over it. We observe that \mptcp's default path manager performs well on the first
-failure. For the next ones, it seems to require several seconds to
-recover the right path. Besides, \mptcp seems to remember that something wrong
-happened, and enters a kind of congestion avoidance state until the end of the
-transfer. We may question this design choice, since many \tcp connections on the
-Internet have a shorter lifespan than 10 seconds (i.e., the time after which
-\mptcp should re-use a previously used path in this experiment). We also tested
-multiple failures with spurious \rst, but \mptcp indefinitely stalled after the second \rst.
-
-\tcpls however, finds the right path and recovers the session as fast as
-expected, similarly to the drop and \rst outage studied in Fig.~\ref{fig:recovery}. Moreover, since those connections are fresh, they can quickly use the available bandwidth.
+We do not report the results with PQUIC and MPQUIC as 
+detecting and recovering from network failures were not part of these 
+prototypes.
+%We dug into these implementations and observed that they were not programmed 
+%to 
+%detect network failures and correctly switch the network path, thus we 
+%preferred to ignore those results. 
+\mptcp is a more mature multipath transport implementation that is maintained 
+and used in production. Fig.~\ref{fig:failover} compares how 
+\mptcp and \tcpls recovers when three paths out of four are blackholed every 
+five seconds. We rotate the working path so that each implementation has 
+first to find it before recovering the transfer. 
+We observe that \mptcp's default path manager performs well on the first
+failure. For the next ones, it requires several seconds to recover the right 
+path. 
+%Besides, \mptcp seems to remember that something wrong
+%happened, and enters a kind of congestion avoidance state until the end of the
+%transfer. We may question this design choice, since many \tcp connections on 
+%the
+%Internet have a shorter lifespan than 10 seconds (i.e., the time after which
+%\mptcp should re-use a previously used path in this experiment). 
+We also tested injecting \tcp \rst instead of blackholing paths and \mptcp 
+indefinitely stalled after the second \rst.
+However, \tcpls finds the right path quicker and recovers the session in a 
+short time similarly to the drop and \rst outage studied in 
+Fig.~\ref{fig:recovery}. Moreover, since those connections are fresh, they can 
+quickly use the available bandwidth.
 
 \subsection{Application-Level Migration}
 \label{sec:app-migration}
