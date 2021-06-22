@@ -1,9 +1,40 @@
 % !TEX root = ./paper.tex
 
-In this section, we evaluate \tcpls using two different types of experiments.
-First, we analyze the raw performance of our \tcpls prototype and how \tcpls
-interacts with middleboxes in a controlled environment. We then emulate, using
-Mininet~\cite{handigol2012reproducible}, more complex scenarios, including failover and multipathing.
+In this section, we evaluate \tcpls with several experiments.
+First, we evaluate the raw performance of our \tcpls prototype in 
+Section~\ref{sec:perf}. Then we report how \tcpls
+interacts with middleboxes in a controlled environment in 
+Section~\ref{sec:middlebox}. We then emulate, using
+Mininet~\cite{handigol2012reproducible}, more complex scenarios involving 
+Failover (Sec.~\ref{sec:eval_failover}), Application Connection Migration (Sec.
+~\ref{sec:app-migration}) and bandwidth aggregation~\ref{sec:bwaggr}.
+
+\todo{State against which protocol we compare tcpls and outline the global 
+results.}
+
+For the two first experiments of 
+our \tcpls prototype (Sec.~\ref{sec:perf} and~\ref{sec:middlebox}), we use the 
+testbed depicted
+in Fig.~\ref{fig:perf_testbed}. It consists of three servers equipped
+with Intel Xeon CPU E5-2630 2.40GHz, 16~GB RAM, running
+Debian with Linux 5.9 and 5.7 kernels. Two of these machines are used as,
+respectively, Client and Server, while the third one is used as a router or a
+middlebox, depending on the scenario. Each machine is equipped with an Intel
+XL710 2x40Gbps NIC. A single \tcp connection can saturate the 40~Gbps path when 
+enabling Jumbo frames. With a 1500 bytes MTU, a single \tcp connection reaches 
+22~Gbps. For all measurements, with all implementations, we use a single thread 
+on each machine to run the client and server.
+
+\begin{figure}[!t]
+	\begin{center}
+		\includegraphics[width=.6\columnwidth]{figures/testbed.png}
+	\end{center}
+	\vspace{-0.5cm}
+	\caption{Performance Measurements Setup. C = Client. S = Server. R = 
+	Router/Middlebox.}
+	\label{fig:perf_testbed}
+\end{figure}
+
 
 
 %Our objective is to evaluate whether our design and implementation are indeed
@@ -25,28 +56,8 @@ Mininet~\cite{handigol2012reproducible}, more complex scenarios, including failo
 
 \subsection{Raw Performance} \label{sec:perf}
 
-To evaluate the raw performance (Sec.~\ref{sec:perf}) and middlebox traversal
-(Sec.~\ref{sec:middlebox}) of our \tcpls prototype, we use the testbed depicted
-in Fig.~\ref{fig:perf_testbed}. Our testbed is made of three servers equipped
-with Intel Xeon CPU E5-2630 2.40GHz, 16~GB RAM, running
-Debian with Linux 5.9 and 5.7 kernels. Two of these machines are used as,
-respectively, Client and Server, while the third one is used as a router or a
-middlebox, depending on the scenario. Each machine is equipped with an Intel
-XL710 2x40Gbps NIC. A single \tcp connection can saturate the 40~Gbps path with
-Jumbo frames. With a 1500 bytes MTU, a single \tcp connection reaches 22~Gbps.
-For all measurements, with all implementations, we use a single thread on each
-machine to run the client and server.
-
-\begin{figure}[!t]
-  \begin{center}
-    \includegraphics[width=.6\columnwidth]{figures/testbed.png}
-  \end{center}
-  \vspace{-0.5cm}
-  \caption{Performance Measurements Setup. C = Client. S = Server. R = Router/Middlebox.}
-  \label{fig:perf_testbed}
-\end{figure}
-
-
+With this first experiment, we demonstrate that \tcpls can be implemented at a
+low cost compared to \tcp and \tls while 
 The first question we want to answer is whether \tcpls can compete with the
 traditional \tls over \tcp stack. We also compare our \tcpls prototype with
 different \quic implementations.
@@ -244,37 +255,50 @@ network).
 \subsection{Middlebox Interference}
 \label{sec:middlebox}
 
-A full evaluation of middlebox interference would require measurements in various operational networks that include such devices~\cite{honda2011still,raman2020measuring,o2016tls}. This is
-outside the scope of this paper and left for further work. Nevertheless, we have tested \tcpls against different opensource and commercial stateful
+We have tested \tcpls against different opensource and commercial 
+stateful
 firewalls and proxy implementations (i.e., pfSense, IPFire, Cisco ASAv,
 mitmproxy) and found no unexpected interference. Stateful filtering and stateful
-packet inspection policies did not impact connectivity, and transparent TLS proxy successfully triggered \tcpls fallback to \tls/\tcp. Still, the security
+packet inspection policies did not impact the \tcpls handshake, and transparent 
+\tls
+proxy successfully triggered \tcpls fallback to \tls/\tcp. Still, the security
 appliances that block \tls 1.3 or some of its features
 \cite{lee2019matls,Bock_China,raman2020measuring} would also block \tcpls.
 %pervasive monitoring allows for configurable TLS extensions blocking
 %\cite{rfc7258}. This is handled properly by \tcpls fallback mechanism.
 
-When faced with middleboxes that intercept \tls 1.3~\cite{Bock_China,raman2020measuring}, we need to consider the \tcpls handshake \tls extensions: \tcpls, \join, SESSID, and COOKIE. The other
-\tcpls messages through the Secure Control Channel are indistinguishable from
-classical \tls records (i.e., they look like encrypted application data
-for the middlebox). If a client attempts to open a \tcpls session
-through a \tls termination proxy, it sends a \textsc{ClientHello} with the
-\tcpls extension. If the proxy does not support \tcpls, it replies with a
-\textsc{ServerHello} message that does not include the \tcpls extension. From
-this point, the client implicitly falls back to \tls, and continues with the
-handshake.
+When faced with middleboxes that modify \tls 
+1.3~\cite{Bock_China,raman2020measuring}, only one type of \tcpls 
+messages can be impacted. The client \tls extensions, that are 
+integrity-protected but not confidential, can be modified by these middleboxes. 
+They contain messages such as \hello, \join, \textit{SESSID} and 
+\textit{COOKIE} presented 
+in Sections~\ref{sec:tcpls-handshake} and \ref{sec:multipath}. Other messages 
+conveyed in encrypted \tls records cannot be distinguished or tampered with.
+When a client opens a \tcpls session
+through a \tls terminating proxy not supportin \tcpls, it replies 
+with 
+a \textsc{ServerHello} message omitting the \hello extension. Then, the client 
+can implicitly fall back to \tls and continue with the handshake.
 
-Certain legacy \tls server implementations are known not to implement the \tls
+Some legacy \tls server implementations do not implement the \tls
 specification properly and might abort connections when receiving unknown \tls
-extensions. Analogous behavior has been observed in overly restrictive stateful
+extensions. Similar behavior has been observed in overly restrictive stateful
 firewalls. To ensure connectivity in the presence of such policies, \tcpls
 implements an explicit fallback mechanism. If a client receives a \tcp \rst in
 response to the \tcpls \textsc{ClientHello}, or no response, it
 tries negotiating a regular \tls connection, either
-immediately or after a timeout. Similarly, a \tcpls \join extension might be
-blocked on a path. In this case, the subflow attachment is canceled, and
-the application is directly notified to be able to react appropriately (e.g.,
-to cancel a migration attempt).
+immediately similarly to Happy Eyeballs~\ref{TODO} or after a timeout. 
+In the same manner, a \tcpls \join extension might be
+blocked on a path when joining connections. In this case, the subflow 
+attachment is canceled, and
+the application is notified to react appropriately, e.g. to cancel the 
+migration.
+
+A more complete evaluation of middlebox interference would require measurements 
+in various operational networks that include such 
+devices~\cite{honda2011still,raman2020measuring,o2016tls}. This is
+outside the scope of this paper and left for further work. 
 
 %We tested \tcpls against opensource and commercial stateful firewalls and proxy
 %implementations and (i.e., pfSense, IPFire, Cisco ASAv, mitmproxy) and found no
