@@ -57,7 +57,7 @@ stream 64-bit record sequence number. Each \tcpls stream has a separate record
 sequence number space. This combination of IV manipulation guarantees that the
 resulting IV is unique for each record of all \tcpls streams as long as the
 Stream ID is unique and no sequence number is used twice in a given stream.
-
+The Stream ID space is split in TODO
 \todo{Il faut expliquer comment les stream id sont choisis pour garantir 
 l'unicité}
 
@@ -285,7 +285,8 @@ performance impact of adding \tcpls record-level acknowledgments. We also give a
 trace example involving a file transfer and the failover protocol in
 Appendix~\ref{app:failover}.\todo{Let see if we can bring it back in the text later}
 
-\textbf{Application Connection Migration}. \tcpls also enables the application
+\textbf{Application Connection Migration}. \tcpls also enables the 
+application
 to trigger a connection migration, for instance based on application-level 
 metrics qualifying its experience over the current path. %expected to be used 
 %over
@@ -386,6 +387,8 @@ different
 \tcp connections of a \tcpls session. We already discussed a very simple use of
 stream steering when performing Application Connection Migration, which is to 
 move all streams from one connection to the other.
+\todo{Choix du HoL, ça coute des connexions mais pas forcément nécessaire en 
+fonction de l'app.}
 
 %Like \mptcp \cite{raiciu2012hard,rfc6824} or Multipath QUIC
 %\cite{de2017multipath,draft-liu-multipath-quic-02}, \tcpls supports an
@@ -409,6 +412,7 @@ maintaining the ability to process each stream in a zero-copy manner, and
 with no head-of-line blocking.
 
 \todo{OB: paragraphe ci-dessous pas clair. (mp): C'est m-à-j}
+\todo{Multipath congestion control appliqué a TCPLS, eBPF, pas trivial}
 
 \textbf{Coupling streams for aggregated bandwidths}. Applications that benefit 
 from the aggregated bandwidth of several network paths when transmitting a 
