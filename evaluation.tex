@@ -83,9 +83,9 @@ benchmark AES128-GCM-SHA256's decryption at
 24.59~Gbps when doing in-memory decryption on our testbed's client (openssl
 1.1.1i), and
 13,62~Gbps when doing in-memory encryption on our testbed's server (openssl
-1.1.1d). Note that on
+1.1.1d), which explains the gap between TCPLS and raw TCP.
+Note that, on
 both machines, encryption is $\approx 40\%$ slower than decryption.
-which explains the gap between TCPLS and raw TCP.
 The next bar (labeled ``\tcpls tso on'') shows that with TSO and standard frame
 size (1,500 bytes MTU), the throughput still reaches 10.84 Gbps. These
 results should be compared with the 22~Gbps \tcp reaches in the same

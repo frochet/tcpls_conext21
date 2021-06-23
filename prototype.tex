@@ -39,7 +39,9 @@ and bandwidth aggregation.
 ($v$, \textit{Sec. \ref{sec:prot-ebpf}}) The server can securely inject eBPF 
 bytecode to the client 
 to upgrade its \tcp congestion control scheme or tune other \tcp 
-mechanisms~\cite{brakmo2017tcp,tran2019beyond}.
+mechanisms~\cite{brakmo2017tcp,tran2019beyond}. These prototype examples
+hopefully demonstrate how interesting \tcpls's design can be.
+
 %Variable-length options (e.g., eBPF bytecode) can be sent within streams to 
 %take advantage of bandwidth aggregation or Failover when these features are 
 %enabled.
@@ -112,7 +114,7 @@ sender configures this time threshold at the receiver side by sending this \tcp
 option in a \tcpls record. The receiver can then notice when it stops receiving 
 data and trigger the Failover.
 Receiving a \tcp \texttt{RST} or \texttt{FIN} over a \tcp connection for which
-\tcpls streams are attached to also triggers the Failover.
+\tcpls streams are attached does also trigger the Failover.
 
 The stream-level acknowledgments required for the Failover to detect the lost
 \tcpls records can be enabled at the start of a \tcpls session. The default
