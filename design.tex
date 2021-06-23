@@ -2,8 +2,8 @@
 
 \subsection{\tcpls Transport Services}
 
-\todo{parler de secure control channel ? (mp): Pour moi non, c'est une vue de 
-l'esprit, ça équivaut a dire qu'on peut utiliser des nouveaux records tls}
+%\todo{parler de secure control channel ? (mp): Pour moi non, c'est une vue de 
+%l'esprit, ça équivaut a dire qu'on peut utiliser des nouveaux records tls}
 
 By leveraging \tcpls records and extensions, we can design new modern transport
 services atop the combination of \tcp and \tls. In this subsection, we answer our
@@ -57,9 +57,10 @@ stream 64-bit record sequence number. Each \tcpls stream has a separate record
 sequence number space. This combination of IV manipulation guarantees that the
 resulting IV is unique for each record of all \tcpls streams as long as the
 Stream ID is unique and no sequence number is used twice in a given stream.
-The Stream ID space is split in TODO
-\todo{Il faut expliquer comment les stream id sont choisis pour garantir 
-l'unicité}
+The Stream ID space is split between the client and the server. Stream ID 0 is 
+equivalent to the cryptographic context directly derived from the handshake.
+%\todo{Il faut expliquer comment les stream id sont choisis pour garantir 
+%l'unicité}
 
 To avoid possible middleboxes interference, in addition to the record sequence number, 
 the \tcpls Stream ID is kept implicit as well. When an endpoint receives a 
@@ -283,7 +284,9 @@ transmitted again over a functional one.
 We present in Section~\ref{sec:perf} measurements quantifying the
 performance impact of adding \tcpls record-level acknowledgments. We also give a
 trace example involving a file transfer and the failover protocol in
-Appendix~\ref{app:failover}.\todo{Let see if we can bring it back in the text later}
+Appendix~\ref{app:failover}.\todo{Let see if we can bring it back in the text 
+later}
+\todo{Parler de la resynchronisation}
 
 \textbf{Application Connection Migration}. \tcpls also enables the 
 application
@@ -374,7 +377,14 @@ use both cellular and Wi-Fi to optimize performance. Apple Music mainly
 performs handovers. As applications have very different requirements, \tcpls 
 exposes the underlying \tcp connections to the application through its API. The 
 applications use this API to implement their own policy to manage the 
-underlying \tcp connections. 
+underlying \tcp connections.
+
+When several networks paths are used in a transport 
+connection, the congestion controller of each path should be coupled to control 
+the overall aggressiveness of the connection. This problem has been solved in a 
+generic way for MPTCP~\cite{rfc6356}, and the same solution could be applied to 
+\tcpls. eBPF could be leveraged to access and modify the congestion controller 
+state. We leave this engineering effort as future work.
 
 \textbf{Stream Steering}. \tcpls enables the application to combine 
 multiplexing with the ability to join
@@ -387,8 +397,6 @@ different
 \tcp connections of a \tcpls session. We already discussed a very simple use of
 stream steering when performing Application Connection Migration, which is to 
 move all streams from one connection to the other.
-\todo{Choix du HoL, ça coute des connexions mais pas forcément nécessaire en 
-fonction de l'app.}
 
 %Like \mptcp \cite{raiciu2012hard,rfc6824} or Multipath QUIC
 %\cite{de2017multipath,draft-liu-multipath-quic-02}, \tcpls supports an
@@ -410,9 +418,16 @@ low-latency connections. By sending each application-level object in a separate
 stream, the application can benefit from multiple network paths while
 maintaining the ability to process each stream in a zero-copy manner, and
 with no head-of-line blocking.
+\tcpls enables the application to choose which streams are protected from 
+Head-of-Line blocking by placing them on separate \tcp connections. 
+Applications objects that depend on others can cope with occasional 
+Head-of-Line blocking.
 
-\todo{OB: paragraphe ci-dessous pas clair. (mp): C'est m-à-j}
-\todo{Multipath congestion control appliqué a TCPLS, eBPF, pas trivial}
+%\todo{Choix du HoL, ça coute des connexions mais pas forcément nécessaire en 
+%	fonction de l'app.}
+
+%\todo{OB: paragraphe ci-dessous pas clair. (mp): C'est m-à-j}
+%\todo{Multipath congestion control appliqué a TCPLS, eBPF, pas trivial}
 
 \textbf{Coupling streams for aggregated bandwidths}. Applications that benefit 
 from the aggregated bandwidth of several network paths when transmitting a 
@@ -542,7 +557,7 @@ impacting the application goodput.
 
 \subsection{Finishing a \tcpls connection}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\todo{OB: pas critique pour moi}
+\todo{OB: pas critique pour moi, ou alors il faut comparer MPTCP et QUIC}
 
 \todo{What's left here that does not belong to the Failover or implementation section?}
 \tcpls's semantic offers a secure stream abstraction to the application.

@@ -3,36 +3,41 @@
 
 In this section, we describe our \tcpls implementation which provides the 
 following benefits.
-(\textit{Sec. \ref{sec:prot-multiplexing}}) Applications can use parallel 
+($i$, \textit{Sec. \ref{sec:prot-multiplexing}}) Applications can use parallel 
 streams with 
 different cryptographic 
 contexts and multiplex them over a \tcp connection.
 %(mp): TODO reintegrate this whenever the API has substantial text in the body of the paper
 %($ii$) An experimental API that wraps \tls and \tcp and enables applications to
 %    handle multihoming, multipathing, and various transport layer mechanisms.
-\todo{MP: mettre la ref du workshop et ne pas expliquer}
+%\todo{MP: mettre la ref du workshop et ne pas expliquer}
 ($ii$) \tcp options can be sent through the secure \tcpls records, improving 
-the extensibility of \tcp. 
+the extensibility of \tcp. We presented this service in an workshop
+paper~\cite{rochet2020tcpls} by implementing the \tcp User Timeout option.
 %(as described in
    %Sec.~\ref{sec:background-design})
-   . We demonstrate this possibility by
-   implementing the \tcp User Timeout option%, which is a building block for
+   %. We demonstrate this possibility by
+   %implementing the \tcp User Timeout option%, which is a building block for
    %our Failover protocol
-   .
+   %.
    %(mp): TODO move this to a section describe secure TCP options, with maybe 
    %the exchange of eBPF code somehow
    % Supporting another \tcp option is only a matter of
    %extending the sender's API and processing the option on the receiver side.
    %\tcpls's internal machinery allows to the server (resp. client) to send any
    %TCP option during (resp. after) the \tls handshake.
-(\textit{Sec. \ref{sec:prot-migration}}) Applications can enable Failover and 
+($iii$, \textit{Sec. \ref{sec:prot-migration}}) Applications can enable 
+Failover and 
 trigger Connection Migration.
-(\textit{Sec. \ref{sec:prot-multipath}}) Applications can leverage multipath 
-capabilities such as enabling stream 
-steering over several \tcp connections and bandwidth aggregation.
-\todo{MP: en faire une petite section qui présente l'implémentation, a combiner 
-p-ê avec (ii)}
-($iv$) The server can securely inject eBPF bytecode to the client 
+($iv$, \textit{Sec. \ref{sec:prot-multipath}}) Applications can leverage 
+multipath 
+capabilities such as stream 
+steering %over several \tcp connections 
+and bandwidth aggregation.
+%\todo{MP: en faire une petite section qui présente l'implémentation, a 
+%combiner p-ê avec (ii)}
+($v$, \textit{Sec. \ref{sec:prot-ebpf}}) The server can securely inject eBPF 
+bytecode to the client 
 to upgrade its \tcp congestion control scheme or tune other \tcp 
 mechanisms~\cite{brakmo2017tcp,tran2019beyond}.
 %Variable-length options (e.g., eBPF bytecode) can be sent within streams to 
@@ -65,17 +70,20 @@ as often found in QUIC implementations.
 %neither part of our goals, but might be necessary for a production ready \tcpls
 %library.
 
-\subsection{The \tcpls API}
-
-\todo{(mp): How important is this for conext, rather than IETF? I feel like the subsection content is too thin to have any weight}
-
-The API that applications use to interact with a protocol plays an important
-role in leveraging all the protocol features. The most popular
-API to interact with the transport layer remains the BSD socket API. Researchers
-and the IETF have explored new ways to expose a transport
-API~\cite{draft-ietf-taps-arch,hruby2014sockets,rfc6458,schmidt2013socket}.
-Due to space limitations, we provide in appendix~\ref{appendix:api} a simple example of our API workflow,
-which builds upon good practices proposed by the outlined research.
+%\subsection{The \tcpls API}
+%
+%\todo{(mp): How important is this for conext, rather than IETF? I feel like 
+%the subsection content is too thin to have any weight}
+%
+%The API that applications use to interact with a protocol plays an important
+%role in leveraging all the protocol features. The most popular
+%API to interact with the transport layer remains the BSD socket API. 
+%Researchers
+%and the IETF have explored new ways to expose a transport
+%API~\cite{draft-ietf-taps-arch,hruby2014sockets,rfc6458,schmidt2013socket}.
+%Due to space limitations, we provide in appendix~\ref{appendix:api} a simple 
+%example of our API workflow,
+%which builds upon good practices proposed by the outlined research.
 
 %In this spirit, application-level developers would only be required to
 %configure a \tcpls context and register function callbacks.
@@ -173,6 +181,29 @@ support other schedulers in the future and allow the application to select its p
 
 %\subsection{TCP Options and Kernel extensibility}
 
+\subsection{Congestion controller remote injection}
+\label{sec:prot-ebpf}
+
+Recent work on restructuring congestion control has proposed a generic 
+architecture for congestion controllers~\cite{narayan2018restructuring}.
+Linux kernel developers have relied on eBPF to make the Linux TCP/IP 
+stack easier to extend~\cite{brakmo2017tcp,tran2020beyond}. Since Linux kernel 
+version 5.6, an application can inject congestion control schemes 
+entirely implemented in eBPF. A broader approach was proposed for \quic in 
+Pluginizing \quic~\cite{de2019pluginizing}. 
+%We leverage these new eBPF capabilities to demonstrate the feasibility of 
+%injecting a new congestion control scheme during a \tcpls session.
+Our \tcpls prototype enables the server %to use \tcpls streams 
+to inject a new eBPF congestion controller to the client over the \tcpls 
+session.
+
+%
+%The \tcpls streams enable new use cases. A \tcpls application can
+%create and use different streams to carry data. However, since these streams
+%are generic, they can also be used by the \tcpls implementation itself to
+%exchange control information. To demonstrate the versatility of these control
+%streams, we extended \tcpls to enable a server to push a different congestion
+%control scheme to a specific client over an existing \tcpls session. 
 \subsection{\tcpls Session Establishment}
 
 Our prototype is fully compatible with both the \tls 1.3 0-RTT session resumption

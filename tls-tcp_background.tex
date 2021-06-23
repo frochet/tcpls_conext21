@@ -78,30 +78,32 @@ implementations.
 
 
 
-\begin{table*}[!t]
+\begin{table}[!t]
+  \setlength\tabcolsep{3pt}
   \small
   \begin{tabular}{lccccc}
     \toprule
     & \tcp & \mptcp & \tls/\tcp & \quic & \tcpls \\
     \midrule
-    Reliability \& cong. control & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
-    Message conf. and auth.&  \xmark & \xmark & \checkmark & \checkmark & \checkmark \\
+    Reliability \& cong. control & \checkmark & \checkmark & \checkmark & 
+    \checkmark & \checkmark \\
+    Message conf. and auth.&  \xmark & \xmark & \checkmark & \checkmark & 
+    \checkmark \\
     Failover &  \xmark & \checkmark &\xmark & (\checkmark) & \checkmark \\
-    Resilience to HOL blocking & \xmark & \xmark & \xmark & \checkmark & (\checkmark) \\
-    \multicolumn{5}{l}{Application-exposed features} \\
-    \hspace{2em} Streams & \xmark &  \xmark & \xmark & \checkmark & \checkmark 
-    \\
-    \hspace{2em} Connection migration & \xmark & (\checkmark) & \xmark & 
-    (\checkmark) & \checkmark \\
-    \hspace{2em} Concurrent paths & \xmark & \checkmark & \xmark & 
-    \xmark & \checkmark \\
+    HoL blocking resilience & \xmark & \xmark & \xmark & \checkmark & 
+    (\checkmark) \\
+%    \multicolumn{5}{l}{Transport services} \\
+    Streams & \xmark &  \xmark & \xmark & \checkmark & \checkmark \\
+    Connection migration & \xmark & (\checkmark) & \xmark & (\checkmark) & 
+    \checkmark \\
+    Concurrent paths & \xmark & \checkmark & \xmark & \xmark & \checkmark \\
 
     \bottomrule
   \end{tabular}
-  \caption{Comparison of \xmark\ the features not 
+  \caption{Comparison of \xmark\ the services not 
   offered 
   , (\checkmark)\
-  partially available or under development, and \checkmark\ offered by a 
+  partially available, and \checkmark\ offered by a 
   given 
   protocol stack.}
 %  \caption{Protocol features comparison. (\xmark) means that the feature is
@@ -109,7 +111,7 @@ implementations.
 %  feature is partially available and under development. \checkmark means that
 %  the feature is available, and \xmark means that it is not.}
   \label{table:tcpquictcpls}
-\end{table*}
+\end{table}
 
 
 
