@@ -186,6 +186,10 @@ attempts for censoring applications using \tcpls.
 The server handshake extensions are 
 encrypted and thus cannot be targeted by such attacks.
 
+\todo{FR: I am not sure this is correct.  EncryptedExtensions could be dropped
+  by a middlebox, yet the TLS app-key should still be properly derived, and the
+  client cannot know whether the server supports TCPLS}
+
 %\todo{Is the following best here? -> Background ?}
 %A reasonable approach to design extensibility mechanisms in the Internet
 %is to avoid leaking any information that could help an on-path attacker

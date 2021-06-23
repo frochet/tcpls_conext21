@@ -66,9 +66,10 @@ To avoid possible middleboxes interference, in addition to the record sequence n
 the \tcpls Stream ID is kept implicit as well. When an endpoint receives a 
 \tcpls Record, 
 we leverage the AEAD cipher to check the authentication tag repeatedly until the
-correct \tcpls Stream ID is found. This operation is lightweight as it does not
-involve a complete decryption as all TLS 1.3 AEAD ciphers use an 
-Encrypt-then-MAC construct~\cite{rfc7366, rfc8446}. 
+correct \tcpls Stream ID is found. An optimized
+implementation would not involve a complete decryption as all TLS 1.3 AEAD
+ciphers use an Encrypt-then-MAC construct~\cite{rfc7366, rfc8446}, and the tag
+verification, especially on AES-GCM is computationnaly light.
 %\todo{citer rfc7366 ? ou les références de ce rfc ?}
 
 From a security standpoint, each failed decryption is considered as a
