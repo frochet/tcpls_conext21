@@ -20,10 +20,8 @@ with Intel Xeon CPU E5-2630 2.40GHz, 16~GB RAM, running
 Debian with Linux 5.9 and 5.7 kernels. Two of these machines are used as,
 respectively, Client and Server, while the third one is used as a router or a
 middlebox, depending on the scenario. Each machine is equipped with an Intel
-XL710 2x40Gbps NIC. A single \tcp connection can saturate the 40~Gbps path when 
-enabling Jumbo frames. With a 1500 bytes MTU, a single \tcp connection reaches 
-22~Gbps. For all measurements, with all implementations, we use a single thread 
-on each machine to run the client and server.
+XL710 2x40Gbps NIC. For all measurements, with all implementations, we use a 
+single thread on each machine to run the client and server.
 
 \begin{figure}[!t]
 	\begin{center}
@@ -61,36 +59,67 @@ network, each offering 25Mbps and 10ms latency.
 
 
 \subsection{Raw Performance} \label{sec:perf}
+In our first experiment, we demonstrate that \tcpls can be implemented at a low 
+cost compared to \tcp and \tls while offering better raw performance than 
+several \quic implementations. To this end, we use our physical testbed 
+presented in Figure~\ref{fig:perf_testbed} and run throughput measurements for 
+large transfers with \tcp/\tls, \tcpls and three \quic implementations.
+The results are reported on Figure~\ref{fig:perf}, which contains the bandwidth 
+in gigabits per second and packets per second obtained for each test.
+Each bar corresponds to the median measurement over 10 seconds of stable 
+throughput.
+A preliminary test in our testbed shows that a single \tcp connection can 
+saturate the 40~Gbps link when setting the MTU to 9000. With a 1500-byte MTU, a 
+single \tcp connection reaches 22~Gbps. We also benchmarked the 
+AES128-GCM-SHA256 cipher with in-memory 16,384-byte \tls records and observed 
+that decryption in our client reaches 24.59~Gbps while encryption on our 
+server reaches 13,62~Gbps.
 
-With this first experiment, we demonstrate that \tcpls can be implemented at a
-low cost compared to \tcp and \tls while 
-The first question we want to answer is whether \tcpls can compete with the
-traditional \tls over \tcp stack. We also compare our \tcpls prototype with
-different \quic implementations.
+%With this first experiment, we demonstrate that \tcpls can be implemented at a
+%low cost compared to \tcp and \tls while 
+%The first question we want to answer is whether \tcpls can compete with the
+%traditional \tls over \tcp stack. We also compare our \tcpls prototype with
+%different \quic implementations.
 
-\paragraph*{\tcpls}
-For all the \tcpls measurements, we use a custom application that performs
-large memory-to-memory transfers over a \tcpls session using a single stream.
-\tcpls is configured to use the AES128-GCM-SHA256 cipher. Fig.~\ref{fig:perf}
-provides the throughput as measured in our testbed. We report both the bandwidth in
-gigabits per second and packets per second. Each bar in Fig.~\ref{fig:perf}
-corresponds to the median measured over 10 seconds of stable throughput. The
-bottom bar (labeled ``\tcpls tso on mtu 9000'') is the highest median throughput
-that we measured with \tcpls: 12.4~Gbps. This result was obtained with jumbo
-frames (i.e., 9000 bytes MTU) and using \tcp Segmentation Offload (TSO) on the
-NICs. TSO is a standard feature that is enabled by all high-speed NICs. We
-benchmark AES128-GCM-SHA256's decryption at
-24.59~Gbps when doing in-memory decryption on our testbed's client (openssl
-1.1.1i), and
-13,62~Gbps when doing in-memory encryption on our testbed's server (openssl
-1.1.1d). Note that on
-both machines, encryption is $\approx 40\%$ slower than decryption.
-which explains the gap between TCPLS and raw TCP.
-The next bar (labeled ``\tcpls tso on'') shows that with TSO and standard frame
-size (1,500 bytes MTU), the throughput still reaches 10.84 Gbps. These
-results should be compared with the 22~Gbps \tcp reaches in the same
-environment using \texttt{iperf} but without any encryption.
+\textbf{\tcp/\tls}. To get a fair reference point, we first evaluate \tls over 
+\tcp using \texttt{picotls} with the AES128-GCM-SHA256 cipher at the commit 
+starting our fork. We also manually configured the receiving buffer size 
+to match the maximum read buffer size of \tcpls. This fixes fragmentation and 
+unnecessary copies of received \tls records that could occur, which our \tcpls 
+prototype avoids by design. We can observe that \tcp/\tls reaches XXX~Gbps 
+with a 1500-byte MTU and XXX~Gbps with a 9000-byte MTU. Both leverages using 
+\tcp Segmentation Offload (TSO), which is a feature commonly enabled on 
+high-speed NICs.
 
+\textbf{\tcpls}.
+To benchmark \tcpls, we use a simple application performing large 
+memory-to-memory transfers over a \tcpls session using a single stream, also
+%For all the \tcpls measurements, we use a custom application that performs
+%large memory-to-memory transfers over a \tcpls session using a single stream.
+%\tcpls is 
+configured to use the AES128-GCM-SHA256 cipher. 
+%Fig.~\ref{fig:perf}
+%provides the throughput as measured in our testbed. We report both the 
+%bandwidth in
+%gigabits per second and packets per second. Each bar in Fig.~\ref{fig:perf}
+%corresponds to the median measured over 10 seconds of stable throughput. The
+%bottom bar (labeled ``\tcpls tso on mtu 9000'') is the highest median 
+%throughput
+%that we measured with \tcpls: 12.4~Gbps. This result was obtained with jumbo
+%frames (i.e., 9000 bytes MTU) and using \tcp Segmentation Offload (TSO) on the
+%NICs. TSO is a standard feature that is enabled by all high-speed NICs.  Note 
+%that on
+%both machines, encryption is $\approx 40\%$ slower than decryption.
+%which explains the gap between TCPLS and raw TCP.
+%The next bar (labeled ``\tcpls tso on'') shows that with TSO and standard frame
+%size (1,500 bytes MTU), the throughput still reaches 10.84 Gbps. These
+%results should be compared with the 22~Gbps \tcp reaches in the same
+%environment using \texttt{iperf} but without any encryption.
+We first compare \tcpls without using any of the transport services 
+presented in Section~\ref{sec:transport-services}. We can observe that 
+\tcp/\tls reaches XXX~Gbps with a 1500-byte MTU and XXX~Gbps with a 9000-byte 
+MTU. \tcpls has thus a similar throughput than \tcp/\tls when using the base 
+protocol. We now evaluate the cost of the transport services.
 
 
 %the shows several interesting results. First, while offering similar (and more)
@@ -160,34 +189,39 @@ failover mode.
 %ac%k for throughput at the price of a slower recovery in case of network
 %failure.
 
-\paragraph*{\tcpls vs. \tls/\tcp} We now compare the performance of \tcpls with
-the traditional \tls over \tcp stack. To have a fair comparison, we use
-\texttt{picotls}'s perf client/server implementation with the same commit as our
-initial fork for \tcpls. Fig.~\ref{fig:perf} shows that \tls/\tcp provides a
-lower performance than \tcpls with regular and jumbo frames. This can be
-explained by the receiving buffer size provided to \texttt{read()}, which is
-hardcoded to 16,384 bytes in \texttt{picotls}'s perf client. This implementation
-choice results in fragmentation on the receiver and prevents it from using
-efficiently the
-zero-copy code path provided by the library. Our \tcpls implementation uses a
-larger read buffer with auto-tuning
-and benefits from zero-copy. At first, one may consider this as an unfair
-comparison. \tcpls's design is an attempt to solve a common mistake. Indeed, in our \tcpls implementation,
-the application developers cannot touch \texttt{read()}'s interface. This
-implies that an application developer cannot misuse the relationship between
-\tls and \tcp by creating fragmented records and doing unnecessary copies to
-handle those fragments. \tcpls's design and implementation try to prevent
-fragmentation by, first, having a sufficiently large read buffer size. Second,
-\tcpls deciphers a record when it has received the entire content.
-\tls libraries provide \tls/\tcp record fragmentation as a usability
-feature that spares the application developers from taking into account all \tls
-details, at the cost of lower performance. With \tcpls, application developers
-can ignore \tls details without misusing the interface, which is why
-this comparison is interesting. \tcpls constrains the application developer to
-use the buffer type provided by the API, but offers zero-copy deciphered records
-in return. Note, however, that the main culprit for the lower \tls/\tcp result
-is the read buffer size. Increasing the read buffer size of the perf client
-using \texttt{picotls} fills the performance gap with \tcpls.
+%\paragraph*{\tcpls vs. \tls/\tcp} We now compare the performance of \tcpls with
+%the traditional \tls over \tcp stack. To have a fair comparison, we use
+%\texttt{picotls}'s perf client/server implementation with the same commit as 
+%our
+%initial fork for \tcpls. Fig.~\ref{fig:perf} shows that \tls/\tcp provides a
+%lower performance than \tcpls with regular and jumbo frames. This can be
+%explained by the receiving buffer size provided to \texttt{read()}, which is
+%hardcoded to 16,384 bytes in \texttt{picotls}'s perf client. This 
+%implementation
+%choice results in fragmentation on the receiver and prevents it from using
+%efficiently the
+%zero-copy code path provided by the library. Our \tcpls implementation uses a
+%larger read buffer with auto-tuning
+%and benefits from zero-copy. At first, one may consider this as an unfair
+%comparison. \tcpls's design is an attempt to solve a common mistake. Indeed, 
+%in our \tcpls implementation,
+%the application developers cannot touch \texttt{read()}'s interface. This
+%implies that an application developer cannot misuse the relationship between
+%\tls and \tcp by creating fragmented records and doing unnecessary copies to
+%handle those fragments. \tcpls's design and implementation try to prevent
+%fragmentation by, first, having a sufficiently large read buffer size. Second,
+%\tcpls deciphers a record when it has received the entire content.
+%\tls libraries provide \tls/\tcp record fragmentation as a usability
+%feature that spares the application developers from taking into account all 
+%\tls
+%details, at the cost of lower performance. With \tcpls, application developers
+%can ignore \tls details without misusing the interface, which is why
+%this comparison is interesting. \tcpls constrains the application developer to
+%use the buffer type provided by the API, but offers zero-copy deciphered 
+%records
+%in return. Note, however, that the main culprit for the lower \tls/\tcp result
+%is the read buffer size. Increasing the read buffer size of the perf client
+%using \texttt{picotls} fills the performance gap with \tcpls.
 
 %\todo{OB: pas sur que la suite est nécessaire} Moreover, but this has not
 %yet been implemented, it could be interesting to match the TLS record size to
