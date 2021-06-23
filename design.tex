@@ -1,6 +1,7 @@
 % !TEX root = ./paper.tex
 
 \subsection{\tcpls Transport Services}
+\label{sec:transport-services}
 
 %\todo{parler de secure control channel ? (mp): Pour moi non, c'est une vue de 
 %l'esprit, ça équivaut a dire qu'on peut utiliser des nouveaux records tls}
@@ -444,7 +445,7 @@ reads the application object in order, as \tcpls handles the reordering.
 %This provides a level of service similar to MPTCP and MPQUIC. 
 
 Dozens of packet schedulers were proposed for \mptcp. The default one is the 
-RTT-based scheduler that favors the subflow with the lowest RTT 
+RTT-based scheduler that favors the subflow with the lowest RTT
 ~\cite{paasch2014experimental}. Other schedulers include the redundant 
 scheduler 
 that sends data over both subflows~\cite{frommgen2016remp}, schedulers that 
