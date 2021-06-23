@@ -360,7 +360,6 @@ Appendix~\ref{appendix:aggr} shows the results of the same experiment but using
 a \tls record size of 1,500 bytes instead.
 
 \todo{Manque un takeaway qui cloture la section}
-\todo{Quid des spikes qui restent?}
 
 \begin{figure}[!t]
   \begin{center}
@@ -459,23 +458,51 @@ path.
 %the
 %Internet have a shorter lifespan than 10 seconds (i.e., the time after which
 %\mptcp should re-use a previously used path in this experiment). 
-We also tested injecting \tcp \rst instead of blackholing paths and \mptcp 
+We also tried injecting \tcp \rst instead of blackholing paths and \mptcp 
 indefinitely stalled after the second \rst.
 However, \tcpls finds the right path quicker and recovers the session in a 
 short time similarly to the drop and \rst outage studied in 
 Fig.~\ref{fig:recovery}. Moreover, since those connections are fresh, they can 
 quickly use the available bandwidth.
 
-\subsection{Application-Level Migration}
+\subsection{Application-level Connection Migration}
 \label{sec:app-migration}
 
-When there are multiple IP paths, connection migration might be a
-powerful tool to improve the application's resilience to network problems. Applications can take advantage of the \tcpls API to migrate their traffic from one network path to another. Fig.~\ref{fig:conn_migration} shows the result of an Application-level connection migration demo using the API (i.e., the application decides when to migrate, and we expose a simplistic code flow to perform it). In this experiment, we reuse the Mininet topology introduced in Sec.~\ref{sec:bwaggr}. We set a bandwidth of 30Mbps on each path, a 40ms round-trip-time for the v4 link, and 80ms for the v6 link. Our application downloads
-a 60MB file from a server and migrates twice (i.e., from the IPv4 to the IPv6 path and once again to the IPv4 path).
+When there are multiple network paths, connection migration might be a
+powerful tool for applications to adapt to the changing network conditions 
+based on applications metrics.
 
+Applications can migrate their traffic from 
+one network path to another in a few \tcpls API calls. 
+Fig.~\ref{fig:conn_migration} shows the goodput 
+obtained when performing such a migration during a file transfer.% using the 
+%API 
+%(i.e., the application decides 
+% when to migrate, and we expose a simplistic code flow to 
+%perform it). 
+In this experiment, we reuse the Mininet topology% introduced in 
+Sec.~\ref{sec:bwaggr}%. We
+and set a bandwidth of 30Mbps on each path, a 40ms 
+round-trip-time for the v4 link, and 80ms for the v6 link. Our test application 
+downloads a 60MB file and migrates once from the IPv4 to 
+the IPv6 path and once again back to the IPv4 path.
+
+\todo{Est-ce necessaire? A aligner avec la place que l'on veut pour l'API vs 
+les services. Le fonctionnement de connection migration à déjà été expliqué en 
+soit}
 Triggering the first connection migration involves chaining five API calls: first, if a \tcp connection is not already established, the application issues a
 \texttt{tcpls\_connect()} that creates a $\tcp$ connection (or directly uses
-\texttt{tcpls\_handshake()} with TFO enabled. Calling \texttt{tcpls\_handshake()} is required and needs to be configured with handshake properties announcing a \join over the IPv6 connection. Then, the creation of a new stream \texttt{tcpls\_stream\_new()} for the IPv6 connection, finally followed by the attachment of this new stream \texttt{tcpls\_streams\_attach()} and the secure closing of the IPv4 \tcp connection using \texttt{tcpls\_stream\_close()}. Following these events, the server seamlessly switches the path while looping over \texttt{tcpls\_send()} to send the file. Note that all the events trigger callbacks on the server side, to let the server react appropriately if other requirements need to be fulfilled.
+\texttt{tcpls\_handshake()} when TFO enabled is. Calling 
+\texttt{tcpls\_handshake()} is required and needs to be configured with 
+handshake properties announcing a \join over the IPv6 connection. Then, the 
+creation of a new stream \texttt{tcpls\_stream\_new()} for the IPv6 connection, 
+finally followed by the attachment of this new stream 
+\texttt{tcpls\_streams\_attach()} and the secure closing of the IPv4 \tcp 
+connection using \texttt{tcpls\_stream\_close()}. Following these events, the 
+server seamlessly switches the path while looping over \texttt{tcpls\_send()} 
+to send the file. Note that all the events trigger callbacks on the server 
+side, to let the server react appropriately if other requirements need to be 
+fulfilled.
 
 Fig.~\ref{fig:conn_migration} shows a peak in goodput during each migration. During the migration window (marked with vertical black bars indicating the attachment of the new stream and the closing of the initial stream), the client is taking advantage of both paths to receive its data: the first path finishes to flush its data while the second path is already used. Once the last record of the first path is sent, \tcpls can reorder the data and deliver it to the client. We then obtain a goodput peak matching the accumulated bandwidth over both paths during the migration time window.
 
