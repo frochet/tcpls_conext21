@@ -513,39 +513,50 @@ Fig.~\ref{fig:conn_migration} shows a peak in goodput during each migration. Dur
 \end{figure}
 
 \subsection{Dynamically Extending \tcpls}
+%
+%The \tcpls streams enable new use cases. A \tcpls application can
+%create and use different streams to carry data. However, since these streams
+%are generic, they can also be used by the \tcpls implementation itself to
+%exchange control information. To demonstrate the versatility of these control
+%streams, we extended \tcpls to enable a server to push a different congestion
+%control scheme to a specific client over an existing \tcpls session. Recent
+%work on restructuring congestion control has proposed a generic architecture
+%for congestion controllers~\cite{narayan2018restructuring}.
+%During the last years, the Linux kernel developers have relied on eBPF
+%to make the Linux TCP/IP stack~\cite{brakmo2017tcp,tran2020beyond} easier
+%to extend. Since Linux kernel version 5.6, an application can inject
+%a different congestion control scheme entirely implemented using eBPF. A 
+%similar
+%approach was proposed for \quic in Pluginizing \quic~\cite{de2019pluginizing}. 
+%We
+%leverage these new eBPF capabilities to demonstrate the feasibility of 
+%injecting
+%and updating a congestion control scheme during a \tcpls session.
 
-The \tcpls streams enable new use cases. A \tcpls application can
-create and use different streams to carry data. However, since these streams
-are generic, they can also be used by the \tcpls implementation itself to
-exchange control information. To demonstrate the versatility of these control
-streams, we extended \tcpls to enable a server to push a different congestion
-control scheme to a specific client over an existing \tcpls session. Recent
-work on restructuring congestion control has proposed a generic architecture
-for congestion controllers~\cite{narayan2018restructuring}.
-During the last years, the Linux kernel developers have relied on eBPF
-to make the Linux TCP/IP stack~\cite{brakmo2017tcp,tran2020beyond} easier
-to extend. Since Linux kernel version 5.6, an application can inject
-a different congestion control scheme entirely implemented using eBPF. A similar
-approach was proposed for \quic in Pluginizing \quic~\cite{de2019pluginizing}. We
-leverage these new eBPF capabilities to demonstrate the feasibility of injecting
-and updating a congestion control scheme during a \tcpls session.
-
-We perform our experiment using Mininet over a 100Mbps emulated link that has a
-60msec delay. Fig.~\ref{fig:vegasCubic} shows a client that uses the \tcp
-Vegas~\cite{10.1145/190314.190317} congestion control scheme to upload a file.
-This \tcpls session fully uses the bottleneck link. After some time, another
-client starts an upload, but using the CUBIC congestion
-controller~\cite{rfc8312}. This results in an unfair distribution of the
-bandwidth. The server then sends the eBPF bytecode implementing the CUBIC
-congestion control scheme to the \tcp Vegas client that injects it in its kernel
-and the unfairness disappears. We performed the same experiment for different
-delays, varying from 10ms to 100ms and obtained similar results.
+To demonstrate how \tcpls can be dynamically extended, we show how a server can 
+send an eBPF congestion controller to its client that attaches it in the middle 
+of a \tcpls session. Figure~\ref{fig:vegasCubic} reports the goodput obtained 
+by two \tcpls sessions during a file upload on a Mininet network with a 
+100Mbps and 60ms RTT link.
+%We use Mininet over a single 100Mbps emulated link with a 
+%60msec rtt. Fig.~\ref{fig:vegasCubic} shows a client that uses the \tcp
+The orange curve is the first \tcpls session that starts with the Vegas 
+congestion controller~\cite{10.1145/190314.190317}. It rapidly reaches the 
+full capacity of the link. Then, a second \tcpls session, depicted in blue, is 
+started with the CUBIC congestion controller~\cite{rfc8312}. This quickly 
+results in an unfair distribution of the bandwidth. The server then sends an 
+eBPF bytecode implementing the CUBIC congestion controller to the first \tcpls 
+session which attaches it. The bandwidth distribution becomes fair. We 
+performed the same experiment for different delays, varying from 10ms to 100ms 
+and obtained similar results.
 
 \begin{figure}[!t]
   \begin{center}
     \includegraphics[width=.8\columnwidth]{pretty_plotify/plots/vegas_cubic.png}
   \end{center}
 \vspace{-0.5cm}
-  \caption{\tcpls hosts can exchange congestion control schemes compiled into eBPF bytecode and activate them during a \tcpls session.}
+  \caption{\tcpls hosts can exchange eBPF congestion controllers and enable 
+  them during a \tcpls session.}
+  \todo{Legende bleu "CUBIC", orange "Vegas -> eBPF CUBIC"}
   \label{fig:vegasCubic}
 \end{figure}

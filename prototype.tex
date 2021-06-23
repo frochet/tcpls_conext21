@@ -36,7 +36,7 @@ steering %over several \tcp connections
 and bandwidth aggregation.
 %\todo{MP: en faire une petite section qui présente l'implémentation, a 
 %combiner p-ê avec (ii)}
-($v$, \textit{Sec. \ref{sec:prot-ebpf}}) The server can securely inject eBPF 
+($v$, \textit{Sec. \ref{sec:prot-ebpf}}) The server can securely send eBPF 
 bytecode to the client 
 to upgrade its \tcp congestion control scheme or tune other \tcp 
 mechanisms~\cite{brakmo2017tcp,tran2019beyond}.
@@ -181,23 +181,30 @@ support other schedulers in the future and allow the application to select its p
 
 %\subsection{TCP Options and Kernel extensibility}
 
-\subsection{Congestion controller remote injection}
+\subsection{eBPF code remote attachment}
 \label{sec:prot-ebpf}
 
 Recent work on restructuring congestion control has proposed a generic 
 architecture for congestion controllers~\cite{narayan2018restructuring}.
 Linux kernel developers have relied on eBPF to make the Linux TCP/IP 
 stack easier to extend~\cite{brakmo2017tcp,tran2020beyond}. Since Linux kernel 
-version 5.6, an application can inject congestion control schemes 
+version 5.6, an application can attach congestion control schemes 
 entirely implemented in eBPF. A broader approach was proposed for \quic in 
 Pluginizing \quic~\cite{de2019pluginizing}. 
 %We leverage these new eBPF capabilities to demonstrate the feasibility of 
 %injecting a new congestion control scheme during a \tcpls session.
-Our \tcpls prototype enables the server %to use \tcpls streams 
-to inject a new eBPF congestion controller to the client over the \tcpls 
-session.
 
-%
+Our \tcpls prototype enables the server %to use \tcpls streams 
+to attach a new eBPF congestion controller to the client over the \tcpls 
+session. The type of eBPF code 
+that can be attached could be easily extended to other points of the TCP 
+execution path.
+The eBPF code is conveyed securely in a dedicated \tcpls record. When 
+the code is larger than a single \tls record, it can be chunked in several 
+records and sent using a \tcpls stream cryptographic context. This service 
+illustrates how the flexibility of \tcpls record and streams can be leveraged 
+to implement novel transport mechanisms.
+
 %The \tcpls streams enable new use cases. A \tcpls application can
 %create and use different streams to carry data. However, since these streams
 %are generic, they can also be used by the \tcpls implementation itself to
