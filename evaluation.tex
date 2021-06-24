@@ -83,11 +83,15 @@ server reaches 13,62~Gbps.
 
 \textbf{\tcp/\tls}. To get a fair reference point, we first evaluate \tls over 
 \tcp using \texttt{picotls} with the AES128-GCM-SHA256 cipher at the commit 
-starting our fork. We also manually configured the receiving buffer size 
-to match the maximum read buffer size of \tcpls. This fixes fragmentation and 
-unnecessary copies of received \tls records that could occur, which our \tcpls 
-prototype avoids by design. We can observe that \tcp/\tls reaches XXX~Gbps 
-with a 1500-byte MTU and XXX~Gbps with a 9000-byte MTU. Both leverages using 
+starting our fork. We also manually configured the receiving and sending buffer size 
+to match the ones we use internally in \tcpls. This fixes fragmentation and 
+unnecessary copies of received \tls records that could occur, and improves by
++$\approx \%40$ the
+implementation's throughput which our \tcpls 
+prototype avoids by design by offering a new transport API preventing the
+application developers to make choices heavily affecting the throughput. With
+the implemented fixes, we can observe that \tcp/\tls reaches 10.3~Gbps 
+with a 1500-byte MTU and 12.6~Gbps with a 9000-byte MTU. Both leverages using 
 \tcp Segmentation Offload (TSO), which is a feature commonly enabled on 
 high-speed NICs.
 
@@ -117,8 +121,9 @@ configured to use the AES128-GCM-SHA256 cipher.
 %environment using \texttt{iperf} but without any encryption.
 We first compare \tcpls without using any of the transport services 
 presented in Section~\ref{sec:transport-services}. We can observe that 
-\tcp/\tls reaches XXX~Gbps with a 1500-byte MTU and XXX~Gbps with a 9000-byte 
-MTU. \tcpls has thus a similar throughput than \tcp/\tls when using the base 
+\tcpls reaches similar throughput than \tls/\tcp over both 
+MTU. The small benefit to \tcpls is mainly caused by implementation differences
+within the two perf clients. \tcpls has thus a similar throughput than \tcp/\tls when using the base 
 protocol. We now evaluate the cost of the transport services.
 
 
@@ -128,7 +133,7 @@ protocol. We now evaluate the cost of the transport services.
 %implementation (quicly) over CPU limited experimentations. We evaluate \tcpls
 
 We then evaluate the impact of adding the \tcpls-level acknowledgments
-described in Sec.~\ref{failover} to support failover.
+described in Sec.~\ref{sec:multipath} to support failover.
 % Thanks to these acknowledgments, \tcpls can support failover.
 From a performance viewpoint, they increase the number of control records and
 the number of system calls. Our prototype currently sends a \tcpls-ack for every
@@ -272,7 +277,8 @@ acknowledgments in userspace for \quic increasing the number of context-switches
 still be improved, several are carved in \quic's choice to use UDP. There isn't likely enough room to match \tcpls performance
 without offloading everything, which inherently breaks \quic's flexibility
 argument and would be uncompliant regarding the end users' threat model (untrusted
-network).
+network, and we assume the NICs are a component of the network and not part of the
+user's stack).
 
 
 %QUIC is young protocol, and all implementations are in active development, with
