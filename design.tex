@@ -3,17 +3,13 @@
 \subsection{\tcpls Transport Services}
 \label{sec:transport-services}
 
-%\todo{parler de secure control channel ? (mp): Pour moi non, c'est une vue de 
+%\todo{parler de secure control channel ? (mp): Pour moi non, c'est une vue de
 %l'esprit, ça équivaut a dire qu'on peut utiliser des nouveaux records tls}
 
 By leveraging \tcpls records and extensions, we can design new modern transport
-services atop the combination of \tcp and \tls. In this subsection, we answer our
-second research question {\small\textit{RQ2}} by presenting three transport services:
-stream multiplexing, connection migration and bandwidth aggregation.
-We leverage the  \tcpls records
-to multiplex concurrent encrypted bytestreams. By extending the \tls handshake, \tcpls
-allows joining several \tcp connections to a single \tcpls session to support
-connection migration and %multipath capabilities, mitigating Head-of-Line 
+services atop the combination of \tcp and \tls. In this subsection, we answer our second research question {\small\textit{RQ2}} by presenting three transport services: stream multiplexing (Sec.~\ref{sec:datastreams}), connection migration (Sec.~\ref{sec:multipath}), and bandwidth aggregation (Sec.~\ref{sec:multipath}). We leverage the \tcpls records
+to multiplex concurrent encrypted bytestreams. By extending the \tls handshake, \tcpls allows joining several \tcp connections to a single \tcpls session to support
+connection migration and %multipath capabilities, mitigating Head-of-Line
 %blocking and enabling
 bandwidth aggregation.
 %aggregation and Head-of-Line blocking resilience.
@@ -21,7 +17,7 @@ bandwidth aggregation.
 \subsubsection{Stream Multiplexing}\label{sec:datastreams}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{figure}
+\begin{figure}[!t]
 	\centering
 	\begin{bytefield}[bitheight=\widthof{aw}]{32}
 		\bitbox[]{1}{\small N} & \bitbox[]{9}{} & \bitbox[]{3}{\small N-32} &
@@ -35,50 +31,23 @@ bandwidth aggregation.
 	\label{fig:aead-iv}
 \end{figure}
 
-Stream Multiplexing is a modern transport service that has been part of recent protocols such
-as \sctp \cite{rfc4960}, \quic \cite{rfc9000} and HTTP/2.0 \cite{rfc7540}.
-The latter also proposes multiplexing with an independent
-framing system atop the TLS-encrypted TCP bytestream. In \tcpls, we choose 
-to implement multiplexing with \tcpls records. We dedicate a \tcpls record type to
-\tcpls stream data. Each stream has a separate cryptographic context allowing
+Stream Multiplexing is a modern transport service that has been part of recent protocols such as \sctp~\cite{rfc4960}, \quic~\cite{rfc9000} and HTTP/2.0 \cite{rfc7540}. The latter also proposes multiplexing with an independent
+framing system atop the \tls-encrypted \tcp bytestream. In \tcpls, we choose
+to implement multiplexing with \tcpls records. We dedicate a \tcpls record type to \tcpls stream data. Each stream has a separate cryptographic context allowing
 concurrent encryption and decryption of data within the same session.
-A \tcpls stream consists of a sequence of \tcpls stream data records encrypted with its cryptographic
-context.
+A \tcpls stream consists of a sequence of \tcpls stream data records encrypted with its cryptographic context.
 
-One simple way to provide separate cryptographic contexts is to use multiple application-level
-keys. But this is known to degrade the security properties proportionally to the number of
-additional keys~\cite{chatterjee2011another}. To overcome this, we propose an
-Initial Vector (IV) derivation technique that enables independent
-encryption/decryption to each stream without the security degradation.
+One simple way to provide separate cryptographic contexts is to use multiple application-level keys. But this is known to degrade the security properties proportionally to the number of additional keys~\cite{chatterjee2011another}. To overcome this, we propose an Initial Vector (IV) derivation technique that enables independent encryption/decryption to each stream without the security degradation.
 
-Figure~\ref{fig:aead-iv} illustrates how the AEAD IV is computed for a 
-given \tcpls record of a \tcpls stream. First the left-most bits of the IV derived from the \tls handshake
-are summed with the 32-bit \tcpls Stream ID. Then the right-most bits are XORed with the
-stream 64-bit record sequence number. Each \tcpls stream has a separate record
-sequence number space. This combination of IV manipulation guarantees that the
-resulting IV is unique for each record of all \tcpls streams as long as the
-Stream ID is unique and no sequence number is used twice in a given stream.
-The Stream ID space is split between the client and the server. Stream ID 0 is 
-equivalent to the cryptographic context directly derived from the handshake.
-%\todo{Il faut expliquer comment les stream id sont choisis pour garantir 
+Fig.~\ref{fig:aead-iv} illustrates how the AEAD IV is computed for a
+given \tcpls record of a \tcpls stream. First the left-most bits of the IV derived from the \tls handshake are summed with the 32-bit \tcpls Stream ID. Then the right-most bits are XORed with the stream 64-bit record sequence number. Each \tcpls stream has a separate record sequence number space. This combination of IV manipulation guarantees that the resulting IV is unique for each record of all \tcpls streams as long as the Stream ID is unique and no sequence number is used twice in a given stream. The Stream ID space is split between the client and the server. Stream ID 0 is equivalent to the cryptographic context directly derived from the handshake.
+%\todo{Il faut expliquer comment les stream id sont choisis pour garantir
 %l'unicité}
 
-To avoid possible middleboxes interference, in addition to the record sequence number, 
-the \tcpls Stream ID is kept implicit as well. When an endpoint receives a 
-\tcpls Record, 
-we leverage the AEAD cipher to check the authentication tag repeatedly until the
-correct \tcpls Stream ID is found. An optimized
-implementation would not involve a complete decryption as all TLS 1.3 AEAD
-ciphers use an Encrypt-then-MAC construct~\cite{rfc7366, rfc8446}, and the tag
-verification, especially on AES-GCM is computationnaly light.
+To avoid possible middleboxes interference, in addition to the record sequence number, the \tcpls Stream ID is kept implicit as well. When an endpoint receives a \tcpls record, we leverage the AEAD cipher to check the authentication tag repeatedly until the correct \tcpls Stream ID is found. An optimized implementation would not involve a complete decryption as all TLS 1.3 AEAD ciphers use an Encrypt-then-MAC construct~\cite{rfc7366, rfc8446}, and the tag verification, especially on AES-GCM is computationnaly light.
 %\todo{citer rfc7366 ? ou les références de ce rfc ?}
 
-From a security standpoint, each failed decryption is considered as a
-forgery attempt. However, the limits on confidentiality and
-integrity for AEAD ciphers are large before a
-successful forgery may be considered with non-negligible probability~\cite{luykx2015limits, aeadlimits}. For
-example, in the case of ChaCha20 + Poly1305, an adversary making $2^{60}$ forgery
-attempts succeeds with probability $2^{-33}$.
+From a security standpoint, each failed decryption is considered as a forgery attempt. However, the limits on confidentiality and integrity for AEAD ciphers are large before a successful forgery may be considered with non-negligible probability~\cite{luykx2015limits, aeadlimits}. For example, in the case of ChaCha20 + Poly1305, an adversary making $2^{60}$ forgery attempts succeeds with probability $2^{-33}$.
 \todo{Should we mention that one stream cannot be used on two connections at the same time?}
 
 %The classical solution to support streams in a transport protocol is to assign
@@ -153,17 +122,10 @@ attempts succeeds with probability $2^{-33}$.
 \subsubsection{Connection Migration}\label{sec:multipath}
 
 \tcpls allows joining several \tcp connections to an existing \tcpls session.
-We leverage this mechanism to implement new transport services
-such as connection migration.
-Compared to the subflow joining mechanism of
+We leverage this mechanism to implement new transport services such as connection migration. Compared to the subflow joining mechanism of
 \mptcp~\cite{raiciu2012hard,hesmans2015smapp,hesmans2016enhanced}, our design is
-more secure. Indeed, \mptcp supports additional subflows by initially exchanging 
-short keys
-inside cleartext \tcp \texttt{Options} during the \tcp handshake~\cite{rfc6824, rfc8684}.
-These keys are then used to authenticate the association of subflows.
-An attacker having observed the key exchange during the \tcp handshake can associate
-subflows to an existing \mptcp connection~\cite{rfc6181}.
-
+more secure. Indeed, \mptcp supports additional subflows by initially exchanging
+short keys inside cleartext \tcp \texttt{Options} during the \tcp handshake~\cite{rfc6824, rfc8684}. These keys are then used to authenticate the association of subflows. An attacker having observed the key exchange during the \tcp handshake can associate subflows to an existing \mptcp connection~\cite{rfc6181}.
 
 \begin{figure}[!t]
 	\centering
@@ -193,33 +155,16 @@ subflows to an existing \mptcp connection~\cite{rfc6181}.
 	\label{fig:join-example}
 \end{figure}
 
-
-\textbf{Joining \tcp connections}. \tcpls leverages its secure records and extensions
-to solve this problem in a more secure
-manner. Figure~\ref{fig:join-example} illustrates the \tls and \tcpls messages 
-exchanged when a client connects to a server over IPv4 and later joins another connection
-over IPv6.
-First, the client sends a \textsc{ClientHello} containing a \hello.
-The server replies with a \textsc{ServerHello}
-containing three types of encrypted extensions. First, the server announces its IPv6 address ($ADDR(v6)$).
-Second, it associates one identifier $\alpha$ to the \tcpls session (\emph{SESSID($\alpha$)}). 
-%It uniquely identifies the \tcpls session on the server. 
-Third, the server provides a list
-of \tcpls session cookies $\beta_1,\beta_2$ in the \emph{COOKIE} extension.
-Each of these session cookies enables the client
-to associate one additional \tcp connection to the \tcpls session. Thus by sending $n$
-cookies over a session, the server limits the client to associate up to
-$n$ \tcp connections. This prevents resource exhaustion attacks
+\textbf{Joining \tcp connections}. \tcpls leverages its secure records and extensions to solve this problem in a more secure manner. Fig.~\ref{fig:join-example} illustrates the \tls and \tcpls messages exchanged when a client connects to a server over IPv4 and later joins another connection over IPv6.
+First, the client sends a \textsc{ClientHello} containing a \hello. The server replies with a \textsc{ServerHello} containing three types of encrypted extensions. First, the server announces its IPv6 address ($ADDR(v6)$). Second, it associates one identifier $\alpha$ to the \tcpls session (\emph{SESSID($\alpha$)}).
+%It uniquely identifies the \tcpls session on the server.
+Third, the server provides a list of \tcpls session cookies $\beta_1,\beta_2$ in the \emph{COOKIE} extension. Each of these session cookies enables the client
+to associate one additional \tcp connection to the \tcpls session. Thus by sending $n$ cookies over a session, the server limits the client to associate up to $n$ \tcp connections. This prevents resource exhaustion attacks
 that are difficult to counter with \mptcp. The server can later send additional
 cookies and update its list of addresses.
 
-To join a new \tcp connection to the \tcpls session, for instance over IPv6, the client
-sends a \textsc{ClientHello} message containing the session identifier
-(SESSID($\alpha$) in Fig.~\ref{fig:join-example}) and one of the
-cookies provided by the server (COOKIE($\beta_1$) in Fig.~\ref{fig:join-example}). 
-The server uses the session identifier $\alpha$ to find the corresponding \tcpls session
-and checks the validity of the cookie. If the \tcpls session and cookie are valid, the \tcp
-connection is joined to the \tcpls session. The session identifier plays the same role as the \mptcp token, but is sent encrypted. The cookie providers stronger protection than \mptcp's HMAC with security keys exchanged in cleartext. The cookie is also sent encrypted and can only be used once.
+To join a new \tcp connection to the \tcpls session, for instance over IPv6, the client sends a \textsc{ClientHello} message containing the session identifier (SESSID($\alpha$) in Fig.~\ref{fig:join-example}) and one of the
+cookies provided by the server (COOKIE($\beta_1$) in Fig.~\ref{fig:join-example}). The server uses the session identifier $\alpha$ to find the corresponding \tcpls session and checks the validity of the cookie. If the \tcpls session and cookie are valid, the \tcp connection is joined to the \tcpls session. The session identifier plays the same role as the \mptcp token, but is sent encrypted. The cookie providers stronger protection than \mptcp's HMAC with security keys exchanged in cleartext. The cookie is also sent encrypted and can only be used once.
 %(i.e.,
 %when the server receives a valid cookie, it accepts the connection, attaches it
 %to the right \tcpls session, and discards the cookie).
@@ -273,7 +218,7 @@ connection is joined to the \tcpls session. The session identifier plays the sam
 %to the right \tcpls session, and discards the cookie).
 
 
-\textbf{Failover}. 
+\textbf{Failover}.
 Upon network outage, \tcpls leverages its joining mechanism to recover the session
 over another \tcp connection. To do achieve such a \emph{break-before-make}, \tcpls sends stream-level record
 acknowledgments for the records that have been received
@@ -286,57 +231,56 @@ transmitted again over a functional one.
 We present in Section~\ref{sec:perf} measurements quantifying the
 performance impact of adding \tcpls record-level acknowledgments. We also give a
 trace example involving a file transfer and the failover protocol in
-Appendix~\ref{app:failover}.\todo{Let see if we can bring it back in the text 
+Appendix~\ref{app:failover}.\todo{Let see if we can bring it back in the text
 later}
 \todo{Parler de la resynchronisation}
 
-\textbf{Application Connection Migration}. \tcpls also enables the 
-application
-to trigger a connection migration, for instance based on application-level 
-metrics qualifying its experience over the current path. %expected to be used 
+\textbf{Application Connection Migration}. \tcpls also enables the
+application to trigger a connection migration, for instance based on application-level metrics qualifying its experience over the current path.
+%expected to be used
 %over
-%healthy networks. %and leveraging a transient usage of bandwidth aggregation. 
+%healthy networks. %and leveraging a transient usage of bandwidth aggregation.
 %(mp): I would leave this aside for now, until we explain application streams.
-%The decision to migrate from a healthy network to another one is an 
+%The decision to migrate from a healthy network to another one is an
 %application one.
-%(mp): Yet the following meta-info are not described, and again implementation 
-%-> section 
+%(mp): Yet the following meta-info are not described, and again implementation
+%-> section
 %4
-\tcpls enables the exchange of network paths meta-information to help this 
+\tcpls enables the exchange of network paths meta-information to help this
 decision.
 %The TCPLS protocol and implementation's job is to make it quite simple by
-%supporting the exchange of interface's related meta-information to help the 
+%supporting the exchange of interface's related meta-information to help the
 %decision
 %making and by offering a simple API.
 %Essentially, it means that \tcpls provides a simple API that enables an
-%application to migrate when it wishes to do so (e.g., 
-For instance, an interactive running on a smartphone could migrate from 
-LTE to Wi-Fi when it senses an increase in delays due to bufferbloat for a 
+%application to migrate when it wishes to do so (e.g.,
+For instance, an interactive running on a smartphone could migrate from
+LTE to Wi-Fi when it senses an increase in delays due to bufferbloat for a
 given period of time.
 %when the Wi-Fi appears healthy,
 \todo{Find other examples}
 %The semantic of
 %the application-level connection migration is built from attaching and closing
-%streams in the multipath bandwidth aggregation mode. 
+%streams in the multipath bandwidth aggregation mode.
 %The client that wishes to
 %carry such a migration first creates a new \tcp connection and joins the \tcpls
 %session over this connection.
-To achieve it, the client moves all its \tcpls streams to another \tcp 
+To achieve it, the client moves all its \tcpls streams to another \tcp
 connection.
 %(mp): avoid introducing concepts we define later rather than earlier
 %can essentially use Stream Streering, i.e., the client
 %\textit{composes} with independent
-%features offered by \tcpls. 
+%features offered by \tcpls.
 %(mp) -> section 4
 %In a client/server implementation using \tcpls, the
 %following protocol composition is realised with only 4 API calls (4 lines of
-%code). 
-First, it creates a new \tcp connection and joins it to the 
+%code).
+First, it creates a new \tcp connection and joins it to the
 \tcpls
-session. Then, %it steers the \tcpls stream abstraction, 
+session. Then, %it steers the \tcpls stream abstraction,
 it attaches the existing streams to the new
-connection 
-%using the stream opening protocol 
+connection
+%using the stream opening protocol
 and removes them from the underperforming connection.
 %(mp): Lets talk of that in the following section rather
 %This stream steering
@@ -367,37 +311,37 @@ connections, which brings us to explain how multipath is designed.
 
 \subsubsection{Multipath capabilities}
 
-Like \mptcp, \tcpls allows an application to control different \tcp connections 
-that are used to exchange data. \mptcp was designed to be a drop-in replacement 
-for \tcp. A regular application that uses the socket API can use \mptcp without 
-any modification. \mptcp uses a path manager to control the underlying \tcp 
-connections. Several path managers were proposed in the Linux kernel 
-implementation \cite{TODO}. However, few advanced applications have taken 
-advantage of these advanced path managers. Apple's \mptcp stack was tuned for 
-specific applications. For example, the Siri voice recognition application can 
-use both cellular and Wi-Fi to optimize performance. Apple Music mainly 
-performs handovers. As applications have very different requirements, \tcpls 
-exposes the underlying \tcp connections to the application through its API. The 
-applications use this API to implement their own policy to manage the 
+Like \mptcp, \tcpls allows an application to control different \tcp connections
+that are used to exchange data. \mptcp was designed to be a drop-in replacement
+for \tcp. A regular application that uses the socket API can use \mptcp without
+any modification. \mptcp uses a path manager to control the underlying \tcp
+connections. Several path managers were proposed in the Linux kernel
+implementation \cite{TODO}. However, few advanced applications have taken
+advantage of these advanced path managers. Apple's \mptcp stack was tuned for
+specific applications. For example, the Siri voice recognition application can
+use both cellular and Wi-Fi to optimize performance. Apple Music mainly
+performs handovers. As applications have very different requirements, \tcpls
+exposes the underlying \tcp connections to the application through its API. The
+applications use this API to implement their own policy to manage the
 underlying \tcp connections.
 
-When several networks paths are used in a transport 
-connection, the congestion controller of each path should be coupled to control 
-the overall aggressiveness of the connection. This problem has been solved in a 
-generic way for MPTCP~\cite{rfc6356}, and the same solution could be applied to 
-\tcpls. eBPF could be leveraged to access and modify the congestion controller 
+When several networks paths are used in a transport
+connection, the congestion controller of each path should be coupled to control
+the overall aggressiveness of the connection. This problem has been solved in a
+generic way for MPTCP~\cite{rfc6356}, and the same solution could be applied to
+\tcpls. eBPF could be leveraged to access and modify the congestion controller
 state. We leave this engineering effort as future work.
 
-\textbf{Stream Steering}. \tcpls enables the application to combine 
+\textbf{Stream Steering}. \tcpls enables the application to combine
 multiplexing with the ability to join
-several \tcp connections to a \tcpls session. This allows the application to 
+several \tcp connections to a \tcpls session. This allows the application to
 steer \tcpls
 streams over the different \tcp connections. While Failover moves
 \tcpls streams from one connection to another when a \tcp connection fails, stream
-steering allows the application to distribute at any time the streams over the 
+steering allows the application to distribute at any time the streams over the
 different
 \tcp connections of a \tcpls session. We already discussed a very simple use of
-stream steering when performing Application Connection Migration, which is to 
+stream steering when performing Application Connection Migration, which is to
 move all streams from one connection to the other.
 
 %Like \mptcp \cite{raiciu2012hard,rfc6824} or Multipath QUIC
@@ -408,11 +352,11 @@ move all streams from one connection to the other.
 %streams are mapped to two or more underlying \tcp connections and \tcpls
 %schedules different records over different connections.
 
-Applications assign \tcpls streams to \tcp connections through the \tcpls 
+Applications assign \tcpls streams to \tcp connections through the \tcpls
 API.
-%The choice of assigning to the \tcpls streams to the \tcp connections is left 
+%The choice of assigning to the \tcpls streams to the \tcp connections is left
 %to the application through the \tcpls API.
-An interactive game could use different streams for chat messages and player's 
+An interactive game could use different streams for chat messages and player's
 commands.  Also, an HTTP server could choose
 the \tcp connection for the stream of each response based on the content type of
 the response. Latency-critical objects could be sent over
@@ -420,65 +364,65 @@ low-latency connections. By sending each application-level object in a separate
 stream, the application can benefit from multiple network paths while
 maintaining the ability to process each stream in a zero-copy manner, and
 with no head-of-line blocking.
-\tcpls enables the application to choose which streams are protected from 
-Head-of-Line blocking by placing them on separate \tcp connections. 
-Applications objects that depend on others can cope with occasional 
+\tcpls enables the application to choose which streams are protected from
+Head-of-Line blocking by placing them on separate \tcp connections.
+Applications objects that depend on others can cope with occasional
 Head-of-Line blocking.
 
-%\todo{Choix du HoL, ça coute des connexions mais pas forcément nécessaire en 
+%\todo{Choix du HoL, ça coute des connexions mais pas forcément nécessaire en
 %	fonction de l'app.}
 
 %\todo{OB: paragraphe ci-dessous pas clair. (mp): C'est m-à-j}
 %\todo{Multipath congestion control appliqué a TCPLS, eBPF, pas trivial}
 
-\textbf{Coupling streams for aggregated bandwidths}. Applications that benefit 
-from the aggregated bandwidth of several network paths when transmitting a 
-single 
-application object can use \tcpls \textit{coupled streams}. \todo{This 
-abstraction could be surprising if we didn't mention yet that streams cannot be 
-put on more than one connection.} When coupling 
+\textbf{Coupling streams for aggregated bandwidths}. Applications that benefit
+from the aggregated bandwidth of several network paths when transmitting a
+single
+application object can use \tcpls \textit{coupled streams}. \todo{This
+abstraction could be surprising if we didn't mention yet that streams cannot be
+put on more than one connection.} When coupling
 streams assigned to different \tcp connections
-together, the sending application can schedule \tcpls records of application 
-object over these 
-streams and benefit from their aggregated bandwidth. The receiving application 
-reads the application object in order, as \tcpls handles the reordering. 
-%This provides a level of service similar to MPTCP and MPQUIC. 
+together, the sending application can schedule \tcpls records of application
+object over these
+streams and benefit from their aggregated bandwidth. The receiving application
+reads the application object in order, as \tcpls handles the reordering.
+%This provides a level of service similar to MPTCP and MPQUIC.
 
-Dozens of packet schedulers were proposed for \mptcp. The default one is the 
+Dozens of packet schedulers were proposed for \mptcp. The default one is the
 RTT-based scheduler that favors the subflow with the lowest RTT
-~\cite{paasch2014experimental}. Other schedulers include the redundant 
-scheduler 
-that sends data over both subflows~\cite{frommgen2016remp}, schedulers that 
+~\cite{paasch2014experimental}. Other schedulers include the redundant
+scheduler
+that sends data over both subflows~\cite{frommgen2016remp}, schedulers that
 help to minimize reordering on the receiver side~
-\cite{lim2017ecf,hurtig2018low}, schedulers specialized for mobile 
+\cite{lim2017ecf,hurtig2018low}, schedulers specialized for mobile
 applications~\cite{de2018tuning}, \ldots
-The most flexible approach remains the application-defined Multipath TCP 
-scheduler~\cite{frommgen2017programming}, but this solution has never been 
+The most flexible approach remains the application-defined Multipath TCP
+scheduler~\cite{frommgen2017programming}, but this solution has never been
 integrated in \mptcp implementations.
 
-\tcpls takes a different viewpoint. It exposes the underlying \tcp connections 
-and the sender side \tcpls record scheduler to the application. This enables 
-the application to actively decide the \tcp connection that it will use to send 
-each record. A remote terminal application running over \tcpls could send the 
-screen updates over a high bandwidth but high latency connection and the 
-keyboard input over the lower latency one. 
+\tcpls takes a different viewpoint. It exposes the underlying \tcp connections
+and the sender side \tcpls record scheduler to the application. This enables
+the application to actively decide the \tcp connection that it will use to send
+each record. A remote terminal application running over \tcpls could send the
+screen updates over a high bandwidth but high latency connection and the
+keyboard input over the lower latency one.
 %(mp): On ne peut pas il me semble
 It could even duplicate the most latency sensitive data over two paths.
-Using socket options such as 
-\texttt{tcp\_info}, an application can retrieve useful statistics about the 
-performance of the underlying \tcp connections (e.g. RTT, congestion window, 
-\ldots). %If required, it is also possible to 
-A more advanced application could also define \tcpls records to actively 
-probe a connection, e.g. with an echo/request record to actively measure 
-delays, or retrieve information from the remote host, e.g. by retrieving the 
+Using socket options such as
+\texttt{tcp\_info}, an application can retrieve useful statistics about the
+performance of the underlying \tcp connections (e.g. RTT, congestion window,
+\ldots). %If required, it is also possible to
+A more advanced application could also define \tcpls records to actively
+probe a connection, e.g. with an echo/request record to actively measure
+delays, or retrieve information from the remote host, e.g. by retrieving the
 remote host's \texttt{tcp\_info} structure.
 
-Coupled streams can also be used when performing Application Connection 
-Migration to smoothly transition from one network path to another without 
+Coupled streams can also be used when performing Application Connection
+Migration to smoothly transition from one network path to another without
 impacting the application goodput.
 
-%In this subsection, we also present how streams can be coupled to aggregate 
-%the 
+%In this subsection, we also present how streams can be coupled to aggregate
+%the
 %bandwidth of several \tcp connections.
 %This provides various types of services,
 %such as easily performing active migration as discussed in the previous
@@ -526,21 +470,21 @@ impacting the application goodput.
 
 %\todo{OB: déjà couvert au début à mon avis}
 %
-%\todo{Move this into the section 2 or intro. (mp): c'est fait, pour garder la 
+%\todo{Move this into the section 2 or intro. (mp): c'est fait, pour garder la
 %ref a EDO}
-%\tcp~\cite{rfc793} limits the size of the entire \tcp header (including 
-%options) to 64 bytes. Unfortunately, the \tcp designers did not foresee that 
-%many \tcp extensions would be standardized. Today, the \tcp header size 
-%becomes 
+%\tcp~\cite{rfc793} limits the size of the entire \tcp header (including
+%options) to 64 bytes. Unfortunately, the \tcp designers did not foresee that
+%many \tcp extensions would be standardized. Today, the \tcp header size
+%becomes
 %a constraint.
 %%For example, it severely limits the number of gaps that
 %%can be covered by selective acknowledgments.
-%The restriction gets more strict with extensions such as \mptcp~\cite{rfc6824} 
-%that consume more space in the \tcp header. The IETF has discussed this 
-%problem 
-%for several years, but the latest attempt to solve 
-%it~\cite{draft-ietf-tcpm-tcp-edo-10} has not yet been implemented by major 
-%\tcp 
+%The restriction gets more strict with extensions such as \mptcp~\cite{rfc6824}
+%that consume more space in the \tcp header. The IETF has discussed this
+%problem
+%for several years, but the latest attempt to solve
+%it~\cite{draft-ietf-tcpm-tcp-edo-10} has not yet been implemented by major
+%\tcp
 %stacks.
 %%
 %\tcpls provides more space for \tcp options. First, with \tcpls, \tcp
@@ -557,7 +501,7 @@ impacting the application goodput.
 %Timeout option \cite{rfc5482}, \mptcp's \texttt{ADD\_ADDR} and
 %\texttt{REMOVE\_ADDR} option and experimental \tcp options \cite{rfc6994}.
 
-\subsection{Finishing a \tcpls connection}
+\subsection{Finishing a \tcpls Connection}\label{design.closing}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \todo{OB: pas critique pour moi, ou alors il faut comparer MPTCP et QUIC}
 
@@ -566,24 +510,24 @@ impacting the application goodput.
 %(mp): This is implementation not design
 %Streams can be attached to and closed from what we call a \texttt{transportid}
 %(the application does not have any knowledge of the \tcp interface).
-%When a stream is attached for the first time to a \tcp connection, this connection becomes active. 
+%When a stream is attached for the first time to a \tcp connection, this connection becomes active.
 The only way to gracefully closes a \tcp connection in a \tcpls session
 is by securely closing all streams attached to it, then \tcpls gracefully closes the
 \tcp connection. That is, if \tcpls receives a \rst or a \fin over an active
-\tcp connection, it tries to re-establish a \tcp connection. 
+\tcp connection, it tries to re-establish a \tcp connection.
 %(mp): This is implementation not design
 %If failover is enabled, \tcpls tries another network path first. Otherwise, a connection over
 %the same IP source and destination is reestablished and the streams are moved to
-%this new \tcp connection. 
+%this new \tcp connection.
 %If failover is not enabled, \tcpls would
-%opportunistically try to reestablish the connection. 
-When Failover is enabled, in-flight records that were lost after receiving 
+%opportunistically try to reestablish the connection.
+When Failover is enabled, in-flight records that were lost after receiving
 an illegitimate \rst or \fin, e.g. sent by a middlebox, can be transmitted again by \tcpls
 on this new \tcp connection.
 
 %\subsection{Limitations}
 %\tcpls's design ensures that middleboxes are not going to distinguish
-%\tcpls from \tls past the handshake. We chose this method to ease deployment 
+%\tcpls from \tls past the handshake. We chose this method to ease deployment
 %and
 %to harden censorship attempts since, even if some middlebox comes to block
 %\tcpls's handshake extensions, a \tcpls host can
@@ -596,11 +540,11 @@ on this new \tcp connection.
 %(mp): this is already part of the text
 %
 %However, this design approach makes difficult for a
-%receiver to distinguish several streams multiplexed to the same \tcp 
+%receiver to distinguish several streams multiplexed to the same \tcp
 %connection.
 %Indeed, when different streams are carried
 %over the same \tcp connection, \tcpls does not explicitely know which
-%cryptographic context decrypts properly the record. We argue that this is not 
+%cryptographic context decrypts properly the record. We argue that this is not
 %an
 %issue implying strong performance loss in practice. Indeed, to retrieve the
 %right cryptographic context to decrypt the stream data, we leverage the AEAD
@@ -610,7 +554,7 @@ on this new \tcp connection.
 %1.3 do Encrypt then MAC (and MAC then Decrypt).  Looking for the right stream
 %that succeeds the tag verification needs to be performed once each time the
 %sender writes to another stream over the same \tcp connection. While we also
-%experimented with \tls records that include the Stream ID in the associated 
+%experimented with \tls records that include the Stream ID in the associated
 %data
 %(i.e., the cleartext \tls header), we found that `finding the right
 %cryptagraphic context' incurs negligible overheads and is worth the benefit of
@@ -620,6 +564,6 @@ on this new \tcp connection.
 %forgery attempt. However, we have large limits on the confidentiality and
 %integrity with all AEAD ciphers~\cite{luykx2015limits, aeadlimits} before a
 %successful forgery may be considered as a non-negligible probability. For
-%example, in the case of ChaCha20 + Poly1305, an adversary making $2^{60}$ 
+%example, in the case of ChaCha20 + Poly1305, an adversary making $2^{60}$
 %forgery
 %attempts succeeds with probability $2^{-33}$.

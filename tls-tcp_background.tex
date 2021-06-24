@@ -4,79 +4,27 @@
 %Expliquer comment TLS et QUIC sont intégrés.
 
 \tcp was designed as an end-to-end protocol that is only used on end-hosts.
-\tcp includes flow-control, supports various retransmission techniques to cope 
-with packet losses and congestion control mechanisms. \tcp stacks have evolved 
-a lot during the last decades. Most extensions to \tcp leverage the \tcp 
-\texttt{Options} space, which is limited to 40 bytes. Unfortunately, the \tcp 
-designers did not foresee that many \tcp extensions would be standardized. 
-Today, the \tcp header size is a constraint. The IETF has discussed this 
-problem for several years, but the latest attempt to solve 
-it~\cite{draft-ietf-tcpm-tcp-edo-10} has not yet been implemented by major 
+\tcp includes flow-control, supports various retransmission techniques to cope
+with packet losses, and congestion control mechanisms. \tcp stacks have evolved
+a lot during the last decades. Most extensions to \tcp leverage the \tcp
+\texttt{Options} space, which is limited to 40 bytes. Unfortunately, the \tcp
+designers did not foresee that many \tcp extensions would be standardized.
+Today, the \tcp header size is a constraint. The IETF has discussed this
+problem for several years, but the latest attempt to solve
+it~\cite{draft-ietf-tcpm-tcp-edo-10} has not yet been implemented by major
 \tcp stacks.
 
-Modern applications rarely use \tcp alone. They
-often combine \tcp with Transport Layer Security (\tls). 
-\tls 1.3 \cite{rfc8446} brings several essential features compared to the previous versions. It
-includes a secure handshake that allows negotiating the security parameters and
-keys within one round-trip time. Thanks to \tcp Fast Open
-\cite{radhakrishnan2011tcp}, it is also possible to perform the secure handshake
-during the \tcp handshake. Furthermore, it is also possible to exchange
-application data during the handshake. The \tls 1.3 record layer protects all
-application data with encryption and authentication. This record layer is
-extensible, and the \tls record types are also encrypted to prevent
-ossification.
+Modern applications rarely use \tcp alone. They often combine \tcp with Transport Layer Security (\tls). \tls 1.3~\cite{rfc8446} brings several essential features compared to the previous versions. It includes a secure handshake that allows negotiating the security parameters and keys within one round-trip time. Thanks to \tcp Fast Open~\cite{radhakrishnan2011tcp}, it is also possible to perform the secure handshake during the \tcp handshake. Furthermore, it is also possible to exchange application data during the handshake. The \tls 1.3 record layer protects all application data with encryption and authentication. This record layer is extensible, and the \tls record types are also encrypted to prevent ossification.
 
 Despite this architectural principle, network operators have deployed a variety
 of middleboxes (e.g., firewalls, NATs, transparent proxies)~\cite{mCloud} that
 sometimes interfere with \tcp or its extensions~\cite{medina2004measuring,
 honda2011still, edeline2019bottom}. These in-path network functions make
-assumptions about the content of \tcp packets, invalidating the initial
-end-to-end paradigm of \tcp. Moreover, they do not always strictly follow the
+assumptions about the \tcp packets content, invalidating the initial \tcp
+end-to-end paradigm. Moreover, they do not always strictly follow the
 \tcp specifications~\cite{honda2011still, hesmans2013tcp}, which may negatively
-affect \tcp's evolution and performances~\cite{edeline2020evaluating}. These
-middleboxes severely limit the extensibility of TCP. Multipath TCP \cite{rfc8684,raiciu2012hard}
-managed to cope with this interference, but at the price of increased complexity
-with notably the utilization of a second level of checksum to detect middlebox
-interference \cite{raiciu2012hard,hesmans2013tcp}.
-
-To counter middlebox interference, Google took a different approach by developing an
-entirely new secure transport protocol called QUIC \cite{langley2017quic} that
-combines the features of TCP, TLS and HTTP in a single protocol implemented
-in a userspace library and running above UDP. QUIC prevents middlebox 
-interference
-by encrypting and authenticating the data, but also most of the control
-information such as the acknowledgments except a very small header. \quic
-leverages \tls 1.3 \cite{rfc8446} to negotiate the security keys and 
-authenticate
-the server. \quic packets have a flexible framing system and are 
-encrypted separately, in a similar manner to \tls records. \quic allows the
-application to use different datastreams over a single
-connection such as protocols like
-SCTP \cite{rfc4960} or Structured Streams \cite{ford2007structured}.
-\quic has
-been adopted by industry and standardized within the IETF \cite{rfc9000}.
-There are more than a dozen \quic implementations~\cite{quicimplem,marx2020same}. \quic is
-already used in production as shown by recent measurement
-studies~\cite{trevisan2020five}.
-
-Table~\ref{tcpquictcpls} summarises the main features of \tcp, TLS over \tcp 
-and \quic. All protocols include reliability and congestion control. \tls and 
-\quic provide the same security features. \mptcp efficiently supports failovers 
-and \quic includes a connection migration capability. \quic supports streams 
-preventing Head-of-Line blocking. \mptcp is the only 
-standardised protocol that is able to aggregate the bandwidth of different 
-paths. \mptcp implementations include several path management strategies 
-\cite{hesmans2015smapp,hesmans2016enhanced} to control the utilization of 
-different paths. \quic allows the client to migrate its 
-connection, although it is rarely exposed to applications in current 
-implementations.
-%(mp): Actually, none really offer that to my knowledge. I guess that's why 
-%Florentin 
-%added the (v).
-%enable the applications to decide when connections should be migrated.
-
-
-
+affect \tcp's evolution and performance~\cite{edeline2020evaluating}. These
+middleboxes severely limit the \tcp extensibility. Multipath \tcp~\cite{rfc8684,raiciu2012hard} (\mptcp) managed to cope with this interference, but at the price of increased complexity with notably the utilization of a second level of checksum to detect middlebox interference~\cite{raiciu2012hard,hesmans2013tcp}.
 
 \begin{table}[!t]
   \setlength\tabcolsep{3pt}
@@ -85,31 +33,34 @@ implementations.
     \toprule
     & \tcp & \mptcp & \tls/\tcp & \quic & \tcpls \\
     \midrule
-    Reliability \& cong. control & \checkmark & \checkmark & \checkmark & 
+    Reliability \& cong. control & \checkmark & \checkmark & \checkmark &
     \checkmark & \checkmark \\
-    Message conf. and auth.&  \xmark & \xmark & \checkmark & \checkmark & 
+    Message conf. and auth.&  \xmark & \xmark & \checkmark & \checkmark &
     \checkmark \\
     Failover &  \xmark & \checkmark &\xmark & (\checkmark) & \checkmark \\
-    HoL blocking resilience & \xmark & \xmark & \xmark & \checkmark & 
+    HoL blocking resilience & \xmark & \xmark & \xmark & \checkmark &
     (\checkmark) \\
-%    \multicolumn{5}{l}{Transport services} \\
     Streams & \xmark &  \xmark & \xmark & \checkmark & \checkmark \\
-    Connection migration & \xmark & (\checkmark) & \xmark & (\checkmark) & 
+    Connection migration & \xmark & (\checkmark) & \xmark & (\checkmark) &
     \checkmark \\
     Concurrent paths & \xmark & \checkmark & \xmark & \xmark & \checkmark \\
-
     \bottomrule
   \end{tabular}
-  \caption{Comparison of \xmark\ the services not 
-  offered 
-  , (\checkmark)\
+  \caption{Comparison of \xmark\ the services not offered, (\checkmark)\
   partially available, and \checkmark\ offered by protocols.}
-%  \caption{Protocol features comparison. (\xmark) means that the feature is
-%    available, but not straightforward to use. (\checkmark) means that the
-%  feature is partially available and under development. \checkmark means that
-%  the feature is available, and \xmark means that it is not.}
   \label{table:tcpquictcpls}
 \end{table}
+
+To counter middlebox interference, Google took a different approach by developing an entirely new secure transport protocol, \quic~\cite{langley2017quic}, combining \tcp, \tls, and HTTP features in a single protocol implemented in a userspace library and running above \udp. \quic prevents middlebox interference by encrypting and authenticating the data, but also most of the control information such as the acknowledgments except a very small header. \quic leverages \tls 1.3~\cite{rfc8446} to negotiate the security keys and authenticate the server. \quic packets have a flexible framing system and are encrypted separately, in a similar manner to \tls records. \quic allows the application to use different datastreams over a single connection such \sctp~\cite{rfc4960} or Structured Streams~\cite{ford2007structured}. \quic has been adopted by the industry and standardized within the IETF~\cite{rfc9000}. There are more than a dozen \quic implementations~\cite{quicimplem,marx2020same}. \quic is already used in production as shown by recent measurement studies~\cite{trevisan2020five}.
+
+Table~\ref{table:tcpquictcpls} summarises the main features of \tcp, \tls over \tcp, and \quic. All protocols include reliability and congestion control. \tls and \quic provide the same security features. \mptcp efficiently supports failovers and \quic includes a connection migration capability. \quic supports streams preventing Head-of-Line (HoL) blocking. \mptcp is the only
+standardised protocol that is able to aggregate different paths bandwidth. \mptcp implementations include several path management strategies~\cite{hesmans2015smapp,hesmans2016enhanced} to control the different paths utilization. \quic allows the client to migrate its connection, although it is rarely exposed to applications in current implementations.
+%(mp): Actually, none really offer that to my knowledge. I guess that's why
+%Florentin
+%added the (v).
+%enable the applications to decide when connections should be migrated.
+
+
 
 
 
@@ -159,6 +110,3 @@ implementations.
 %applications: \quic \cite{langley2017quic}. \quic provides a secure and
 %reliable delivery like the \tls/\tcp stack, but on top of \udp.
 %\quic
-
-
-

@@ -104,36 +104,24 @@
 \begin{abstract}
   \tcp and \tls are among the essential protocols in today's Internet. \tcp
   ensures reliable data delivery while \tls secures the data transfer.
-  Following the layered model of the Internet, %\tls was designed to be as 
-  %independent as possible from the underlying transport protocol.
-  both protocols are largely independent.
-  This paper revisits this
-  assumption and demonstrates the various benefits a closer integration between
-  \tcp and \tls brings.
-  
-  By leveraging the extensible \tls 1.3 records, we combine \tcp and \tls into 
-  \tcpls to 
-  build modern transport services such as multiplexing, connection migration, 
-  stream steering and bandwidth aggregation. These services do not modify the 
-  \tcp wire 
-  format and are resistant 
-  to middleboxes. \tcpls offers a powerful API enabling applications to 
-  precisely express the required transport services, ranging from a single-path 
-  single-stream connection to a multi-stream connection over several network 
-  paths, enabling aggregated bandwidth and Head-of-Line blocking resilience.
+  Following the Internet layered model, both protocols are largely independent.
+  This paper revisits this assumption and demonstrates the various benefits a closer integration between \tcp and \tls brings.
 
-%(mp): L'abstract revient un peu en arrière par rapport au schéma du papier, 
+  By leveraging the extensible \tls 1.3 records, we combine \tcp and \tls into
+  \tcpls to build modern transport services such as multiplexing, connection migration, stream steering, and bandwidth aggregation. These services do not modify the \tcp wire format and are resistant to middleboxes. \tcpls offers a powerful API enabling applications to  precisely express the required transport services, ranging from a single-path single-stream connection to a multi-stream connection over several network paths, enabling aggregated bandwidth and Head-of-Line blocking resilience.
+
+%(mp): L'abstract revient un peu en arrière par rapport au schéma du papier,
 %j'ai proposé une version qui suit mieux la trame actuelle.
 %  We propose \tcpls, a modern and secure transport that is wire-compatible with
 %  \tcp and transparent for middleboxes. It suggests a new approach for \tcp
 %  extensibility and leverages \tls 1.3 to support modern services such as
-%  connection migration, seamless handovers, and bandwidth aggregation. To 
+%  connection migration, seamless handovers, and bandwidth aggregation. To
 %expose
 %  the new capabilities, we build a new API and research a method to express
 %  novel transport services. We desgined a Stream Steering mechanic to let the
 %  application steers and combines features offered by the protocol, easily
 %  managing the session from a single-path stream connection to features similar
-%  to \mptcp's bandwidth aggregation or \quic's Head-of-Line blocking 
+%  to \mptcp's bandwidth aggregation or \quic's Head-of-Line blocking
 %resilience.
 %  The Stream Steering mechanic exposed to the applications allows it to easily
 %  program complex transport mechanisms with interesting properties, such as a
@@ -143,11 +131,10 @@
 
   Compared to \mptcp and \quic, \tcpls offers more control to the
   application, can be easily deployed as an extension to the
-  user-space \tls libraries and %provides high performance by leveraging the
-  %existing \tcp support in the network interface cards.  
-  can be implemented at a low cost.
-  Measurements with our
-  \tcpls implementation demonstrate that it offers higher performance than 
+  user-space \tls libraries, and %provides high performance by leveraging the
+  %existing \tcp support in the network interface cards.
+  can be implemented at a low cost. Measurements with our
+  \tcpls implementation demonstrate it offers higher performance than 
   existing \quic libraries with a super set of transport services.
 
 \end{abstract} \maketitle

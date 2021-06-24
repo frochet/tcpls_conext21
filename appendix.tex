@@ -102,49 +102,36 @@ migration. Note that, HOL-blocking avoidance is incompatible with
 aggregating bandwidth using multipathing (the application cannot enable both
 features at the same time).
 
-\section{Capability Comparison}
+%\section{Capability Comparison}
 
 
-Table~\ref{table:tcplsvsquic} compares the features supported by
-\tcp, \mptcp, \tls/\tcp, \quic and \tcpls. \quic and \tcpls are very similar in their
-capabilities. They mainly differ in their semantic. \tcpls's semantic is to let
-the applications make the decision, and we design its API to fulfill this goal.
-That is, the meaning of \tcpls is to offer advanced, extensible and secure
-transport-layer functionalities on top of \tcp, while exposing a simple but
-powerful API to let the application decide the properties its transport should
-have.
+%Table~\ref{table:tcplsvsquic} compares the features supported by \tcp, \mptcp, \tls/\tcp, \quic and \tcpls. \quic and \tcpls are very similar in their capabilities. They mainly differ in their semantic. \tcpls's semantic is to let the applications make the decision, and we design its API to fulfill this goal. That is, the meaning of \tcpls is to offer advanced, extensible and secure transport-layer functionalities on top of \tcp, while exposing a simple but powerful API to let the application decide the properties its transport should have.
 
-Note that several of the features included in \tcpls are also suggested by researchers
-for \tcp or \quic such as a new socket API for explicit \mptcp
-\cite{hesmans2016enhanced}, eBPF plugins in \quic~\cite{de2019pluginizing} or multipath
-extensions to \quic~\cite{viernickel2018multipath,de2017multipath,draft-liu-multipath-quic-02}.
+%Note that several of the features included in \tcpls are also suggested by researchers for \tcp or \quic such as a new socket API for explicit \mptcp \cite{hesmans2016enhanced}, eBPF plugins in \quic~\cite{de2019pluginizing} or multipath extensions to \quic~\cite{viernickel2018multipath,de2017multipath,draft-liu-multipath-quic-02}.
 
-\begin{table*}[!t]
-  \small
-  \begin{tabular}{lccccc}
-    \toprule
-    & \tcp & \mptcp & \tls/\tcp & \quic & \tcpls \\
-    \midrule
-    Transport reliability & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
-    Message conf. and auth.&  \xmark & \xmark & \checkmark & \checkmark & \checkmark \\
-    Connection reliability (failover) &  \xmark & \checkmark &\xmark & (\checkmark) & \checkmark \\
-    0-RTT & \checkmark & (\checkmark) & (\xmark) & \checkmark  & \checkmark \\
-    Session Resumption & \xmark & \xmark & \checkmark & \checkmark & \checkmark \\
-    Connection Migration & \xmark & \xmark &\xmark & \checkmark & \checkmark \\
-    \multicolumn{5}{l}{Application-exposed features} \\
-    \hspace{2em} Streams & \xmark &  \xmark & \xmark & \checkmark & \checkmark \\
-    \hspace{2em} Explicit Multipath & \xmark & \xmark & \xmark & \xmark & \checkmark \\
-    \hspace{2em} App-level Con. migration & \xmark & \xmark & \xmark & (\checkmark) & \checkmark \\
-    Resilience to HOL blocking & \xmark & \xmark & \xmark & \checkmark & \checkmark \\
-    Secure Connection Closing & \xmark &  \xmark & \xmark & \checkmark & \checkmark \\
-    \bottomrule
-  \end{tabular}
-  \caption{Protocol features comparison. (\xmark) means that the feature is
-    available, but not straightforward to use. (\checkmark) means that the
-  feature is partially available and under development. \checkmark means that
-  the feature is available, and \xmark means that it is not.}
-  \label{table:tcplsvsquic}
-\end{table*}
+%\begin{table*}[!t]
+%  \small
+%  \begin{tabular}{lccccc}
+%    \toprule
+%    & \tcp & \mptcp & \tls/\tcp & \quic & \tcpls \\
+%    \midrule
+%    Transport reliability & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+%    Message conf. and auth.&  \xmark & \xmark & \checkmark & \checkmark & \checkmark \\
+%    Connection reliability (failover) &  \xmark & \checkmark &\xmark & (\checkmark) & \checkmark \\
+%    0-RTT & \checkmark & (\checkmark) & (\xmark) & \checkmark  & \checkmark \\
+%    Session Resumption & \xmark & \xmark & \checkmark & \checkmark & \checkmark \\
+%    Connection Migration & \xmark & \xmark &\xmark & \checkmark & \checkmark \\
+%    \multicolumn{5}{l}{Application-exposed features} \\
+%    \hspace{2em} Streams & \xmark &  \xmark & \xmark & \checkmark & \checkmark \\
+%    \hspace{2em} Explicit Multipath & \xmark & \xmark & \xmark & \xmark & \checkmark \\
+%    \hspace{2em} App-level Con. migration & \xmark & \xmark & \xmark & (\checkmark) & \checkmark \\
+%    Resilience to HOL blocking & \xmark & \xmark & \xmark & \checkmark & \checkmark \\
+%    Secure Connection Closing & \xmark &  \xmark & \xmark & \checkmark & \checkmark \\
+%    \bottomrule
+%  \end{tabular}
+%  \caption{Protocol features comparison. (\xmark) means that the feature is available, but not straightforward to use. (\checkmark) means that the feature is partially available and under development. \checkmark means that the feature is available, and \xmark means that it is not.}
+%  \label{table:tcplsvsquic}
+%\end{table*}
 
 \section{Failover Protocol}
 \label{app:failover}
