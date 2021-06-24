@@ -256,9 +256,9 @@ decision.
 %application to migrate when it wishes to do so (e.g.,
 For instance, an interactive running on a smartphone could migrate from
 LTE to Wi-Fi when it senses an increase in delays due to bufferbloat for a
-given period of time.
+given period of time, or when a mobile client detects its home Wi-Fi and the
+user's preference is to move its traffic to the Wi-Fi if detected.
 %when the Wi-Fi appears healthy,
-\todo{Find other examples}
 %The semantic of
 %the application-level connection migration is built from attaching and closing
 %streams in the multipath bandwidth aggregation mode.
@@ -407,7 +407,6 @@ each record. A remote terminal application running over \tcpls could send the
 screen updates over a high bandwidth but high latency connection and the
 keyboard input over the lower latency one.
 %(mp): On ne peut pas il me semble
-It could even duplicate the most latency sensitive data over two paths.
 Using socket options such as
 \texttt{tcp\_info}, an application can retrieve useful statistics about the
 performance of the underlying \tcp connections (e.g. RTT, congestion window,
