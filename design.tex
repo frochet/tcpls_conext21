@@ -231,8 +231,8 @@ transmitted again over a functional one.
 We present in Section~\ref{sec:perf} measurements quantifying the
 performance impact of adding \tcpls record-level acknowledgments. We also give a
 trace example involving a file transfer and the failover protocol in
-Appendix~\ref{app:failover}.\todo{Let see if we can bring it back in the text
-later}
+Appendix~\ref{app:failover}.
+%\todo{Let see if we can bring it back in the text later}
 \todo{Parler de la resynchronisation}
 
 \textbf{Application Connection Migration}. \tcpls also enables the
@@ -325,12 +325,13 @@ exposes the underlying \tcp connections to the application through its API. The
 applications use this API to implement their own policy to manage the
 underlying \tcp connections.
 
-When several networks paths are used in a transport
-connection, the congestion controller of each path should be coupled to control
-the overall aggressiveness of the connection. This problem has been solved in a
-generic way for MPTCP~\cite{rfc6356}, and the same solution could be applied to
-\tcpls. eBPF could be leveraged to access and modify the congestion controller
-state. We leave this engineering effort as future work.
+%(mp): It's already part of related work actually
+%When several networks paths are used in a transport
+%connection, the congestion controller of each path should be coupled to control
+%the overall aggressiveness of the connection. This problem has been solved in a
+%generic way for MPTCP~\cite{rfc6356}, and the same solution could be applied to
+%\tcpls. eBPF could be leveraged to access and modify the congestion controller
+%state. We leave this engineering effort as future work.
 
 \textbf{Stream Steering}. \tcpls enables the application to combine
 multiplexing with the ability to join

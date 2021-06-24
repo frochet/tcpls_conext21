@@ -132,13 +132,25 @@ protocol. We now evaluate the cost of the transport services.
 %\tcpls is also more than twice faster than the strongest evaluated QUIC
 %implementation (quicly) over CPU limited experimentations. We evaluate \tcpls
 
-We then evaluate the impact of adding the \tcpls-level acknowledgments
-described in Sec.~\ref{sec:multipath} to support failover.
+We then evaluate the cost of enabling Failover, which adds \tcpls-record-level 
+acknowledgments. % of adding the \tcpls-level 
+%acknowledgments
+%described in Sec.~\ref{failover} to support failover.
 % Thanks to these acknowledgments, \tcpls can support failover.
-From a performance viewpoint, they increase the number of control records and
-the number of system calls. Our prototype currently sends a \tcpls-ack for every
-16 received records. Our measurements indicate that with this functionality,
-\tcpls reaches 9.65 Gbps with a $1500$ bytes MTU.
+Our measurements show that Failover has a small impact on raw throughput as
+\tcpls reaches XXX Gbps with a $1500$ bytes MTU.
+This is due to increase in control records that are exchanged during the file 
+transfer.
+This impact could be reduced by reducing number of record acknowledgments. We 
+leave finding the optimal acknowledgment frequency as future work.
+%From a performance viewpoint, they increase the 
+%number of control records 
+%exchanged and the number of system calls. 
+%Our prototype currently sends a 
+%\tcpls-ack for every
+%16 received records. 
+\todo{Commenter Failover mtu 9000}
+
 
 %% We also compared \tcpls's native bandwidth aggregation using two streams with a
 %% single stream produced by our \tcpls client on the top of the \mptcp kernel
@@ -160,19 +172,26 @@ the number of system calls. Our prototype currently sends a \tcpls-ack for every
 %% \tcpls's native  multipath uses the \tcp optimized stack, which together offer a
 %% strong secure bandwidth aggregation solution.
 
-
-Our next step was to evaluate the cost of the multi-connections stream steering feature of \tcpls.
-We configured IPv4 and IPv6 addresses on the Client and the Server and created
-a \tcpls session that uses two \tcp connections. Our Server steers the data in
-the \tcpls streams using a
-round-robin scheduler to send the records over the available connections. This
-is not the best scheduler for sending data over multiple paths~\cite{paasch2014experimental} since it will force the
-receiver to reorder the received records. \tcpls’s reordering is implemented
-with an efficient heap pushing unordered records in $O(log(n))$
-for $n$ elements in the heap, and retrieving ordered records
-in $O(1)$. Our measurements show that when steering data in two streams
+Finally, we evaluate the cost of using coupled streams over several \tcp 
+connections.
+%Our next step was to evaluate the cost of the multi-connections stream 
+%steering feature of \tcpls.
+We configured \tcpls to use IPv4 and IPv6 as separate network paths and start a 
+\tcp connection on each path. 
+%We configured IPv4 and IPv6 addresses on the Client and the Server and created
+%a \tcpls session that uses two \tcp connections. 
+The \tcpls server sends the records over the two \tcp connections in a 
+round-robin manner. The \tcpls client receives and reorder the records using an 
+efficient heap.
+%Our Server steers the data in
+%the \tcpls streams using a
+%round-robin scheduler to send the records over the available connections. 
+%This is not the best scheduler for sending data over multiple 
+%paths~\cite{paasch2014experimental} since it will force the
+%receiver to reorder the received records.  
+Our measurements show that when steering data in two streams
 configured with bandwidth aggregation in our testbed,
-\tcpls can reach a throughput of 8.8 Gbps, i.e. less than 10\% below the
+\tcpls can reach a throughput of XXX Gbps, i.e. less than XXX\% below the
 failover mode.
 
 \begin{figure}[!t]
@@ -180,10 +199,12 @@ failover mode.
     \includegraphics[width=\columnwidth]{figures/perf_analysis.png}
   \end{center}
 \vspace{-0.5cm}
-  \caption{\tcpls raw performance and comparison with state of the art.
-    Single-thread client/server for all implementations.  The
+  \caption{Throughput comparison between \tcpls, \tcp/\tls and three \quic 
+  implementations.
+    %Single-thread client/server for all implementations.  
+    The
     \tcpls prototype is faster than several major \quic implementations while
-    offering a superset of protocol features and similar flexibility.}
+    offering a superset of transport services and similar flexibility.}
   \label{fig:perf}
 \end{figure}
 
@@ -234,51 +255,79 @@ failover mode.
 %the congestion window to deliver faster the data to the application when the
 %network is congested.
 
-\paragraph{\tcpls vs. \quic}
-Although \quic~\cite{draft-ietf-quic-transport} is a young protocol, there are
-already more than a dozen
-implementations~\cite{marx2020same,quicimplem,yang2020making} under active
-development. We compiled and installed three representative \quic
-implementations in our testbed: Facebook's
-\mvfst~\cite{mvfst-github,Joras_mvfst}, Microsoft's
+\textbf{\quic}.
+%Although \quic~\cite{draft-ietf-quic-transport} is a young protocol, there are
+%already more than a dozen
+%implementations~\cite{marx2020same,quicimplem,yang2020making} under active
+%development. 
+We evaluate three representative \quic implementations in our testbed: 
+Facebook's \mvfst~\cite{mvfst-github,Joras_mvfst}, Microsoft's
 \msquic~\cite{msquic-github}, and Fastly's \quicly~\cite{quicly-github}. They
-are all developed by large companies that (plan to) use them in production and
-include their own benchmarking application to perform throughput measurements.
-Furthermore, \mvfst and \quicly support Generic Segmentation Offload (GSO), that
-should improve performance by offloading \udp segmentation and checksum
-computation to our NICs. We use the implementation's benchmarking application as
-is, exploiting the optional arguments provided by their interface to increase
-the throughput but drawing the line there. We do not modify the \quic
-implementations and use their default cipher. Note, we tried to match the
-transport parameters to the same ones used by \tcpls when they did not adversely
-affect \quic's performance too much. For example, several congestion control
-algorithms are implemented in the different \quic stacks but setting a different
-one than the suggested default led to lower performance or unstable throughput
-measurements.
+are intended for production use and
+include throughput measurements applications.
+Furthermore, \mvfst and \quicly support Generic Segmentation Offload (GSO), 
+which
+offloads \udp segmentation and checksum computation to NICs. 
+%We use the 
+%implementation's benchmarking application as
+%is, exploiting the optional arguments provided by their interface to increase
+%the throughput but drawing the line there. 
+%We do not modify the \quic
+%implementations and use their default cipher.
+We configured the QUIC implementations to the most comparable setting than 
+\tls/\tcp and \tcpls. That is, we changed the cipher and set the CUBIC 
+congestion controller when available.
+% to the same ones used by 
+%\tcpls when they did 
+%not adversely
+%affect \quic's performance too much. For example, several congestion 
+%controller 
+%are implemented in the \quic stacks but changing the default 
+%one often led to lower performance or unstable throughput.
 
-The results in Fig.~\ref{fig:perf} show that \tcpls compares favorably
+The results obtained show that \tcpls compares favorably
 with the tested \quic implementations. The fastest \quic implementation is
-\quicly. Thanks to GSO and with a 1450-byte \quic packet, it reaches 4.4~Gbps in our testbed with a 1,500 bytes
-MTU. This result is directly comparable to \tcpls with TSO enabled, which still
-performs more than twice faster at CPU limitation with similar configurations
-for the receiving buffer size. Surprisingly, \quicly's performance decreases with
-jumbo frames but is still faster than when GSO is disabled.  \msquic reaches
-1.96~Gbps and \mvfst was slower despite GSO. The results are quite good for
-\msquic and \quicly. Indeed, since \msquic does not yet use GSO, the speed of
-this implementation is fundamentally limited by the speed of the Linux Kernel's
-interface with UDP. \quic is known to have several performance shortcomings compared
-to \tls/\tcp, in short: 1) \quic relies on $sendmsg$/$recvmsg$ which allows 1
-packet at a time, 2) 1350-byte
-plaintext encryptions (\quic) vs 16384-byte plaintext encryption for \tls and
-\tcpls (higher is better),
-3) Pacing in userspace for \quic, 4) Segmentation in the kernel for \quic using GSO not as good as TSO
-(hardware, on the NIC for \tls/\tcp and \tcpls), 5) transport
-acknowledgments in userspace for \quic increasing the number of context-switches. While some of these shortcomings may
-still be improved, several are carved in \quic's choice to use UDP. There isn't likely enough room to match \tcpls performance
-without offloading everything, which inherently breaks \quic's flexibility
-argument and would be uncompliant regarding the end users' threat model (untrusted
-network, and we assume the NICs are a component of the network and not part of the
-user's stack).
+\quicly, with GSO and 1500-byte MTU, it reaches 4.4~Gbps. \tcpls with TSO is 
+twice faster with the same CPU usage and similar 
+receiving buffer sizes. Surprisingly, \quicly's performance decreases with
+jumbo frames but is still faster than without GSO.  \msquic reaches
+1.96~Gbps and \mvfst was slower despite GSO. 
+%The results are quite good for \msquic and \quicly. 
+%Indeed, since \msquic does not yet use GSO, the speed of
+%this implementation is fundamentally limited by the speed of the Linux Kernel's
+%interface with UDP. 
+The lower performance of \quic implementations can be explained by several 
+factors originating from the Linux UDP interface and \quic design.
+%\quic is known to have several performance shortcomings compared
+%to \tls/\tcp, in short: 1) \quic relies on $sendmsg$/$recvmsg$ which allows 1
+($i$) Early \quic implementations use \texttt{sendmsg}/\texttt{recvmsg}, 
+exchanging one packet at a time with the kernel.
+($ii$) GSO is often not supported by the NIC and implemented in the kernel, 
+unlike TSO.
+($iii$) Pacing is implemented in userspace.
+($iv$) Acknowledgments are handled in userspace, increasing further the number 
+of context switches.
+($v$) \quic packets are smaller units than \tls records for encryption and 
+decryption.
+%packet at a time, 2) 1350-byte
+%plaintext encryptions (\quic) vs 16384-byte plaintext encryption for \tls and
+%\tcpls (higher is better),
+%3) Pacing in userspace for \quic, 4) Segmentation in the kernel for \quic 
+%using GSO not as good as TSO
+%(hardware, on the NIC for \tls/\tcp and \tcpls), 5) transport
+%acknowledgments in userspace for \quic increasing the number of 
+%context-switches. While some of these shortcomings may
+%still be improved, several are carved in \quic's choice to use UDP.
+While there is ongoing works to improve $i$, $ii$ and $iii$ 
+\cite{udp-gso-pacing}, it is likely that 
+performance parity will require more offload capabilities, which could lessen 
+the flexibility of \quic and would be uncompliant regarding the end users' 
+threat model 
+(untrusted network, and we assume the NICs are a component of the network and 
+not part of the user's stack).
+%There isn't likely enough room to match \tcpls performance
+%without offloading everything, which inherently breaks \quic's flexibility
+%argument
 
 
 %QUIC is young protocol, and all implementations are in active development, with
@@ -520,31 +569,49 @@ obtained when performing such a migration during a file transfer.% using the
 %(i.e., the application decides 
 % when to migrate, and we expose a simplistic code flow to 
 %perform it). 
-In this experiment, we reuse the Mininet topology% introduced in 
-Sec.~\ref{sec:bwaggr}%. We
+In this experiment, we reuse the Mininet topology %introduced in 
+%Sec.~\ref{sec:bwaggr}%. We
 and set a bandwidth of 30Mbps on each path, a 40ms 
 round-trip-time for the v4 link, and 80ms for the v6 link. Our test application 
 downloads a 60MB file and migrates once from the IPv4 to 
 the IPv6 path and once again back to the IPv4 path.
 
-\todo{Est-ce necessaire? A aligner avec la place que l'on veut pour l'API vs 
-les services. Le fonctionnement de connection migration à déjà été expliqué en 
-soit}
-Triggering the first connection migration involves chaining five API calls: first, if a \tcp connection is not already established, the application issues a
-\texttt{tcpls\_connect()} that creates a $\tcp$ connection (or directly uses
-\texttt{tcpls\_handshake()} when TFO enabled is. Calling 
-\texttt{tcpls\_handshake()} is required and needs to be configured with 
-handshake properties announcing a \join over the IPv6 connection. Then, the 
-creation of a new stream \texttt{tcpls\_stream\_new()} for the IPv6 connection, 
-finally followed by the attachment of this new stream 
-\texttt{tcpls\_streams\_attach()} and the secure closing of the IPv4 \tcp 
-connection using \texttt{tcpls\_stream\_close()}. Following these events, the 
-server seamlessly switches the path while looping over \texttt{tcpls\_send()} 
-to send the file. Note that all the events trigger callbacks on the server 
-side, to let the server react appropriately if other requirements need to be 
-fulfilled.
+%\todo{Est-ce necessaire? A aligner avec la place que l'on veut pour l'API vs 
+%les services. Le fonctionnement de connection migration à déjà été expliqué en 
+%soit}
+%Triggering the first connection migration involves chaining five API calls: 
+%first, if a \tcp connection is not already established, the application issues 
+%a
+%\texttt{tcpls\_connect()} that creates a $\tcp$ connection (or directly uses
+%\texttt{tcpls\_handshake()} when TFO enabled is. Calling 
+%\texttt{tcpls\_handshake()} is required and needs to be configured with 
+%handshake properties announcing a \join over the IPv6 connection. Then, the 
+%creation of a new stream \texttt{tcpls\_stream\_new()} for the IPv6 
+%connection, 
+%finally followed by the attachment of this new stream 
+%\texttt{tcpls\_streams\_attach()} and the secure closing of the IPv4 \tcp 
+%connection using \texttt{tcpls\_stream\_close()}. Following these events, the 
+%server seamlessly switches the path while looping over \texttt{tcpls\_send()} 
+%to send the file. Note that all the events trigger callbacks on the server 
+%side, to let the server react appropriately if other requirements need to be 
+%fulfilled.
 
-Fig.~\ref{fig:conn_migration} shows a peak in goodput during each migration. During the migration window (marked with vertical black bars indicating the attachment of the new stream and the closing of the initial stream), the client is taking advantage of both paths to receive its data: the first path finishes to flush its data while the second path is already used. Once the last record of the first path is sent, \tcpls can reorder the data and deliver it to the client. We then obtain a goodput peak matching the accumulated bandwidth over both paths during the migration time window.
+Figure~\ref{fig:conn_migration} reports the goodput obtained during the 
+experiment. We can observe a peak during the migration windows marked with 
+vertical black bars.% indicating the 
+%attachment of the new stream and the closing of the initial stream), the 
+%client.
+During this window, the client uses coupled streams to transition smoothly from 
+one \tcp connection to the other, i.e. the first \tcp connection finishes to 
+transmit the queued \tcpls record while the second transmits the following 
+records.
+%is taking advantage of both paths to receive its data: the first path finishes 
+%to flush its data while the second path is already used.
+%Once the last record 
+%of the first path is sent, 
+\tcpls reorders the records and deliver the data to the 
+client. The peak corresponds to the sum of bandwidth over 
+both paths during the migration time window.
 
 \begin{figure}[!t]
   \begin{center}

@@ -121,7 +121,12 @@ Receiving a \tcp \texttt{RST} or \texttt{FIN} over a \tcp connection for which
 The stream-level acknowledgments required for the Failover to detect the lost
 \tcpls records can be enabled at the start of a \tcpls session. The default
 policy is to acknowledge every 16 received records, or when a
-stream has processed more than $249600$ bytes since the last acknowledgment. \todo{Maybe explain the number?}
+stream has processed 
+%more than $249600$ 
+%\todo{Maybe explain the number?}
+a given amount of 
+bytes since the last acknowledgment. 
+
 Our prototype handles failover over IPv4 and IPv6 \tcp connections, and by default, chooses different source and destination addresses than the failed \tcp connection if possible.
 
 Application running on more constrained devices can choose to disable Failover
@@ -155,7 +160,14 @@ Such a feature may be implemented through a negotiation of the aggregation
 mode.
 
 Our implementation currently includes a round-robin scheduler. We expect to
-support other schedulers in the future and allow the application to select its preferred scheduler through the API, or even send it as eBPF bytecode over the session. The more \tcpls receives records in order, the more it can deliver them in a zero-copy fashion to the application. When a record is received out-of-sequence, its content is copied in a reordering buffer. The performance of our multipath bandwidth aggregation is evaluated in Sec.~\ref{sec:bwaggr}
+support other schedulers in the future and allow the application to select its 
+preferred scheduler through the API, or even send it as eBPF bytecode over the 
+session. The more \tcpls receives records in order, the more it can deliver 
+them in a zero-copy fashion to the application. When a record is received 
+out-of-sequence, its content is pushed on an efficient reordering heap in 
+$O(log(n))$ for $n$ elements in the heap. Retrieving ordered records is in
+in $O(1)$. The performance of our multipath bandwidth aggregation is evaluated 
+in Sec.~\ref{sec:bwaggr}.
 
 %\subsubsection{Failover}\label{failover}
 %Failover is a binary mode (on/off) that is fully internal to \tcpls.
