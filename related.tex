@@ -1,41 +1,53 @@
 % !TEX root = ./paper.tex
 
-By closely coupling \tcp and \tls, \tcpls builds upon two of the most important
-end-to-end protocols. Given the huge activity on these two protocols within the
-research community and the IETF, we restrict our discussion to the closest
-related works. Interested readers may refer to survey papers for additional context information~\cite{polese2019survey,li2016multipath,papastergiou2016ossifying}.
+By combining \tcp and \tls, \tcpls builds upon two of the most important
+Internet protocols. Given their importance within 
+the research community and the IETF, we restrict our discussion to close
+related works. Readers may refer to survey papers for additional 
+context 
+information~\cite{polese2019survey,li2016multipath,papastergiou2016ossifying}.
 
-Given its security features, \tcpls must be compared with \tcpcrypt~\cite{bittau2010case,rfc8548}. \tcpcrypt predates \tls 1.3. It uses \tcp options to support opportunistic encryption but is not secure against an active network attacker. \tcpls is compatible with \tls, retains its security properties, and supports additional features. It is also compatible with \tcp middleboxes.
+Given its security features, \tcpls must be compared with 
+\tcpcrypt~\cite{bittau2010case,rfc8548} which predates \tls 1.3. It uses \tcp 
+options to support opportunistic encryption but is not secure against an active 
+network attacker. \tcpls extends \tls while retaining its security 
+properties, and supporting new features. It is also compatible with \tcp 
+middleboxes, as it leaves the \tcp wire format untouched.
 
 \tcpls also needs to be compared with \mptcp \cite{raiciu2012hard,rfc6824}.
 \mptcp supports several coupled congestion control schemes
 \cite{peng2014multipath,wischik2011design,khalili2013mptcp} that preserve
-fairness even when different paths share the same bottleneck. These are not yet
-included in our \tcpls prototype, but could be added with some engineering
-effort. The initial idea of coupling \mptcp and \tls was proposed in an expired
-Internet draft~\cite{draft-paasch-mptcp-ssl-00}, but was not adopted by the
+fairness when different paths share the same bottleneck. A similar solution 
+could be applied to \tcpls by leveraging eBPF to access and modify the 
+congestion controller state. We leave this engineering effort as future work.
+The initial idea of coupling \mptcp and \tls was proposed in an
+Internet draft~\cite{draft-paasch-mptcp-ssl-00} that was not adopted by the
 IETF. MPTCPSec~\cite{jadin2017securing} adds security capabilities to \mptcp but
 comes with a large performance penalty.
 
-Another important related work is \quic. The initial design~\cite{roskind2013quic} has evolved a lot and large companies have started to adopt it~\cite{langley2017quic,Joras_mvfst,marx2020same}. The \quic
-version 1 specification~\cite{draft-ietf-quic-transport} supports connection
-migration like \tcpls, but we could not test it in our lab since none of the
-available open-source implementations have implemented it yet. Multipath
-extensions
+Another important related work is \quic. Its design has 
+evolved over the years, and several companies adopted 
+it~\cite{langley2017quic,Joras_mvfst,marx2020same}. \quic
+version 1~\cite{rfc9000} also supports connection
+migration, but to our knowledge no implementation offer this feature to 
+applications outside from limited interoperability scripts.
+%we could not test it in our lab since none of 
+%the available open-source implementations have implemented it yet. 
+Multipath extensions
 \cite{viernickel2018multipath,de2017multipath,draft-liu-multipath-quic-02}
 to \quic have been discussed but not yet adopted within the IETF. Finally,
 PQUIC~\cite{de2019pluginizing} proposed to convey eBPF code over \quic
 connections to deploy new protocol features. This goes beyond the exchange of
-congestion control scheme that we demonstrated with \tcpls.
+congestion controller in \tcpls.
 
 Finally, several solutions have been proposed to provide multipath capabilities
 in the application layer. Examples include MP-H2~\cite{nikravesh2019mp} that
 extends HTTP/2, MP-DASH~\cite{han2016mp} for video streaming or mHTTP~\cite{kim2014multi} that extends HTTP.
 
-\tcpls's idea has also similarities with \tls FOP~\cite{sy2020enhanced}, a
-proposal to solve the privacy issue with TFO. However, \tcpls is more generic,
-and shows how we can achieve such extensibility work for any other concerns and
-new features.
+\tcpls also share similarities with \tls FOP~\cite{sy2020enhanced}, which 
+solves the privacy issue with TFO by using TLS. However, \tcpls is more generic,
+and demonstrate how we leverage its extensibility work for more advanced 
+concerns and transport services.
 
 \todo{Structured stream}
 
