@@ -60,7 +60,7 @@ def main():
     #bar_height_pps_sorted = [(x[0], mapping[x[0]]) for x in bar_height_bw]
     #bar_height_pps = bar_height_pps_sorted
     y_pos = np.arange(len(bar_height_bw))
-    y_pos = [ 0,  1,  2,  3,  4,  5.5,  6.5 , 7.5, 9,  10, 11, 12.5, 13.5 ,15 , 16, 17]
+    y_pos = [ 0,  1,  2,  3,  4,  5.5,  6.5 , 8,  9, 10, 11.5, 12.5 ,14 , 15, 16]
     #data plotting
     fig, ax = plt.subplots(figsize=(8,6))
 
@@ -73,7 +73,7 @@ def main():
 #             cmap[1],cmap[5],cmap[0]]
 
     colors = [cmap[5],cmap[5], cmap[5],cmap[5],cmap[5],
-          cmap[4], cmap[4], cmap[4],
+          cmap[4], cmap[4],
           cmap[3],cmap[3],cmap[3],
           cmap[2],cmap[2],
           cmap[1],cmap[1],cmap[1]]
