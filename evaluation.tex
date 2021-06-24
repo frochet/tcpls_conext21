@@ -84,10 +84,10 @@ server reaches 13,62~Gbps.
 \textbf{\tcp/\tls}. To get a fair reference point, we first evaluate \tls over 
 \tcp using \texttt{picotls} with the AES128-GCM-SHA256 cipher at the commit 
 starting our fork. We also manually configured the receiving and sending buffer size 
-to match the ones we use internally in \tcpls. This fixes fragmentation and 
+to match the ones we use internally in \tcpls. This modification fixes fragmentation and 
 unnecessary copies of received \tls records that could occur, and improves by
-+$\approx \%40$ the
-implementation's throughput which our \tcpls 
++$\approx 40\%$ \texttt{picotls}'s perf client
+implementation throughput which our \tcpls 
 prototype avoids by design by offering a new transport API preventing the
 application developers to make choices adversaly affecting the throughput. With
 the implemented fixes, we can observe that \tcp/\tls reaches 10.3~Gbps 
