@@ -424,10 +424,9 @@ for different types of outages during a file transfer. We configure the client
 and the server with two interfaces, with one set to the 
 backup mode in the case of \mptcp, i.e. no subflows are opened on the backup 
 interface unless an issue is detected on the first interface. 
-We consider three 
-types of outages: a middlebox blackholing all the traffic, the reception of a 
-spurious \rst, and the loss of the interface for \mptcp.
-\todo{Why evaluate the loss of an interface if we can't compare it?}
+We consider two 
+types of outages: a middlebox blackholing all the traffic and the reception of a 
+spurious \rst.
 Fig.~\ref{fig:recovery}
 compares the goodput achieved by \mptcp and \tcpls over time when encountering 
 these events.
