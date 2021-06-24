@@ -133,12 +133,16 @@ These are encrypted with the handshake key which is not part of the context used
 Once the \tls handshake has succeeded, the endpoints can exchange \tcpls
 records.
 
-Our design ensures that middleboxes cannot distinguish \tcpls from \tls past the handshake. This eases the \tcpls deployment and hardens censorship attempts. Whenever a middlebox blocks the client \tcpls's handshake extensions, the later could choose to enable \tcpls after the handshake using \tcpls control records, provided that the server announced \tcpls support.
-The censor would not be able to trivially distinguish this behaviour from regular \tls, hardening potential attempts for censoring applications using \tcpls. The server handshake extensions are encrypted and thus cannot be targeted by such attacks.
+Our design ensures that middleboxes cannot distinguish \tcpls from \tls past the
+handshake. This eases the \tcpls deployment and hardens censorship attempts.
+Whenever a middlebox blocks the client \tcpls's handshake extensions, the later
+could choose to enable \tcpls after the handshake using \tcpls control records,
+provided that the server announced \tcpls support.  The censor would not be able
+to trivially distinguish this behaviour from regular \tls, hardening potential
+attempts for censoring applications using \tcpls. The server handshake
+extensions are encrypted and part of the TLS handshake trancript hash,  and thus
+cannot be targeted by such attacks.
 
-\todo{FR: I am not sure this is correct.  EncryptedExtensions could be dropped
-  by a middlebox, yet the TLS app-key should still be properly derived, and the
-  client cannot know whether the server supports TCPLS}
 
 %\todo{Is the following best here? -> Background ?}
 %A reasonable approach to design extensibility mechanisms in the Internet
