@@ -367,7 +367,7 @@ that are used to exchange data. \mptcp was designed to be a drop-in replacement
 for \tcp. A regular application that uses the socket API can use \mptcp without
 any modification. \mptcp uses a path manager to control the underlying \tcp
 connections. Several path managers were proposed in the Linux kernel
-implementation \cite{TODO}. However, few advanced applications have taken
+implementation \cite{TODO}.\todo{ref} However, few advanced applications have taken
 advantage of these advanced path managers. Apple's \mptcp stack was tuned for
 specific applications. For example, the Siri voice recognition application can
 use both cellular and Wi-Fi to optimize performance. Apple Music mainly
@@ -393,8 +393,9 @@ streams over the different \tcp connections. While Failover moves
 steering allows the application to distribute at any time the streams over the
 different
 \tcp connections of a \tcpls session. We already discussed a very simple use of
-stream steering when performing Application Connection Migration, which is to
-move all streams from one connection to the other.
+stream steering when performing Application Connection Migration, which plays
+with opening, attaching and closing \tcpls stream protocols to move the
+application data to a new connection.
 
 %Like \mptcp \cite{raiciu2012hard,rfc6824} or Multipath QUIC
 %\cite{de2017multipath,draft-liu-multipath-quic-02}, \tcpls supports an
@@ -418,8 +419,8 @@ maintaining the ability to process each stream in a zero-copy manner, and
 with no head-of-line blocking.
 \tcpls enables the application to choose which streams are protected from
 Head-of-Line blocking by placing them on separate \tcp connections.
-Applications objects that depend on others can cope with occasional
-Head-of-Line blocking.
+%Applications objects that depend on others can cope with occasional
+%Head-of-Line blocking.
 
 %\todo{Choix du HoL, ça coute des connexions mais pas forcément nécessaire en
 %	fonction de l'app.}
@@ -427,17 +428,20 @@ Head-of-Line blocking.
 %\todo{OB: paragraphe ci-dessous pas clair. (mp): C'est m-à-j}
 %\todo{Multipath congestion control appliqué a TCPLS, eBPF, pas trivial}
 
-\textbf{Coupling streams for aggregated bandwidths}. Applications that benefit
+\textbf{Coupling streams for aggregated bandwidths}. Recall that each stream is
+attached to only one \tcp connection. Applications that benefit
 from the aggregated bandwidth of several network paths when transmitting a
-single
-application object can use \tcpls \textit{coupled streams}. \todo{This
-abstraction could be surprising if we didn't mention yet that streams cannot be
-put on more than one connection.} When coupling
-streams assigned to different \tcp connections
-together, the sending application can schedule \tcpls records of application
+single application object can use \tcpls \textit{coupled streams}. Coupled
+streams send data alongside a sequence number located at the end of
+the record. The sender can schedule \tcpls records of application
 object over these
-streams and benefit from their aggregated bandwidth. The receiving application
-reads the application object in order, as \tcpls handles the reordering.
+streams and benefit from their aggregated bandwidth by sending data over the two
+stream using a strategy that fits the application usage. The receiving application
+reads the application object in order, as \tcpls handles the reordering when
+processing the decrypted records.
+%That is, with coupled streams, \tcpls offers
+%to the application an explicit interface to the sender, and an agnostic
+%interface to the receiver
 %This provides a level of service similar to MPTCP and MPQUIC.
 
 Dozens of packet schedulers were proposed for \mptcp. The default one is the
@@ -468,7 +472,7 @@ probe a connection, e.g. with an echo/request record to actively measure
 delays, or retrieve information from the remote host, e.g. by retrieving the
 remote host's \texttt{tcp\_info} structure.
 
-Coupled streams can also be used when performing Application Connection
+Coupled streams can be used when performing Application Connection
 Migration to smoothly transition from one network path to another without
 impacting the application goodput.
 
