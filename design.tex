@@ -328,10 +328,11 @@ connection.
 First, it creates a new \tcp connection and joins it to the
 \tcpls
 session. Then, %it steers the \tcpls stream abstraction,
-it attaches the existing streams to the new
+it attaches new streams to the new
 connection
 %using the stream opening protocol
-and removes them from the underperforming connection.
+and removes the old ones from the underperforming connection, effectively moving
+the application traffic to the new connection.
 %(mp): Lets talk of that in the following section rather
 %This stream steering
 %mechanism may temporally takes advantage of bandwidth aggregation during the
@@ -356,8 +357,8 @@ and removes them from the underperforming connection.
 
 This second type of migration does not require application-level
 acknowledgments, but it cannot survive from one of the
-underlying connections' failure. During such a migration, data is sent over two
-connections, which brings us to explain how multipath is designed.
+underlying connections' failure. During such a migration, data may be sent over
+two connections, which brings us to explain how multipath is designed.
 
 \subsubsection{Multipath capabilities}
 
