@@ -64,7 +64,7 @@ cost compared to \tcp and \tls while offering better raw performance than
 several \quic implementations. To this end, we use our physical testbed 
 presented in Figure~\ref{fig:perf_testbed} and run throughput measurements for 
 large transfers with \tcp/\tls, \tcpls and three \quic implementations.
-The results are reported on Figure~\ref{fig:perf}, which contains the bandwidth 
+The results are reported in Figure~\ref{fig:perf}, which contains the bandwidth 
 in gigabits per second and packets per second obtained for each test.
 Each bar corresponds to the median measurement over 10 seconds of stable 
 throughput.
@@ -85,11 +85,11 @@ server reaches 13,62~Gbps.
 \tcp using \texttt{picotls} with the AES128-GCM-SHA256 cipher at the commit 
 starting our fork. We also manually configured the receiving and sending buffer size 
 to match the ones we use internally in \tcpls. This modification fixes fragmentation and 
-unnecessary copies of received \tls records that could occur, and improves by
+unnecessary copies of received \tls records that could occur and improves by
 +$\approx 40\%$ \texttt{picotls}'s perf client
 implementation throughput which our \tcpls 
 prototype avoids by design by offering a new transport API preventing the
-application developers to make choices adversaly affecting the throughput. With
+application developers to make choices adversely affecting the throughput. With
 the implemented fixes, we can observe that \tcp/\tls reaches 10.3~Gbps 
 with a 1500-byte MTU and 12.6~Gbps with a 9000-byte MTU. Both leverage the 
 \tcp Segmentation Offload (TSO), which is a feature commonly enabled on 
@@ -139,9 +139,9 @@ acknowledgments. % of adding the \tcpls-level
 % Thanks to these acknowledgments, \tcpls can support failover.
 Our measurements show that Failover has a small impact on raw throughput as
 \tcpls reaches 9.66 Gbps with a $1500$ bytes MTU.
-This is due to increase in control records that are exchanged during the file 
+This is due to an increase in control records that are exchanged during the file 
 transfer, and buffer management within \tcpls.
-This impact could be reduced by reducing number of record acknowledgments. We 
+This impact could be reduced by reducing the number of record acknowledgments. We 
 leave finding the optimal acknowledgment frequency as future work.
 %From a performance viewpoint, they increase the 
 %number of control records 
