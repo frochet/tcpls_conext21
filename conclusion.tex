@@ -22,11 +22,12 @@ flexible API that allows the applications to perform zero-copy data transfers,
 and easily manipulate the different features presented in this research work.
 Our performance evaluation shows that this prototype is more than twice as fast
 as currently available \quic implementations while already supporting additional
-features such as multipath, failover, and connection migration.
+features such as bandwidth aggregation, failover, and connection migration.
 
 \tcpls is both simple and powerful. Simple because it can be implemented inside
 existing \tls libraries without any kernel change in contrast to \tcp. \tcpls is
 wire-compatible with the existing \tcp middleboxes and can thus be used in all
 environments where \tls is used over \tcp. Given the performance benefits of
-\tcpls and the features that it already provides, it might be worth
-reconsidering the deployment of new protocols like \quic.
+\tcpls, the flexibility it offers and the features that it already provides, we
+believe it can be a strong contender to \quic for modern services, including
+HTTP.
