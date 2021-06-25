@@ -159,7 +159,8 @@ client do not necessarily need to be part of the multipath bandwidth aggregation
 Such a feature may be implemented through a negotiation of the aggregation
 mode.
 
-Our implementation currently includes a round-robin scheduler. We expect to
+Our implementation currently includes a round-robin scheduler on the receiver
+side. We expect to
 support other schedulers in the future and allow the application to select its 
 preferred scheduler through the API, or even send it as eBPF bytecode over the 
 session. The more \tcpls receives records in order, the more it can deliver 

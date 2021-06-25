@@ -31,24 +31,52 @@ bandwidth aggregation.
 	\label{fig:aead-iv}
 \end{figure}
 
-Stream Multiplexing is a modern transport service that has been part of recent protocols such as \sctp~\cite{rfc4960}, \quic~\cite{rfc9000} and HTTP/2.0 \cite{rfc7540}. The latter also proposes multiplexing with an independent
-framing system atop the \tls-encrypted \tcp bytestream. In \tcpls, we choose
-to implement multiplexing with \tcpls records. We dedicate a \tcpls record type to \tcpls stream data. Each stream has a separate cryptographic context allowing
-concurrent encryption and decryption of data within the same session.
-A \tcpls stream consists of a sequence of \tcpls stream data records encrypted with its cryptographic context.
+Stream Multiplexing is a modern transport service that has been part of recent
+protocols such as \sctp~\cite{rfc4960}, \quic~\cite{rfc9000} and HTTP/2.0
+\cite{rfc7540}. The latter also proposes multiplexing with an independent
+framing system atop the \tls-encrypted \tcp bytestream. In \tcpls, we choose to
+implement multiplexing with \tcpls records. We dedicate a \tcpls record type to
+\tcpls stream data. Each stream has a separate cryptographic context allowing
+concurrent encryption and decryption of data within the same session.  A \tcpls
+stream consists of a sequence of \tcpls stream data records encrypted with its
+cryptographic context. Each stream is attached to one \tcp connection.
 
-One simple way to provide separate cryptographic contexts is to use multiple application-level keys. But this is known to degrade the security properties proportionally to the number of additional keys~\cite{chatterjee2011another}. To overcome this, we propose an Initial Vector (IV) derivation technique that enables independent encryption/decryption to each stream without the security degradation.
+One simple way to provide separate cryptographic contexts is to use multiple
+application-level keys. But this is known to degrade the security properties
+proportionally to the number of additional keys~\cite{chatterjee2011another}. To
+overcome this, we propose an Initial Vector (IV) derivation technique that
+enables independent encryption/decryption to each stream without the security
+degradation.
 
-Fig.~\ref{fig:aead-iv} illustrates how the AEAD IV is computed for a
-given \tcpls record of a \tcpls stream. First the left-most bits of the IV derived from the \tls handshake are summed with the 32-bit \tcpls Stream ID. Then the right-most bits are XORed with the stream 64-bit record sequence number. Each \tcpls stream has a separate record sequence number space. This combination of IV manipulation guarantees that the resulting IV is unique for each record of all \tcpls streams as long as the Stream ID is unique and no sequence number is used twice in a given stream. The Stream ID space is split between the client and the server. Stream ID 0 is equivalent to the cryptographic context directly derived from the handshake.
+Fig.~\ref{fig:aead-iv} illustrates how the AEAD IV is computed for a given
+\tcpls record of a \tcpls stream. First the left-most bits of the IV derived
+from the \tls handshake are summed with the 32-bit \tcpls Stream ID. Then the
+right-most bits are XORed with the stream 64-bit record sequence number. Each
+\tcpls stream has a separate record sequence number space. This combination of
+IV manipulation guarantees that the resulting IV is unique for each record of
+all \tcpls streams as long as the Stream ID is unique and no sequence number is
+used twice in a given stream. The Stream ID space is split between the client
+and the server. Stream ID 0 is equivalent to the cryptographic context directly
+derived from the handshake.
 %\todo{Il faut expliquer comment les stream id sont choisis pour garantir
 %l'unicité}
 
-To avoid possible middleboxes interference, in addition to the record sequence number, the \tcpls Stream ID is kept implicit as well. When an endpoint receives a \tcpls record, we leverage the AEAD cipher to check the authentication tag repeatedly until the correct \tcpls Stream ID is found. An optimized implementation would not involve a complete decryption as all TLS 1.3 AEAD ciphers use an Encrypt-then-MAC construct~\cite{rfc7366, rfc8446}, and the tag verification, especially on AES-GCM is computationnaly light.
+To avoid possible middleboxes interference, in addition to the record sequence
+number, the \tcpls Stream ID is kept implicit as well. When an endpoint receives
+a \tcpls record, we leverage the AEAD cipher to check the authentication tag
+repeatedly until the correct \tcpls Stream ID is found. An optimized
+implementation would not involve a complete decryption as all TLS 1.3 AEAD
+ciphers use an Encrypt-then-MAC construct~\cite{rfc7366, rfc8446}, and the tag
+verification, especially on AES-GCM is computationnaly light.
 %\todo{citer rfc7366 ? ou les références de ce rfc ?}
 
-From a security standpoint, each failed decryption is considered as a forgery attempt. However, the limits on confidentiality and integrity for AEAD ciphers are large before a successful forgery may be considered with non-negligible probability~\cite{luykx2015limits, aeadlimits}. For example, in the case of ChaCha20 + Poly1305, an adversary making $2^{60}$ forgery attempts succeeds with probability $2^{-33}$.
-\todo{Should we mention that one stream cannot be used on two connections at the same time?}
+From a security standpoint, each failed decryption is considered as a forgery
+attempt. However, the limits on confidentiality and integrity for AEAD ciphers
+are large before a successful forgery may be considered with non-negligible
+probability~\cite{luykx2015limits, aeadlimits}. For example, in the case of
+ChaCha20 + Poly1305, an adversary making $2^{60}$ forgery attempts succeeds with
+probability $2^{-33}$.
+%\todo{Should we mention that one stream cannot be used on two connections at the same time?}
 
 %The classical solution to support streams in a transport protocol is to assign
 %an identifier to each stream and send the data from stream $x$ as a tuple
@@ -163,8 +191,17 @@ to associate one additional \tcp connection to the \tcpls session. Thus by sendi
 that are difficult to counter with \mptcp. The server can later send additional
 cookies and update its list of addresses.
 
-To join a new \tcp connection to the \tcpls session, for instance over IPv6, the client sends a \textsc{ClientHello} message containing the session identifier (SESSID($\alpha$) in Fig.~\ref{fig:join-example}) and one of the
-cookies provided by the server (COOKIE($\beta_1$) in Fig.~\ref{fig:join-example}). The server uses the session identifier $\alpha$ to find the corresponding \tcpls session and checks the validity of the cookie. If the \tcpls session and cookie are valid, the \tcp connection is joined to the \tcpls session. The session identifier plays the same role as the \mptcp token, but is sent encrypted. The cookie providers stronger protection than \mptcp's HMAC with security keys exchanged in cleartext. The cookie is also sent encrypted and can only be used once.
+To join a new \tcp connection to the \tcpls session, for instance over IPv6, the
+client sends a \textsc{ClientHello} message containing the session identifier
+(SESSID($\alpha$) in Fig.~\ref{fig:join-example}) and one of the cookies
+provided by the server (COOKIE($\beta_1$) in Fig.~\ref{fig:join-example}). The
+server uses the session identifier $\alpha$ to find the corresponding \tcpls
+session and checks the validity of the cookie. If the \tcpls session and cookie
+are valid, the \tcp connection is joined to the \tcpls session. The session
+identifier plays the same role as the \mptcp token, but is sent encrypted. The
+cookie providers stronger protection than \mptcp's HMAC with security keys
+exchanged in cleartext. The server sends cookies encrypted and they can only be
+used once by the client.
 %(i.e.,
 %when the server receives a valid cookie, it accepts the connection, attaches it
 %to the right \tcpls session, and discards the cookie).
@@ -222,18 +259,31 @@ cookies provided by the server (COOKIE($\beta_1$) in Fig.~\ref{fig:join-example}
 Upon network outage, \tcpls leverages its joining mechanism to recover the session
 over another \tcp connection. To do achieve such a \emph{break-before-make}, \tcpls sends stream-level record
 acknowledgments for the records that have been received
-over each stream. Upon network outage, \tcpls moves the
+over each stream. Upon reception of Stream-level acknowledgments, the sender can
+manage its sending buffer and remove acknowledged encrypted records. Upon network outage, \tcpls moves the
 active streams out of the failed \tcp connection to an active one. Furthermore,
 the unacknowledged data records sent over the failed \tcp connection are
-transmitted again over a functional one.
+transmitted again over a functional one. To resynchronize the session (i.e., the
+implicit encryption/decryption sequence numbers), the
+failover protocol makes the client sends the sequence number of the first record
+within its sending buffer, an $id$ to specify the failed \tcp connection and
+the Stream ID of the stream being moved. This information is encrypted with
+the default context and sent within the new \tcp connection. Receiving this protocol message, the server now knows
+the sequence number to decrypt some record arriving next on the connection that
+read the failover message. Either the server already processed that record, and can safely
+ignore it and increase the sequence number, or the server did not yet seen that
+record, and can decrypt and process it. The same protocol message and operations
+then goes from the server to the client, and the stream is then resyncronized
+over a new \tcp connection. No messages are required to be encrypted twice.
 %\tcpls' Failover mode is optional. Both peers need to activate it or
 %negotiate the feature throught the Secure Control Channel.
 We present in Section~\ref{sec:perf} measurements quantifying the
-performance impact of adding \tcpls record-level acknowledgments. We also give a
+performance impact of adding \tcpls record-level acknowledgments. We also
+present in Section~\ref{sec:eval_failover} an analysis of recovery speed against
+different type of outages. We also give a
 trace example involving a file transfer and the failover protocol in
 Appendix~\ref{app:failover}.
 %\todo{Let see if we can bring it back in the text later}
-\todo{Parler de la resynchronisation}
 
 \textbf{Application Connection Migration}. \tcpls also enables the
 application to trigger a connection migration, for instance based on application-level metrics qualifying its experience over the current path.
@@ -241,7 +291,7 @@ application to trigger a connection migration, for instance based on application
 %over
 %healthy networks. %and leveraging a transient usage of bandwidth aggregation.
 %(mp): I would leave this aside for now, until we explain application streams.
-%The decision to migrate from a healthy network to another one is an
+%The decision to migrate from a healthy network to another one is a
 %application one.
 %(mp): Yet the following meta-info are not described, and again implementation
 %-> section
