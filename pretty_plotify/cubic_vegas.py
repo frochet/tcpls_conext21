@@ -25,14 +25,14 @@ if __name__ == "__main__":
     df_vegas = pd.read_csv(args.vegas, sep=";", skipinitialspace=True)
     df_cubic = pd.read_csv(args.cubic, sep=";", skipinitialspace=True)
 
-    df_cubic.plot(kind='line', x='Time', y='Goodput', label=legend_label('cubic'), ax=ax, lw=2)
-    df_vegas.plot(kind='line', x='Time', y='Goodput', label=legend_label('vegas\_bpf\_cubic'), ax=ax, lw=2)
+    df_cubic.plot(kind='line', x='Time', y='Goodput', label=legend_label('CUBIC'), ax=ax, lw=2)
+    df_vegas.plot(kind='line', x='Time', y='Goodput', label=legend_label('Vegas then eBPF CUBIC'), ax=ax, lw=2)
 
-    ax.annotate(legend_label('injection of bpf\_cubic'),
+    ax.annotate(legend_label('injection of eBPF CUBIC'),
                 xy=(117.561356, 12.116826),
                 xytext=(150, 12.116826),
-                arrowprops=dict(arrowstyle="<|-", color='dimgray'), fontsize=12,
-                color='dimgray')
+                arrowprops=dict(arrowstyle="<|-", color='black'), fontsize=12,
+                color='black')
 
     ax.set_ylim(0, 100)
 

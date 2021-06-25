@@ -158,8 +158,8 @@ if __name__ == "__main__":
         ax.annotate(legend_label(args.event_text[counter]),
                     xy=((event-min_timing)/1000000, args.event_pos[counter]+counter*25),
                     xytext=(-0.4, (args.event_pos[counter]-0.5)+counter*25),
-                    arrowprops=dict(arrowstyle="<|-", color='dimgray'), fontsize=12,
-                    color='dimgray')
+                    arrowprops=dict(arrowstyle="<|-", color='black'), fontsize=12,
+                    color='black')
         counter+=1
 
     axis_aesthetic(ax=ax)
