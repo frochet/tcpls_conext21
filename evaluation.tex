@@ -181,7 +181,7 @@ We configured \tcpls to use IPv4 and IPv6 as separate network paths and start a
 %We configured IPv4 and IPv6 addresses on the Client and the Server and created
 %a \tcpls session that uses two \tcp connections. 
 The \tcpls server sends the records over the two \tcp connections in a 
-round-robin manner. The \tcpls client receives and reorder the records using an 
+round-robin manner. The \tcpls client receives and reorders the records using an 
 efficient heap.
 %Our Server steers the data in
 %the \tcpls streams using a
@@ -264,7 +264,7 @@ We evaluate three representative \quic implementations in our testbed:
 Facebook's \mvfst~\cite{mvfst-github,Joras_mvfst}, Microsoft's
 \msquic~\cite{msquic-github}, and Fastly's \quicly~\cite{quicly-github}. They
 are intended for production use and
-include throughput measurements applications.
+include throughput measurement applications.
 Furthermore, \mvfst and \quicly support Generic Segmentation Offload (GSO), 
 which
 offloads \udp segmentation and checksum computation to the NICs. 
@@ -291,7 +291,7 @@ with the tested \quic implementations. The fastest \quic implementation is
 twice faster with the same CPU usage and similar 
 receiving buffer sizes. Surprisingly, \quicly's performance decreases with
 jumbo frames but is still faster than without GSO.  \msquic reaches
-1.96~Gbps and \mvfst was slower despite GSO. 
+1.96~Gbps while \mvfst was slower despite GSO. 
 %The results are quite good for \msquic and \quicly. 
 %Indeed, since \msquic does not yet use GSO, the speed of
 %this implementation is fundamentally limited by the speed of the Linux Kernel's
@@ -318,7 +318,7 @@ decryption.
 %acknowledgments in userspace for \quic increasing the number of 
 %context-switches. While some of these shortcomings may
 %still be improved, several are carved in \quic's choice to use UDP.
-While there is ongoing works to improve $i$, $ii$ and $iii$ 
+While there are ongoing works to improve $i$, $ii$, and $iii$ 
 \cite{udp-gso-pacing}, it is likely that 
 performance parity will require more offload capabilities, which could lessen 
 the flexibility of \quic and would be uncompliant regarding the end users' 
