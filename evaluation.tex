@@ -138,9 +138,9 @@ acknowledgments. % of adding the \tcpls-level
 %described in Sec.~\ref{failover} to support failover.
 % Thanks to these acknowledgments, \tcpls can support failover.
 Our measurements show that Failover has a small impact on raw throughput as
-\tcpls reaches XXX Gbps with a $1500$ bytes MTU.
+\tcpls reaches 9.66 Gbps with a $1500$ bytes MTU.
 This is due to increase in control records that are exchanged during the file 
-transfer.
+transfer, and buffer management within \tcpls.
 This impact could be reduced by reducing number of record acknowledgments. We 
 leave finding the optimal acknowledgment frequency as future work.
 %From a performance viewpoint, they increase the 
@@ -191,7 +191,7 @@ efficient heap.
 %receiver to reorder the received records.  
 Our measurements show that when steering data in two streams
 configured with bandwidth aggregation in our testbed,
-\tcpls can reach a throughput of XXX Gbps, i.e. less than XXX\% below the
+\tcpls can reach a throughput of 8.8 Gbps, i.e. less than 10\% below the
 failover mode.
 
 \begin{figure}[!t]
