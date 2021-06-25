@@ -199,7 +199,7 @@ server uses the session identifier $\alpha$ to find the corresponding \tcpls
 session and checks the validity of the cookie. If the \tcpls session and cookie
 are valid, the \tcp connection is joined to the \tcpls session. The session
 identifier plays the same role as the \mptcp token, but is sent encrypted. The
-cookie providers stronger protection than \mptcp's HMAC with security keys
+cookie provides stronger protection than \mptcp's HMAC with security keys
 exchanged in cleartext. The server sends cookies encrypted and they can only be
 used once by the client.
 %(i.e.,
@@ -257,7 +257,7 @@ used once by the client.
 
 \textbf{Failover}.
 Upon network outage, \tcpls leverages its joining mechanism to recover the session
-over another \tcp connection. To do achieve such a \emph{break-before-make}, \tcpls sends stream-level record
+over another \tcp connection. To achieve such a \emph{break-before-make}, \tcpls sends stream-level record
 acknowledgments for the records that have been received
 over each stream. Upon reception of Stream-level acknowledgments, the sender can
 manage its sending buffer and remove acknowledged encrypted records. Upon network outage, \tcpls moves the
@@ -566,7 +566,7 @@ impacting the application goodput.
 %Streams can be attached to and closed from what we call a \texttt{transportid}
 %(the application does not have any knowledge of the \tcp interface).
 %When a stream is attached for the first time to a \tcp connection, this connection becomes active.
-The only way to gracefully closes a \tcp connection in a \tcpls session
+The only way to gracefully close a \tcp connection in a \tcpls session
 is by securely closing all streams attached to it, then \tcpls gracefully closes the
 \tcp connection. That is, if \tcpls receives a \rst or a \fin over an active
 \tcp connection, it tries to re-establish a \tcp connection.

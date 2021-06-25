@@ -86,7 +86,7 @@ server reaches 13,62~Gbps.
 starting our fork. We also manually configured the receiving and sending buffer size 
 to match the ones we use internally in \tcpls. This modification fixes fragmentation and 
 unnecessary copies of received \tls records that could occur and improves by
-+$\approx 40\%$ \texttt{picotls}'s perf client
+$\approx 40\%$ \texttt{picotls}'s perf client
 implementation throughput which our \tcpls 
 prototype avoids by design by offering a new transport API preventing the
 application developers to make choices adversely affecting the throughput. With
