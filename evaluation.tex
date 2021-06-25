@@ -267,7 +267,7 @@ are intended for production use and
 include throughput measurements applications.
 Furthermore, \mvfst and \quicly support Generic Segmentation Offload (GSO), 
 which
-offloads \udp segmentation and checksum computation to NICs. 
+offloads \udp segmentation and checksum computation to the NICs. 
 %We use the 
 %implementation's benchmarking application as
 %is, exploiting the optional arguments provided by their interface to increase
@@ -373,10 +373,10 @@ messages can be impacted. The client \tls extensions, that are
 integrity-protected but not confidential, can be modified by these middleboxes. 
 They contain messages such as \hello, \join, \textit{SESSID} and 
 \textit{COOKIE} presented 
-in Sections~\ref{sec:tcpls-handshake} and \ref{sec:multipath}. Other messages 
+in Sections~\ref{sec:transport-services} and \ref{sec:multipath}. Other messages 
 conveyed in encrypted \tls records cannot be distinguished or tampered with.
 When a client opens a \tcpls session
-through a \tls terminating proxy not supportin \tcpls, it replies 
+through a \tls terminating proxy not supporting \tcpls, it replies 
 with 
 a \textsc{ServerHello} message omitting the \hello extension. Then, the client 
 can implicitly fall back to \tls and continue with the handshake.
@@ -387,9 +387,8 @@ extensions. Similar behavior has been observed in overly restrictive stateful
 firewalls. To ensure connectivity in the presence of such policies, \tcpls
 implements an explicit fallback mechanism. If a client receives a \tcp \rst in
 response to the \tcpls \textsc{ClientHello}, or no response, it
-tries negotiating a regular \tls connection, either
-immediately similarly to Happy Eyeballs~\ref{TODO} or after a timeout. 
-In the same manner, a \tcpls \join extension might be
+tries negotiating a regular \tls connection after a timeout fired. 
+In the same manner, a \join extension might be
 blocked on a path when joining connections. In this case, the subflow 
 attachment is canceled, and
 the application is notified to react appropriately, e.g. to cancel the 
@@ -564,7 +563,7 @@ based on applications metrics.
 Applications can migrate their traffic from 
 one network path to another in a few \tcpls API calls. 
 Fig.~\ref{fig:conn_migration} shows the goodput 
-obtained when performing such a migration during a file transfer.% using the 
+obtained when performing such a migration during a file transfer. % using the 
 %API 
 %(i.e., the application decides 
 % when to migrate, and we expose a simplistic code flow to 
@@ -598,7 +597,7 @@ the IPv6 path and once again back to the IPv4 path.
 
 Figure~\ref{fig:conn_migration} reports the goodput obtained during the 
 experiment. We can observe a peak during the migration windows marked with 
-vertical black bars.% indicating the 
+vertical black bars. % indicating the 
 %attachment of the new stream and the closing of the initial stream), the 
 %client.
 During this window, the client uses coupled streams to transition smoothly from 
