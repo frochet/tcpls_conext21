@@ -167,7 +167,7 @@ session. The more \tcpls receives records in order, the more it can deliver
 them in a zero-copy fashion to the application. When a record is received 
 out-of-sequence, its content is pushed on an efficient reordering heap in 
 $O(log(n))$ for $n$ elements in the heap. Retrieving ordered records is in
-in $O(1)$. The performance of our multipath bandwidth aggregation is evaluated 
+in $\Theta(1)$. The performance of our multipath bandwidth aggregation is evaluated 
 in Sec.~\ref{sec:bwaggr}.
 
 %\subsubsection{Failover}\label{failover}
