@@ -166,9 +166,10 @@ preferred scheduler through the API, or even send it as eBPF bytecode over the
 session. The more \tcpls receives records in order, the more it can deliver 
 them in a zero-copy fashion to the application. When a record is received 
 out-of-sequence, its content is pushed on an efficient reordering heap in 
-$O(log(n))$ for $n$ elements in the heap. Retrieving ordered records is in
-in $\Theta(1)$. The performance of our multipath bandwidth aggregation is evaluated 
-in Sec.~\ref{sec:bwaggr}.
+$O(log(n))$ for $n$ elements in the heap. Checking the min sequence number in
+the heap is in in $\Theta(1)$ and retrieving is also in $O(log(n))$. The
+performance of our multipath bandwidth aggregation is evaluated in
+Sec.~\ref{sec:bwaggr}.
 
 %\subsubsection{Failover}\label{failover}
 %Failover is a binary mode (on/off) that is fully internal to \tcpls.
