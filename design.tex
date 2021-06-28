@@ -8,7 +8,8 @@
 
 By leveraging \tcpls records and extensions, we can design new modern transport
 services atop the combination of \tcp and \tls. In this subsection, we answer 
-our second research question {\small\textit{RQ2}} by presenting three transport 
+our second research question ({\small\textit{RQ2}}) by presenting three 
+transport 
 services: stream multiplexing (Section~\ref{sec:datastreams}), connection 
 migration (Section~\ref{sec:multipath}), and bandwidth aggregation 
 (Section~\ref{sec:multipath}). We leverage the \tcpls records
@@ -65,7 +66,7 @@ derived from the handshake.
 %\todo{Il faut expliquer comment les stream id sont choisis pour garantir
 %l'unicité}
 
-To avoid possible middleboxes interference ({\small{\textit{RQ2}}}), in addition to the record sequence
+To avoid possible middleboxes interference, in addition to the record sequence
 number, the \tcpls Stream ID is kept implicit as well. When an endpoint receives
 a \tcpls record, we leverage the AEAD cipher to check the authentication tag
 repeatedly until the correct \tcpls Stream ID is found. An optimized

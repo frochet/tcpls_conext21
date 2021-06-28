@@ -12,35 +12,47 @@ usage triggered the development of various important \tcp extensions, including
 timestamps and large windows~\cite{rfc1323} or Selective
 Acknowledgments~\cite{rfc2018}.
 
+In the mid-nineties, the Secure Socket Layer (SSL) protocol was proposed as an
+additional layer to \tcp to secure emerging e-commerce 
+websites~\cite{draft-hickman-netscape-ssl}. SSL evolved in different versions 
+of the Transport Layer Security (\tls) protocol, the most recent one being 
+version 1.3~\cite{rfc8446}. %Many details of the \tls protocol have changed 
+%since the first version of SSL~\cite{kotzias2018coming}. 
+Nowadays, \tls is almost ubiquitous on web servers~\cite{holz2019era} and many 
+non-web applications use it~\cite{anderson2019tls}.
+
 During the late nineties, early 2000s, transport protocol researchers explored
 alternatives to \tcp. The IETF standardized two new transport protocols:
 \dccp~\cite{kohler2006designing} and \sctp~\cite{rfc4960}. We rarely use \dccp
-today. Despite its benefits (support for multihoming, better design, and
-extensibility), only niche applications use it. This limited deployment is
-probably due to two different factors. First, \sctp forced the applications to %<--(mp): c'est aussi ce qu'a fait quic et tcpls
-use a new API. Second, the Internet contains various middleboxes (NAT,
-firewalls, etc.) that often block packets that do not carry \tcp or
+today. Despite \sctp benefits (support for multihoming, better design, and
+extensibility), only niche applications use it. %This limited deployment is
+%probably due to two different factors. First, \sctp forced the applications to 
+%%%<--(mp): c'est aussi ce qu'a fait quic et tcpls
+%use a new API. 
+This limited deployment is mainly due to the various middleboxes (NAT,
+firewalls, etc.) deployed in 
+the Internet that often block packets that do not carry \tcp or
 \udp~\cite{honda2011still}.  \sctp initially supported multihoming by switching
 from one path to another. It was later extended to use different
-paths continuously~\cite{iyengar2006concurrent}.  Multipath
+paths continuously~\cite{iyengar2006concurrent}. Multipath
 \tcp~\cite{rfc6824,raiciu2012hard} brought similar capabilities to \tcp, and
 included a coupled congestion control scheme~\cite{wischik2011design}, later
 brought to \sctp as well. This particular succession of events shows how
-different designs can collaborate to advance each other.
+different designs compete and advance each other.
 
-In the mid-nineties, the Secure Socket Layer (SSL) protocol was proposed as an
-additional layer to \tcp to secure emerging e-commerce websites~\cite{draft-hickman-netscape-ssl}. SSL evolved in different versions of the Transport Layer Security (\tls) protocol, the most recent one being version 1.3~\cite{rfc8446}. Many details of the \tls protocol have changed since the first version of SSL~\cite{kotzias2018coming}. Nowadays, \tls is almost ubiquitous on web servers~\cite{holz2019era} and many non-web applications use it~\cite{anderson2019tls}.
-
-\quic started as an experimental protocol used by Google to speed up web
-transfers~\cite{roskind2013quic,langley2017quic}. During the last years, it
+Extending \tcp today is not feasible anymore as middleboxes severely interfere 
+with changes to the \tcp header and 
+options~\cite{medina2004measuring,honda2011still, edeline2019bottom}.
+To overcome this problem, Google started \quic as an experimental 
+protocol~\cite{roskind2013quic,langley2017quic} combining functions usually 
+found in \tcp, \tls and HTTP/2. During the last years, it
 evolved into a complete transport protocol~\cite{rfc9000}.
 %whose standardization is being finalized within the IETF
-\quic proposes to revisit the layered model of the Internet to improve the 
-transport services. It combines the functions that are usually found in \tcp, 
-\tls, and HTTP/2. This results in latency reduction, more security, and better 
-extensibility. Indeed, the integration of \tls 1.3 allows 1-RTT secure 
-handshakes and extensive packet encryption, providing more security and 
-preventing middlebox interference.
+\quic leverages encryption to prevent middlebox interference and propose to 
+revisit the layered model of the Internet to improve the transport services.
+%Indeed, the integration of \tls 1.3 allows 1-RTT secure 
+%handshakes and extensive packet encryption, providing more security and 
+%preventing middlebox interference.
 %A key characteristic of \quic is that it encrypts almost all the packets, including most of their
 %headers.
 As \quic runs atop \udp, it can be implemented and deployed as a user-space library.
@@ -52,9 +64,11 @@ As \quic runs atop \udp, it can be implemented and deployed as a user-space libr
 
 Does the standardization of \quic marks the end of the \tcp era, moving
 all applications and transport research to \quic?  We do not think
-so. Today, QUIC is mainly used for HTTP/3~\cite{http3} and TCP still serves many applications~\cite{covid19,fiveyears}.
-In the future, TCP will remain the fallback for QUIC because of its greater support
-in networks.
+so. Today, QUIC is mainly used for HTTP/3~\cite{http3} and TCP remains a 
+fallback because of its greater support in networks. TCP also still serves many 
+applications~\cite{covid19,fiveyears}.
+%In the future, TCP will remain the fallback for QUIC because of its greater 
+%supportin networks.
 %
 %History tells us that \tcp has evolved with competing transport protocols.
 In the light of those recent advances, we revisit how transport services can be
@@ -66,13 +80,14 @@ This paper revisits this separation through the lens of the following research q
 
 \begin{itemize}
 	\item[{\small{\textit{RQ1}}} -] How can TCP and TLS be 
-	combined to improve extensibility?
+	combined to improve extensibility and middlebox resilience ?
   %\todo{Discuss middleboxes and TCP extensibility so that the 
 	%question can become: How can TCP and TLS be combined to alleviate middlebox 
 	%interference or smth.}
-  \item[{\small{\textit{RQ2}}} -] How can we alleviate middlebox
-    interferences?
-	\item[{\small{\textit{RQ3}}} -] What are the new transport services this combination can offer?
+%  \item[{\small{\textit{RQ2}}} -] How can we alleviate middlebox
+%    interferences?
+	\item[{\small{\textit{RQ2}}} -] What are the new transport services this 
+	combination can offer?
 	%\item[{\small{\textit{RQ3}}} -] How do these services compete with other
 	%protocols ?
 \end{itemize}
