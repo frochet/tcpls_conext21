@@ -104,16 +104,18 @@
 \begin{abstract}
   \tcp and \tls are among the essential protocols in today's Internet. \tcp
   ensures reliable data delivery while \tls secures the data transfer.
-  Following the Internet layered model, both protocols are largely independent.
-  This paper revisits this assumption and demonstrates the various benefits a 
-  closer integration between \tcp and \tls brings.
-  \todo{François}
+  Although they are very often used together, they have been designed 
+  independently following the Internet layered model.
+  This paper %revisits this assumption and 
+  demonstrates the various benefits of 
+  a closer integration between \tcp and \tls.
+%  \todo{François}
 
   By leveraging the extensible \tls 1.3 records, we combine \tcp and \tls into
   \tcpls to build modern transport services such as multiplexing, connection 
   migration, stream steering, and bandwidth aggregation. These services do not 
   modify the \tcp wire format and are resistant to middleboxes. \tcpls offers a 
-  powerful API enabling applications to  precisely express the required 
+  powerful API enabling applications to precisely express the required 
   transport services, ranging from a single-path single-stream connection to a 
   multi-stream connection over several network paths, enabling aggregated 
   bandwidth and Head-of-Line blocking avoidance.
