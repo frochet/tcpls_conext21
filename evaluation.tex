@@ -6,11 +6,13 @@ Section~\ref{sec:perf}. Then we report how \tcpls
 interacts with middleboxes in a controlled environment in 
 Section~\ref{sec:middlebox}. We then emulate, using
 Mininet~\cite{handigol2012reproducible}, more complex scenarios involving 
-Failover (Sec.~\ref{sec:eval_failover}), Application Connection Migration (Sec.
+Failover (Section~\ref{sec:eval_failover}), Application Connection Migration 
+(Section
 ~\ref{sec:app-migration}) and bandwidth aggregation~\ref{sec:bwaggr}.
 
 For the two first experiments of 
-our \tcpls prototype (Sec.~\ref{sec:perf} and~\ref{sec:middlebox}), we use the 
+our \tcpls prototype (Section~\ref{sec:perf} and~\ref{sec:middlebox}), we use 
+the 
 testbed depicted
 in Figure~\ref{fig:perf_testbed}. It consists of three servers equipped
 with Intel Xeon CPU E5-2630 2.40GHz, 16~GB RAM, running
@@ -132,7 +134,7 @@ protocol. We now evaluate the cost of the transport services.
 We then evaluate the cost of enabling Failover, which adds \tcpls-record-level 
 acknowledgments. % of adding the \tcpls-level 
 %acknowledgments
-%described in Sec.~\ref{failover} to support failover.
+%described in Section~\ref{failover} to support failover.
 % Thanks to these acknowledgments, \tcpls can support failover.
 Our measurements show that Failover has a small impact on raw throughput as
 \tcpls reaches 9.66 Gbps with a $1500$ bytes MTU.
@@ -495,7 +497,7 @@ is more difficult to detect. Both stacks rely on timers to decide to switch
 paths. In the case of \tcpls, we
 configure a timer using the \tcp \texttt{User} \texttt{Timeout} 
 option, which is set to $250~ms$ in our experiment. This value can also be
-chosen by the application to reflect specific use cases.
+chosen by the application according to specific use cases.
 %(mp): (should) already been explained in sec. prototype
 %When the server enables failover, it sets a timeout to protect 
 %the transfer. This option is sent in encrypted \tcpls records to 
@@ -571,7 +573,7 @@ obtained when performing such a migration during a file transfer. % using the
 % when to migrate, and we expose a simplistic code flow to 
 %perform it). 
 In this experiment, we reuse the Mininet topology %introduced in 
-%Sec.~\ref{sec:bwaggr}%. We
+%Section~\ref{sec:bwaggr}%. We
 and set a bandwidth of 30Mbps on each path, a 40ms 
 round-trip-time for the v4 link, and 80ms for the v6 link. Our test application 
 downloads a 60MB file and migrates once from the IPv4 to 

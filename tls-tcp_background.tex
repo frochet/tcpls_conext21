@@ -51,10 +51,34 @@ middleboxes severely limit the \tcp extensibility. Multipath \tcp~\cite{rfc8684,
   \label{table:tcpquictcpls}
 \end{table}
 
-To counter middlebox interference, Google took a different approach by developing an entirely new secure transport protocol, \quic~\cite{langley2017quic}, combining \tcp, \tls, and HTTP features in a single protocol implemented in a userspace library and running above \udp. \quic prevents middlebox interference by encrypting and authenticating the data, but also most of the control information such as the acknowledgments except a very small header. \quic leverages \tls 1.3~\cite{rfc8446} to negotiate the security keys and authenticate the server. \quic packets have a flexible framing system and are encrypted separately, in a similar manner to \tls records. \quic allows the application to use different datastreams over a single connection such \sctp~\cite{rfc4960} or Structured Streams~\cite{ford2007structured}. \quic has been adopted by the industry and standardized within the IETF~\cite{rfc9000}. There are more than a dozen \quic implementations~\cite{quicimplem,marx2020same}. \quic is already used in production as shown by recent measurement studies~\cite{trevisan2020five}.
+To counter middlebox interference, Google took a different approach by 
+developing an entirely new secure transport protocol, 
+\quic~\cite{langley2017quic}, combining \tcp, \tls, and HTTP features in a 
+single protocol implemented in a userspace library and running above \udp. 
+\quic prevents middlebox interference by encrypting and authenticating the 
+data, but also most of the control information such as the acknowledgments 
+except a very small header. \quic leverages \tls 1.3~\cite{rfc8446} to 
+negotiate the security keys and authenticate the server. \quic has a flexible 
+framing system and packets are encrypted separately, in a similar manner to 
+\tls records. \quic allows the application to use different datastreams over a 
+single connection such \sctp~\cite{rfc4960} or Structured 
+Streams~\cite{ford2007structured}. \quic has been adopted by the industry and 
+standardized within the IETF~\cite{rfc9000}. There are more than a dozen \quic 
+implementations~\cite{quicimplem,marx2020same}. \quic is already used in 
+production as shown by recent measurement studies~\cite{trevisan2020five}.
 
-Table~\ref{table:tcpquictcpls} summarises the main features of \tcp, \tls over \tcp, and \quic. All protocols include reliability and congestion control. \tls and \quic provide the same security features. \mptcp efficiently supports failovers and \quic includes a connection migration capability. \quic supports streams preventing Head-of-Line (HoL) blocking. \mptcp is the only
-standardised protocol that is able to aggregate different paths bandwidth. \mptcp implementations include several path management strategies~\cite{hesmans2015smapp,hesmans2016enhanced} to control the different paths utilization. \quic allows the client to migrate its connection, although it is rarely exposed to applications in current implementations.
+Table~\ref{table:tcpquictcpls} summarises the main features of \tcp,\mptcp, 
+\tls over \tcp, and \quic. All protocols include reliability and congestion 
+control. \tls and \quic provide the same security features. \mptcp efficiently 
+supports failovers and \quic includes a connection migration capability. \quic 
+supports stream and prevents Head-of-Line (HoL) blocking. \mptcp is the only
+standardised protocol that is able to aggregate different paths bandwidth. 
+\mptcp implementations include several path management 
+strategies~\cite{hesmans2015smapp,hesmans2016enhanced} to control the different 
+paths utilization. \quic allows the client to migrate its connection, although 
+it is rarely exposed to applications in current implementations. Multipath QUIC 
+extensions enabling the use of concurrent paths in QUIC have recently been 
+proposed. \todo{ref}
 %(mp): Actually, none really offer that to my knowledge. I guess that's why
 %Florentin
 %added the (v).

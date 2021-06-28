@@ -35,7 +35,12 @@ additional layer to \tcp to secure emerging e-commerce websites~\cite{draft-hick
 transfers~\cite{roskind2013quic,langley2017quic}. During the last years, it
 evolved into a complete transport protocol~\cite{rfc9000}.
 %whose standardization is being finalized within the IETF
-\quic proposes to revisit the layer model of the Internet to improve the transport services. It combines the functions that are usually found in \tcp, \tls, and HTTP/2. This results in latency reduction, more security, and better extensibility. Indeed, the integration of \tls 1.3 allows 1-RTT secure handshakes and extensive packet encryption, providing more security and preventing middlebox interference.
+\quic proposes to revisit the layered model of the Internet to improve the 
+transport services. It combines the functions that are usually found in \tcp, 
+\tls, and HTTP/2. This results in latency reduction, more security, and better 
+extensibility. Indeed, the integration of \tls 1.3 allows 1-RTT secure 
+handshakes and extensive packet encryption, providing more security and 
+preventing middlebox interference.
 %A key characteristic of \quic is that it encrypts almost all the packets, including most of their
 %headers.
 As \quic runs atop \udp, it can be implemented and deployed as a user-space library.
@@ -69,7 +74,7 @@ This paper revisits this separation through the lens of the following research q
 	%protocols ?
 \end{itemize}
 
-To answer these questions, we design and implement an approach to combine
+To answer these questions, we design and implement an approach that combines
 \tcp and \tls 1.3 into a fast, flexible, and secure transport protocol called \textbf{\tcpls}
 %
 %In this paper, we take a step back. As \quic closely couples the reliability and
@@ -78,7 +83,11 @@ To answer these questions, we design and implement an approach to combine
 %secure protocol called \textbf{\tcpls}
 \footnote{A preliminary version of this work has been presentend in a workshop
   paper~\cite{rochet2020tcpls}.}.  At the heart of our approach, we illustrate
-how \tls records (i.e., messages exchanged through \tls) can be leveraged to build new transport services. In \tcp/\tls, \tls \texttt{AppData} records are solely used to securely convey the \tcp bytestream. In \tcpls, we extend their use to convey both application and control data such as encrypted \tcp options.
+how \tls records (i.e., messages exchanged through \tls) can be leveraged to 
+build new transport services. In \tcp/\tls, \tls \texttt{AppData} records are 
+solely used to securely convey the \tcp bytestream. In \tcpls, we extend their 
+use to convey both application and control data including encrypted \tcp 
+options.
 %\todo{more detail needed?}
 
 We demonstrate that this combination allows secure extensibility that can also
@@ -109,10 +118,13 @@ features than the \quic implementations we tested.
 %for recovery and connection migration. Our \tcpls has been thought
 %with open access in mind and will be released upon this paper acceptance.
 
-The rest of this paper is organized as follows: Sec.~\ref{sec:background}
-provides the required technical background; Sec.~\ref{sec:background-design}
-discusses how we designed \tcpls, while Sec.~\ref{sec:prototype} focuses on how
-we implemented \tcpls; Sec.~\ref{sec:evaluation} evaluates the performance and
-behavior of \tcpls; Sec.~\ref{sec:related} discusses the related work;  finally, Sec.~\ref{sec:conclusion} concludes this paper by
+The rest of this paper is organized as follows: Section~\ref{sec:background}
+provides the required technical background; Section~\ref{sec:background-design}
+discusses how we designed \tcpls, while Section~\ref{sec:prototype} focuses on 
+how
+we implemented \tcpls. Section~\ref{sec:evaluation} evaluates the performance 
+and
+behavior of \tcpls. Section~\ref{sec:related} discusses the related work.  
+finally, Section~\ref{sec:conclusion} concludes this paper by
 summarizing its main achievements and discussing further directions.
 %This work does not raise any ethical issues.

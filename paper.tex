@@ -104,16 +104,17 @@
 \begin{abstract}
   \tcp and \tls are among the essential protocols in today's Internet. \tcp
   ensures reliable data delivery while \tls secures the data transfer.
-  Following the Internet layered model, both protocols are largely independent.
-  This paper revisits this assumption and demonstrates the various benefits a 
-  closer integration between \tcp and \tls brings.
-  \todo{François}
+  Although they are very often used together, they have been designed 
+  independently following the Internet layered model.
+  This paper %revisits this assumption and 
+  demonstrates the various benefits that a closer integration between \tcp and 
+  \tls would bring.
 
   By leveraging the extensible \tls 1.3 records, we combine \tcp and \tls into
   \tcpls to build modern transport services such as multiplexing, connection 
   migration, stream steering, and bandwidth aggregation. These services do not 
   modify the \tcp wire format and are resistant to middleboxes. \tcpls offers a 
-  powerful API enabling applications to  precisely express the required 
+  powerful API enabling applications to precisely express the required 
   transport services, ranging from a single-path single-stream connection to a 
   multi-stream connection over several network paths, enabling aggregated 
   bandwidth and Head-of-Line blocking avoidance.
@@ -137,13 +138,14 @@
 %  having different properties than the passive connection migration, and
 %  more adapted for several connection migration scenarios.
 
-  Compared to \mptcp and \quic, \tcpls offers more control to the
-  application\todo{This a matter of impl. not protocol}, can be easily deployed 
-  as an extension to the
-  user-space \tls libraries, and %provides high performance by leveraging the
+  Compared to \mptcp, our \tcpls prototype offers more control to the
+  application and can be easily deployed 
+  as an extension to user-space \tls libraries, %and ¨provides high performance 
+  %by leveraging the
   %existing \tcp support in the network interface cards.
-  can be implemented at a low cost. Measurements with our
-  \tcpls implementation demonstrate it offers higher performance than 
+  while being implemented at a low cost. Measurements %with our \tcpls 
+  %implementation 
+  demonstrate that it offers higher performance than 
   existing \quic libraries with a super set of transport services.
 
 \end{abstract} \maketitle
