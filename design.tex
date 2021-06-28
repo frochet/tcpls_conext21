@@ -576,32 +576,22 @@ impacting the application goodput.
 %Timeout option \cite{rfc5482}, \mptcp's \texttt{ADD\_ADDR} and
 %\texttt{REMOVE\_ADDR} option and experimental \tcp options \cite{rfc6994}.
 
-\subsection{Finishing a \tcpls Connection}\label{design.closing}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\todo{OB: pas critique pour moi, ou alors il faut comparer MPTCP et QUIC}
+%\subsection{Finishing a \tcpls Connection}\label{design.closing}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\todo{OB: pas critique pour moi, ou alors il faut comparer MPTCP et QUIC}
 
-\todo{What's left here that does not belong to the Failover or implementation section?}
-\tcpls's semantic offers a secure stream abstraction to the application.
-%(mp): This is implementation not design
-%Streams can be attached to and closed from what we call a \texttt{transportid}
-%(the application does not have any knowledge of the \tcp interface).
-%When a stream is attached for the first time to a \tcp connection, this connection becomes active.
-The only way to gracefully close a \tcp connection in a \tcpls session
-is by securely closing all streams attached to it, then \tcpls gracefully closes the
-\tcp connection. That is, if \tcpls receives a \rst or a \fin over an active
-\tcp connection, it tries to re-establish a \tcp connection.
-%(mp): This is implementation not design
-%If failover is enabled, \tcpls tries another network path first. Otherwise, a connection over
-%the same IP source and destination is reestablished and the streams are moved to
-%this new \tcp connection.
-%If failover is not enabled, \tcpls would
-%opportunistically try to reestablish the connection.
-When Failover is enabled, in-flight records that were lost after receiving
-an illegitimate \rst or \fin, e.g. sent by a middlebox, can be transmitted again by \tcpls
-on this new \tcp connection.
+%\todo{What's left here that does not belong to the Failover or implementation section?}
+%\tcpls's semantic offers a secure stream abstraction to the application.
+%The only way to gracefully close a \tcp connection in a \tcpls session
+%is by securely closing all streams attached to it, then \tcpls gracefully closes the
+%\tcp connection. That is, if \tcpls receives a \rst or a \fin over an active
+%\tcp connection, it tries to re-establish a \tcp connection.
+%When Failover is enabled, in-flight records that were lost after receiving
+%an illegitimate \rst or \fin, e.g. sent by a middlebox, can be transmitted again by \tcpls
+%on this new \tcp connection.
 
-%\subsection{Limitations}
-%\tcpls's design ensures that middleboxes are not going to distinguish
+%%\subsection{Limitations}
+%%\tcpls's design ensures that middleboxes are not going to distinguish
 %\tcpls from \tls past the handshake. We chose this method to ease deployment
 %and
 %to harden censorship attempts since, even if some middlebox comes to block
