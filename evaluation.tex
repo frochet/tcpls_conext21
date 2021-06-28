@@ -26,7 +26,6 @@ single thread on each machine to run the client and server.
 	\begin{center}
 		\includegraphics[width=.6\columnwidth]{figures/testbed.png}
 	\end{center}
-	\vspace{-0.5cm}
 	\caption{Performance Measurements Setup. C = Client. S = Server. R = 
 	Router/Middlebox.}
 	\label{fig:perf_testbed}
@@ -197,7 +196,6 @@ Our measurements show that coupling when two streams in our testbed,
   \begin{center}
     \includegraphics[width=\columnwidth]{figures/perf_analysis.png}
   \end{center}
-\vspace{-0.5cm}
   \caption{Throughput comparison between \tcpls, \tcp/\tls and three \quic 
   implementations.
     %Single-thread client/server for all implementations.  
@@ -435,7 +433,6 @@ these events.
   \begin{center}
     \includegraphics[width=.8\columnwidth]{figures/breakage_analysis.png}
   \end{center}
-\vspace{-0.5cm}
   \caption{Recovery delays of \tcpls compared to \mptcp during a single outage.}
   \label{fig:recovery}
 \end{figure}
@@ -465,7 +462,6 @@ experiment.
   \begin{center}
     \includegraphics[width=\columnwidth]{figures/tcpls_mptcp.png}
   \end{center}
-\vspace{-0.5cm}
   \caption{\mptcp has difficulties to react to successive network outages. 
   \tcpls reacts quickly to such outages.}
   \label{fig:failover}
@@ -571,7 +567,6 @@ the new path during the migration time window.
   \begin{center}
     \includegraphics[width=.8\columnwidth]{figures/migration.png}
   \end{center}
-\vspace{-0.5cm}
   \caption{Application-level connection migration during a 60MB file download.
     \tcpls temporarily aggregates the two network paths during such a migration.}
   \label{fig:conn_migration}
@@ -631,7 +626,6 @@ one offered by state-of-the-art \mptcp.
 	\begin{center}
 		\includegraphics[width=\columnwidth]{figures/aggregate_dual.png}
 	\end{center}
-	\vspace{-0.5cm}
 	\caption{Bandwidth aggregation comparison between \mptcp (top plot) and
 		\tcpls (bottom plot) with a record payload size of 16,384 bytes.}
 	\label{fig:multipath_aggregation}
@@ -679,7 +673,6 @@ and obtained similar results.
   \begin{center}
     \includegraphics[width=.8\columnwidth]{pretty_plotify/plots/vegas_cubic.png}
   \end{center}
-\vspace{-0.5cm}
   \caption{\tcpls hosts can exchange eBPF congestion controllers and enable 
   them during a \tcpls session.}
   \label{fig:vegasCubic}
