@@ -65,7 +65,7 @@ derived from the handshake.
 %\todo{Il faut expliquer comment les stream id sont choisis pour garantir
 %l'unicité}
 
-To avoid possible middleboxes interference, in addition to the record sequence
+To avoid possible middleboxes interference ({\small{\textit{RQ2}}}), in addition to the record sequence
 number, the \tcpls Stream ID is kept implicit as well. When an endpoint receives
 a \tcpls record, we leverage the AEAD cipher to check the authentication tag
 repeatedly until the correct \tcpls Stream ID is found. An optimized
