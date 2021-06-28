@@ -134,14 +134,25 @@ to gain in performance. They can also enable Failover during a \tcpls session
 by sending a message on the secure channel. 
 We evaluate the performance impact of Failover in Sec.~\ref{sec:eval_failover}
 
-\textbf{Application Connection Migration}.
-\todo{Is there something to write implementation-wise?}
+%\textbf{Application Connection Migration}.
+%\todo{Is there something to write implementation-wise?}
 
 \subsection{Multipath}
 \label{sec:prot-multipath}
 
 \textbf{Stream steering}.
-\todo{Is there something to write implementation-wise?}
+
+The application, using our \tcpls API can create, attach and steer data within
+any \tcp connection previously created using  \texttt{tcpls\_connect()} and joined using
+\texttt{tcpls\_handshake()}. Properties over the streams can be negotiated, such as the
+failover mode (global to all streams) or \textit{Coupled Streams}, that let the
+application uses the same interface \texttt{tcpls\_send()}  and \texttt{tcpls\_receive()}
+independently of the negotiated stream features. As a matter of example, Stream
+steering and \textit{Coupled Streams} can offer the application to steer a
+connection migration (so called Application Connection Migration in
+section~\ref{sec:transport-services}) in four API calls (i.e., creating a \tcp
+connection, joining the \tcpls session, creating a stream and closing previous
+streams).
 
 \textbf{Bandwidth Aggregation}.
 The application can create and join several \tcp connections to
@@ -167,7 +178,7 @@ session. The more \tcpls receives records in order, the more it can deliver
 them in a zero-copy fashion to the application. When a record is received 
 out-of-sequence, its content is pushed on an efficient reordering heap in 
 $O(log(n))$ for $n$ elements in the heap. Checking the min sequence number in
-the heap is in in $\Theta(1)$ and retrieving is also in $O(log(n))$. The
+the heap is in $\Theta(1)$ and retrieving is also in $O(log(n))$. The
 performance of our multipath bandwidth aggregation is evaluated in
 Sec.~\ref{sec:bwaggr}.
 
