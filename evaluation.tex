@@ -1,14 +1,14 @@
 % !TEX root = ./paper.tex
 
 In this section, we evaluate \tcpls with several experiments.
-First, we evaluate the raw performance of our \tcpls prototype in 
-Section~\ref{sec:perf}. Then we report how \tcpls
+First, we evaluate the raw performance of our \tcpls prototype (
+Section~\ref{sec:perf}). Then we report how \tcpls
 interacts with middleboxes in a controlled environment in 
 Section~\ref{sec:middlebox}. We then emulate, using
 Mininet~\cite{handigol2012reproducible}, more complex scenarios involving 
 Failover (Section~\ref{sec:eval_failover}), Application Connection Migration 
-(Section
-~\ref{sec:app-migration}) and bandwidth aggregation~\ref{sec:bwaggr}.
+(Section~\ref{sec:app-migration}) and Bandwidth Aggregation 
+(Section~\ref{sec:bwaggr}).
 
 For the two first experiments of 
 our \tcpls prototype (Section~\ref{sec:perf} and~\ref{sec:middlebox}), we use 
@@ -36,7 +36,7 @@ In the emulated experiments of Sections~\ref{sec:bwaggr},
 \ref{sec:eval_failover} and \ref{sec:app-migration} we use a Mininet 
 network~\cite{handigol2012reproducible} composed of a client and a server, both 
 dual-stacks. The IPv4 and IPv6 paths are completely disjoint in this emulated 
-network, each offering 25Mbps and 10ms latency. 
+network, each offering 25Mbps and 10ms latency if not stated otherwise. 
 
 
 
@@ -60,16 +60,16 @@ network, each offering 25Mbps and 10ms latency.
 \subsection{Raw Performance} \label{sec:perf}
 In our first experiment, we demonstrate that \tcpls can be implemented at a low 
 cost compared to \tcp and \tls while offering better raw performance than 
-several \quic implementations. To this end, we use our physical testbed 
+several \quic implementations. To this end, we use the physical testbed 
 presented in Figure~\ref{fig:perf_testbed} and run throughput measurements for 
 large transfers with \tcp/\tls, \tcpls and three \quic implementations.
-The results are reported in Figure~\ref{fig:perf}, which contains the bandwidth 
+The results are reported in Figure~\ref{fig:perf} with the bandwidth 
 in gigabits per second and packets per second obtained for each test.
 Each bar corresponds to the median measurement over 10 seconds of stable 
 throughput.
 A preliminary test in our testbed shows that a single \tcp connection can 
-saturate the 40~Gbps link when setting the MTU to 9000. With a 1500-byte MTU, a 
-single \tcp connection reaches 22~Gbps. We also benchmarked the 
+saturate the 40~Gbps link when setting the MTU to 9000 bytes. With a 1500-byte 
+MTU, a single \tcp connection reaches 22~Gbps. We also benchmarked the 
 AES128-GCM-SHA256 cipher with in-memory 16,384-byte \tls records and observed 
 that decryption in our client reaches 24.59~Gbps while encryption on our 
 server reaches 13,62~Gbps.
@@ -85,14 +85,14 @@ server reaches 13,62~Gbps.
 starting our fork. We also manually configured the receiving and sending buffer size 
 to match the ones we use internally in \tcpls. This modification fixes fragmentation and 
 unnecessary copies of received \tls records that could occur and improves by
-$\approx 40\%$ \texttt{picotls}'s perf client
-implementation throughput which our \tcpls 
-prototype avoids by design by offering a new transport API preventing the
-application developers to make choices adversely affecting the throughput. With
-the implemented fixes, we can observe that \tcp/\tls reaches 10.3~Gbps 
-with a 1500-byte MTU and 12.6~Gbps with a 9000-byte MTU. Both leverage the 
-\tcp Segmentation Offload (TSO), which is a feature commonly enabled on 
-high-speed NICs.
+$\approx 40\%$ the throughput of \texttt{picotls}'s measurement client. Our 
+\tcpls prototype avoids these mistakes by design by offering to the application 
+developers a transport API preventing them. % adversely affecting the 
+%throughput. 
+With the fix, we can observe that \tcp/\tls reaches 
+10.3~Gbps with a 1500-byte MTU and 12.6~Gbps with a 9000-byte MTU. Both 
+leverage \tcp Segmentation Offload (TSO), which is a feature commonly enabled 
+on high-speed NICs.
 
 \textbf{\tcpls}.
 To benchmark \tcpls, we use a simple application performing large 
@@ -118,12 +118,13 @@ configured to use the AES128-GCM-SHA256 cipher.
 %size (1,500 bytes MTU), the throughput still reaches 10.84 Gbps. These
 %results should be compared with the 22~Gbps \tcp reaches in the same
 %environment using \texttt{iperf} but without any encryption.
-We first compare \tcpls without using any of the transport services 
+We first compare \tcpls without the transport services 
 presented in Section~\ref{sec:transport-services}. We can observe that 
 \tcpls reaches similar throughput than \tls/\tcp over both 
-MTU. The small benefit to \tcpls is mainly caused by implementation differences
-within the two perf clients. \tcpls has thus a similar throughput than \tcp/\tls when using the base 
-protocol. We now evaluate the cost of the transport services.
+MTU. The small advantage of \tcpls at a MTU of 1500 bytes may be 
+attributed by implementation differences in the two benchmarks tools. \tcpls 
+has thus a similar throughput than \tcp/\tls when using the base 
+protocol. %We now evaluate the cost of the transport services.
 
 
 %the shows several interesting results. First, while offering similar (and more)
@@ -138,11 +139,11 @@ acknowledgments. % of adding the \tcpls-level
 % Thanks to these acknowledgments, \tcpls can support failover.
 Our measurements show that Failover has a small impact on raw throughput as
 \tcpls reaches 9.66 Gbps with a $1500$ bytes MTU.
-This is due to an increase in control records that are exchanged during the file 
-transfer, and buffer management within \tcpls.
-This impact could be reduced by reducing the number of record acknowledgments,
-which should also improve the throughput under larger MTU. We 
-leave finding the optimal acknowledgment frequency as future work.
+This is due to an increase in control records that are exchanged during the 
+file transfer and additional buffer management within \tcpls.
+This impact could be reduced by lowering the number of record acknowledgments,
+which could further improve the throughput with a MTU of 9000 bytes. 
+We leave finding the optimal acknowledgment frequency as future work.
 %From a performance viewpoint, they increase the 
 %number of control records 
 %exchanged and the number of system calls. 
@@ -181,18 +182,16 @@ We configured \tcpls to use IPv4 and IPv6 as separate network paths and start a
 %We configured IPv4 and IPv6 addresses on the Client and the Server and created
 %a \tcpls session that uses two \tcp connections. 
 The \tcpls server sends the records over the two \tcp connections in a 
-round-robin manner. The \tcpls client receives and reorders the records using an 
-efficient heap.
+round-robin manner. The \tcpls client receives and reorders the records using 
+an efficient heap.
 %Our Server steers the data in
 %the \tcpls streams using a
 %round-robin scheduler to send the records over the available connections. 
 %This is not the best scheduler for sending data over multiple 
 %paths~\cite{paasch2014experimental} since it will force the
 %receiver to reorder the received records.  
-Our measurements show that when steering data in two streams
-configured with bandwidth aggregation in our testbed,
-\tcpls can reach a throughput of 8.8 Gbps, i.e. less than 10\% below the
-failover mode.
+Our measurements show that coupling when two streams in our testbed,
+\tcpls reaches a throughput of 8.8 Gbps, i.e. less than 10\% below Failover.
 
 \begin{figure}[!t]
   \begin{center}
@@ -274,7 +273,7 @@ offloads \udp segmentation and checksum computation to the kernel and NICs.
 %the throughput but drawing the line there. 
 %We do not modify the \quic
 %implementations and use their default cipher.
-We configured the QUIC implementations to the most comparable setting than 
+We configured the QUIC implementations to the most comparable setting as 
 \tls/\tcp and \tcpls. That is, we changed the cipher and set the CUBIC 
 congestion controller when available.
 % to the same ones used by 
@@ -287,7 +286,7 @@ congestion controller when available.
 
 The results obtained show that \tcpls compares favorably
 with the tested \quic implementations. The fastest \quic implementation is
-\quicly, with GSO and 1500-byte MTU, it reaches 4.4~Gbps. \tcpls with TSO is 
+\quicly, with GSO and a 1500-byte MTU, it reaches 4.4~Gbps. \tcpls with TSO is 
 twice faster with the same CPU usage and similar 
 receiving buffer sizes. Surprisingly, \quicly's performance decreases with
 jumbo frames but is still faster than without GSO.  \msquic reaches
@@ -321,10 +320,13 @@ decryption.
 While there are ongoing works to improve $i$, $ii$, and $iii$ 
 \cite{udp-gso-pacing}, it is likely that 
 performance parity will require more offload capabilities, which could lessen 
-the flexibility of \quic and would be uncompliant regarding the end users' 
-threat model 
-(untrusted network, and we assume the NICs are a component of the network and 
-not part of the user's stack).
+the flexibility of \quic. From a security standpoint, assuming NICs are opaque 
+components of the network and not part of the user stack, it would be less 
+compliant to the end users threat model.
+%It would also uncompliant regarding the end users' 
+%threat model 
+%(untrusted network, and we assume the NICs are a component of the network and 
+%not part of the user's stack).
 %There isn't likely enough room to match \tcpls performance
 %without offloading everything, which inherently breaks \quic's flexibility
 %argument
@@ -373,7 +375,7 @@ messages can be impacted. The client \tls extensions, that are
 integrity-protected but not confidential, can be modified by these middleboxes. 
 They contain messages such as \hello, \join, \textit{SESSID} and 
 \textit{COOKIE} presented 
-in Sections~\ref{sec:transport-services} and \ref{sec:multipath}. Other messages 
+in Sections~\ref{sec:transport-services}. Other messages 
 conveyed in encrypted \tls records cannot be distinguished or tampered with.
 When a client opens a \tcpls session
 through a \tls terminating proxy not supporting \tcpls, it replies 
@@ -406,62 +408,6 @@ outside the scope of this paper and left for further work.
 %\cite{rfc7258}. This is handled properly by \tcpls fallback mechanism.
 
 
-\subsection{Bandwidth Aggregation}
-\label{sec:bwaggr}
-We compare the \tcpls bandwidth aggregation capability to the state-of-the-art
-\mptcp. 
-%To this end, we build a Mininet network~\cite{handigol2012reproducible}
-%composed of a client and a server, both dual-stacks. The IPv4 and IPv6 paths 
-%are
-%completely disjoint in this emulated network. Both protocols run in the same
-%Mininet topology with two IP paths available, each offering 25Mbps and 10ms
-%latency. 
-Our experiment consists of transferring a 60MB file over a single path
-and enabling the second one after $5$ seconds. \mptcp automatically detects
-the new path once we enable the Client's second network interface. For \tcpls,
-managing paths is different: the application can use the API to add local or
-peer-related addresses at any point of the session. In this experiment, we send
-this information at $5$ seconds, create a new \tcp connection to the peer, and
-attach a new stream to it. The two streams are coupled together. Our results 
-appear in Figure~\ref{fig:multipath_aggregation}. Both protocols aggregate the 
-two paths and reach a goodput of $\approx$ 50 Mbps. 
-
-Both have two major differences. First, for MPTCP, there is a delay before it becomes fully utilized. 
-This delay is the time required by the Linux kernel
-to configure the new network interface IP address, add the required routes, and
-finally inform \mptcp~\cite{paasch2012exploring}.
-%This explains the time that \mptcp needs to start to use the new path.
-Second, \tcpls's aggregated goodput seems less stable than \mptcp. We explain 
-this discrepancy by the difference of chunk size manipulated by the reordering 
-algorithms in our experiment: \mptcp reorders packets with a payload of 1,460 
-bytes, while \tcpls reorders records with the maximum 
-payload size of 16,384 bytes. As concurrent network paths introduce reordering, 
-which is reordered back by both \mptcp and \tcpls, a larger chunk size 
-leads to larger goodput irregularities. 
-
-%However, \tcpls might negotiate the record 
-%size to smooth out this irregularity. 
-Running the experiment with a record size 
-of 1,500 bytes smooths out the irregularity at a slightly higher CPU cost since 
-encryption and decryption are performed more often.
-Appendix~\ref{appendix:aggr} shows the results of the same experiment but using
-a \tls record size of 1,500 bytes instead.
-
-Bandwidth aggregation may be useful for some application use-cases. \tcpls's
-strength is to let the application decides whether such a feature would be
-useful for it. This decision may be negotiated at the beginning or dynamically
-during the session.
-
-\begin{figure}[!t]
-  \begin{center}
-    \includegraphics[width=\columnwidth]{figures/aggregate_dual.png}
-  \end{center}
-\vspace{-0.5cm}
-  \caption{Bandwidth aggregation comparison between \mptcp (top plot) and
-    \tcpls (bottom plot) with a record payload size of 16,384 bytes.}
-  \label{fig:multipath_aggregation}
-\end{figure}
-
 \subsection{Failover}
 \label{sec:eval_failover}
 
@@ -470,7 +416,11 @@ failures. Network outages may happen
 for several reasons, e.g. middlebox interference or mobile clients losing
 one access network (LTE or Wi-Fi). 
 We first discuss and compare the recovery time
-for different types of outages during a file transfer. We configure the client 
+for different types of outages during a file transfer for \tcpls and \mptcp
+\footnote{Existing MPQUIC implementations~\cite{de2017multipath, 
+de2019pluginizing} are not evaluated as detecting and reacting to network 
+failures not part of their prototypes.}.
+We configure the client 
 and the server with two interfaces, with one set to the 
 backup mode in the case of \mptcp, i.e. no subflows are opened on the backup 
 interface unless an issue is detected on the first interface. 
@@ -525,12 +475,13 @@ We now extend our first experiment by adding periodic outages during the
 transfer in a 4-path network topology.
 %The second experiment involves observing how different multipath
 %implementations behave when several failures occur during a data transfer.
-We tested several multipath transport implementations: \mptcp, PQUIC with the 
-multipath
-plugin~\cite{de2019pluginizing}, and MPQUIC~\cite{de2017multipath}.
-We do not report the results with PQUIC and MPQUIC as 
-detecting and recovering from network failures were not part of these 
-prototypes.
+%We compared \tcpls with several multipath transport implementations: \mptcp, 
+%PQUIC with the 
+%multipath
+%plugin~\cite{de2019pluginizing}, and MPQUIC~\cite{de2017multipath}.
+%We do not report the results with PQUIC and MPQUIC as 
+%detecting and recovering from network failures were not part of these 
+%prototypes.
 %We dug into these implementations and observed that they were not programmed 
 %to 
 %detect network failures and correctly switch the network path, thus we 
@@ -560,12 +511,12 @@ quickly use the available bandwidth.
 \subsection{Application-level Connection Migration}
 \label{sec:app-migration}
 
-When there are multiple network paths, connection migration might be a
-powerful tool for applications to adapt to the changing network conditions 
-based on application metrics.
+When there are multiple network paths, connection migration can be used by 
+applications to adapt to the changing network conditions based on application 
+metrics.
 
 Applications can migrate their traffic from 
-one network path to another in a few \tcpls API calls. 
+one network path to another using a few \tcpls API calls. 
 Figure~\ref{fig:conn_migration} shows the goodput 
 obtained when performing such a migration during a file transfer. % using the 
 %API 
@@ -612,7 +563,7 @@ records.
 %to flush its data while the second path is already used.
 %Once the last record 
 %of the first path is sent, 
-\tcpls reorders the records and deliver the data to the 
+\tcpls reorders the records and delivers the data to the 
 client. The goodput increase corresponds to the sum of bandwidth over 
 the new path during the migration time window.
 
@@ -624,6 +575,66 @@ the new path during the migration time window.
   \caption{Application-level connection migration during a 60MB file download.
     \tcpls temporarily aggregates the two network paths during such a migration.}
   \label{fig:conn_migration}
+\end{figure}
+
+\subsection{Bandwidth Aggregation}
+\label{sec:bwaggr}
+We compare the \tcpls bandwidth aggregation capability to the state-of-the-art
+\mptcp. 
+%To this end, we build a Mininet network~\cite{handigol2012reproducible}
+%composed of a client and a server, both dual-stacks. The IPv4 and IPv6 paths 
+%are
+%completely disjoint in this emulated network. Both protocols run in the same
+%Mininet topology with two IP paths available, each offering 25Mbps and 10ms
+%latency. 
+Our experiment consists of transferring a 60MB file over a single path
+and enabling the second one after $5$ seconds. \mptcp automatically detects
+the new path once we enable the Client's second network interface. For \tcpls,
+managing paths is different: the application can use the API to add local or
+peer-related addresses at any point of the session. In this experiment, we send
+this information after $5$ seconds, create a new \tcp connection to the peer, 
+and
+attach a new stream to it. The two streams are coupled together. Our results 
+appear in Figure~\ref{fig:multipath_aggregation}. Both protocols aggregate the 
+two paths and reach a goodput of $\approx$ 50 Mbps. 
+
+They have two differences. First, for MPTCP, there is a delay before it 
+becomes fully utilized. 
+This delay is the time required by the Linux kernel
+to configure the new network interface IP address, add the required routes, and
+finally inform \mptcp~\cite{paasch2012exploring}.
+%This explains the time that \mptcp needs to start to use the new path.
+Second, \tcpls's aggregated goodput seems less stable than \mptcp. We explain 
+this discrepancy by the difference of chunk size manipulated by the reordering 
+algorithms in our experiment: \mptcp reorders packets with a payload of 1,460 
+bytes, while \tcpls reorders records with the maximum 
+payload size of 16,384 bytes. As concurrent network paths introduce reordering, 
+which is reordered back by both \mptcp and \tcpls, a larger chunk size 
+leads to larger goodput irregularities. 
+
+%However, \tcpls might negotiate the record 
+%size to smooth out this irregularity. 
+Running the experiment with a record size 
+of 1,500 bytes smooths out the irregularity at a slightly higher CPU cost since 
+encryption and decryption are performed more often.
+Appendix~\ref{appendix:aggr} shows the results of the same experiment but using
+a \tls record size of 1,500 bytes instead. With these differences explained, we 
+can conclude that \tcpls offers a bandwidth aggregation service similar to the 
+one offered by state-of-the-art \mptcp.
+
+%Bandwidth aggregation may be useful for some application use-cases. \tcpls's
+%strength is to let the application decides whether such a feature would be
+%useful for it. This decision may be negotiated at the beginning or dynamically
+%during the session.
+
+\begin{figure}[!t]
+	\begin{center}
+		\includegraphics[width=\columnwidth]{figures/aggregate_dual.png}
+	\end{center}
+	\vspace{-0.5cm}
+	\caption{Bandwidth aggregation comparison between \mptcp (top plot) and
+		\tcpls (bottom plot) with a record payload size of 16,384 bytes.}
+	\label{fig:multipath_aggregation}
 \end{figure}
 
 \subsection{Dynamically Extending \tcpls}
@@ -647,7 +658,7 @@ the new path during the migration time window.
 %injecting
 %and updating a congestion control scheme during a \tcpls session.
 
-To demonstrate how \tcpls can be dynamically extended, we show how a server can 
+To illustrate how \tcpls can be dynamically extended, we show how a server can 
 send an eBPF congestion controller to its client that attaches it in the middle 
 of a \tcpls session. Figure~\ref{fig:vegasCubic} reports the goodput obtained 
 by two \tcpls sessions during a file upload on a Mininet network with a 

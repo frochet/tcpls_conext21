@@ -21,8 +21,10 @@ network attacker. \tcpls extends \tls while retaining its security
 properties, and supporting new features. It is also compatible with \tcp 
 middleboxes, as it leaves the \tcp wire format untouched.
 
-\tcpls also needs to be compared with \mptcp \cite{raiciu2012hard,rfc6824}.
-\mptcp supports several coupled congestion control schemes
+%\tcpls also needs to be compared with 
+%\mptcp \cite{raiciu2012hard,rfc6824}.
+\mptcp~\cite{raiciu2012hard,rfc6824} supports several coupled congestion 
+control schemes
 \cite{peng2014multipath,wischik2011design,khalili2013mptcp} that preserve
 fairness when different paths share the same bottleneck. A similar solution 
 could be applied to \tcpls by leveraging eBPF to access and modify the 
@@ -32,10 +34,10 @@ Internet draft~\cite{draft-paasch-mptcp-ssl-00} that was not adopted by the
 IETF. MPTCPSec~\cite{jadin2017securing} adds security capabilities to \mptcp but
 comes with a large performance penalty.
 
-Another important related work is \quic. Its design has 
-evolved over the years, and several companies adopted 
-it~\cite{langley2017quic,Joras_mvfst,marx2020same}. \quic
-version 1~\cite{rfc9000} also supports connection
+Another important related work is \quic. %Its design has 
+%evolved over the years, and several companies adopted 
+%it~\cite{langley2017quic,Joras_mvfst,marx2020same}. 
+\quic version 1~\cite{rfc9000} also supports connection
 migration, but to our knowledge no implementation allow applications to trigger 
 it. %outside from limited interoperability scripts.
 %we could not test it in our lab since none of 

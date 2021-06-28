@@ -27,9 +27,8 @@ paper~\cite{rochet2020tcpls} by implementing the \tcp User Timeout option.
    %extending the sender's API and processing the option on the receiver side.
    %\tcpls's internal machinery allows to the server (resp. client) to send any
    %TCP option during (resp. after) the \tls handshake.
-($iii$, \textit{Section \ref{sec:prot-migration}}) Applications can enable 
-Failover and 
-trigger Connection Migration.
+($iii$, \textit{Section \ref{sec:prot-migration}}) Applications can trigger 
+Connection Migration and enable Failover.
 ($iv$, \textit{Section \ref{sec:prot-multipath}}) Applications can leverage 
 multipath 
 capabilities such as stream 
@@ -40,16 +39,17 @@ and bandwidth aggregation.
 ($v$, \textit{Section \ref{sec:prot-ebpf}}) The server can securely send eBPF 
 bytecode to the client 
 to upgrade its \tcp congestion control scheme or tune other \tcp 
-mechanisms~\cite{brakmo2017tcp,tran2019beyond}. These prototype examples
-hopefully demonstrate how interesting \tcpls's design can be.
+mechanisms~\cite{brakmo2017tcp,tran2019beyond}. Through these examples,
+%hopefully demonstrate how interesting \tcpls's design can be.
+we demonstrate that our design enables modern transport services.
 
 %Variable-length options (e.g., eBPF bytecode) can be sent within streams to 
 %take advantage of bandwidth aggregation or Failover when these features are 
 %enabled.
 %($v$) Different connection migration modes: Failover and Application-level
 %Connection Migration.
-Our \tcpls prototype is a fork of the \texttt{picotls} \tls 1.3 implementation 
-and consists of 9k additional lines of C code.
+Our prototype is a fork of the \texttt{picotls} \tls 1.3 implementation 
+to which we added 9k lines of C code to implement TCPLS.
 
 \subsection{Multiplexing}
 \label{sec:prot-multiplexing}
@@ -106,10 +106,10 @@ as often found in QUIC implementations.
 
 %Note, those features are not stable yet, and many bugs remain to be fixed.
 
-\subsection{Connection Migration}
+\subsection{Failover}
 \label{sec:prot-migration}
 
-\textbf{Failover}.
+%\textbf{Failover}.
 We leverage the \tcpls records to securely exchange the \tcp User Timeout option.
 This option enables endpoints to detect blackholed and failed \tcp connections
 after a given time threshold. We use this as one trigger of the Failover. The 
@@ -143,45 +143,56 @@ Section~\ref{sec:eval_failover}
 \label{sec:prot-multipath}
 
 \textbf{Stream steering}.
-
-The application, using our \tcpls API can create, attach and steer data within
-any \tcp connection previously created using  \texttt{tcpls\_connect()} and joined using
-\texttt{tcpls\_handshake()}. Properties over the streams can be negotiated, such as the
-failover mode (global to all streams) or \textit{Coupled Streams}, that let the
-application uses the same interface \texttt{tcpls\_send()}  and \texttt{tcpls\_receive()}
-independently of the negotiated stream features. As a matter of example, Stream
-steering and \textit{Coupled Streams} can offer the application to steer a
-connection migration (so called Application Connection Migration in
-section~\ref{sec:transport-services}) in four API calls (i.e., creating a \tcp
-connection, joining the \tcpls session, creating a stream and closing previous
-streams).
+\tcpls exposes the \tcp connections it manages to the application. This allows 
+the application to directly distribute the \tcpls streams over the \tcp 
+connections at any point of the \tcpls session. A simple distribution is to 
+move all \tcpls streams from one connection to another, as performed during 
+Application-triggered Connection Migration. Our prototype enable these 
+operations in a few API calls. More complex stream attachment policies can be 
+implemented by the application to meet its requirements.
+%The application, using our \tcpls API can create, attach and steer data within
+%any \tcp connection previously created using  \texttt{tcpls\_connect()} and 
+%joined using
+%\texttt{tcpls\_handshake()}. Properties over the streams can be negotiated, 
+%such as the
+%failover mode (global to all streams) or \textit{Coupled Streams}, that let the
+%application uses the same interface \texttt{tcpls\_send()}  and 
+%\texttt{tcpls\_receive()}
+%independently of the negotiated stream features. As a matter of example, Stream
+%steering and \textit{Coupled Streams} can offer the application to steer a
+%connection migration (so called Application Connection Migration in
+%section~\ref{sec:transport-services}) in four API calls (i.e., creating a \tcp
+%connection, joining the \tcpls session, creating a stream and closing previous
+%streams).
 
 \textbf{Bandwidth Aggregation}.
 The application can create and join several \tcp connections to
-the same \tcpls session. As soon as one of the peers attaches streams to
-different \tcp connections of the session, and enables the aggregation mode,
-\tcpls adds a sequence number encrypted in the \tls record payload. This
-sequence number is used to reorder the received records after decryption. 
-Our
-current implementation supports one global ordering, but
-we envision for the \tcpls protocol to have streams potentially detached from
-the global orderings. For example, a HTTP application may want to use an
-aggregation mode for 2 streams over 2 \tcp connections downloading a video
-content for the video playback engine, but the other streams used by the HTTP
-client do not necessarily need to be part of the multipath bandwidth aggregation.
-Such a feature may be implemented through a negotiation of the aggregation
-mode.
-
+the same \tcpls session. When coupled streams are attached to
+different \tcp connections, \tcpls adds a sequence number encrypted in the \tls 
+record payload. It is used to reorder the received records 
+after decryption. Our prototype only supports coupling all streams together.
+%, but
+%we envision for the \tcpls protocol to have streams potentially detached from
+%the global orderings. 
+%For example, a HTTP application may want to use an
+%aggregation mode for 2 streams over 2 \tcp connections downloading a video
+%content for the video playback engine, but the other streams used by the HTTP
+%client do not necessarily need to be part of the multipath bandwidth 
+%aggregation.
+%Such a feature may be implemented through a negotiation of the aggregation 
+%mode.
+The sending application implements the scheduling coupled streams over the 
+different \tcpls connections.
 Our implementation currently includes a round-robin scheduler on the receiver
 side. We expect to
 support other schedulers in the future and allow the application to select its 
 preferred scheduler through the API, or even send it as eBPF bytecode over the 
 session. The more \tcpls receives records in order, the more it can deliver 
 them in a zero-copy fashion to the application. When a record is received 
-out-of-sequence, its content is pushed on an efficient reordering heap in 
-$O(log(n))$ for $n$ elements in the heap. Checking the minimum sequence number 
-inthe heap is in $\Theta(1)$ and retrieving is in $O(log(n))$. The
-performance of our multipath bandwidth aggregation is evaluated in
+out-of-sequence, its content is pushed on an efficient reordering heap. %in 
+%$O(log(n))$ for $n$ elements in the heap. Checking the minimum sequence number 
+%in the heap is in $\Theta(1)$ and retrieving is in $O(log(n))$. 
+The performance of our multipath bandwidth aggregation is evaluated in
 Sec.~\ref{sec:bwaggr}.
 
 %\subsubsection{Failover}\label{failover}
@@ -247,8 +258,8 @@ to implement novel transport mechanisms.
 %control scheme to a specific client over an existing \tcpls session. 
 \subsection{\tcpls Session Establishment}
 
-Our prototype is fully compatible with both the \tls 1.3 0-RTT session resumption
-and the \tcp Fast Open option (TFO)~\cite{radhakrishnan2011tcp}. By combining both
+Our prototype is fully compatible with \tls 1.3 0-RTT session resumption
+and \tcp Fast Open option (TFO)~\cite{radhakrishnan2011tcp}. By combining them,
 the \tcpls handshake can be sent together with the \tcp \texttt{SYN} starting 
 the three way handshake. This provides a low-latency and secure connection establishment.
 It is not enabled by default in \tcpls, as TFO trades off some privacy~\cite{sy2020enhanced}.
