@@ -48,7 +48,7 @@ overcome this, we propose an Initial Vector (IV) derivation technique that
 enables independent encryption/decryption to each stream without the security
 degradation.
 
-Fig.~\ref{fig:aead-iv} illustrates how the AEAD IV is computed for a given
+Figure~\ref{fig:aead-iv} illustrates how the AEAD IV is computed for a given
 \tcpls record of a \tcpls stream. First the left-most bits of the IV derived
 from the \tls handshake are summed with the 32-bit \tcpls Stream ID. Then the
 right-most bits are XORed with the stream 64-bit record sequence number. Each
@@ -183,7 +183,11 @@ short keys inside cleartext \tcp \texttt{Options} during the \tcp handshake~\cit
 	\label{fig:join-example}
 \end{figure}
 
-\textbf{Joining \tcp connections}. \tcpls leverages its secure records and extensions to solve this problem in a more secure manner. Fig.~\ref{fig:join-example} illustrates the \tls and \tcpls messages exchanged when a client connects to a server over IPv4 and later joins another connection over IPv6.
+\textbf{Joining \tcp connections}. \tcpls leverages its secure records and 
+extensions to solve this problem in a more secure manner. 
+Figure~\ref{fig:join-example} illustrates the \tls and \tcpls messages 
+exchanged when a client connects to a server over IPv4 and later joins another 
+connection over IPv6.
 First, the client sends a \textsc{ClientHello} containing a \hello. The server replies with a \textsc{ServerHello} containing three types of encrypted extensions. First, the server announces its IPv6 address ($ADDR(v6)$). Second, it associates one identifier $\alpha$ to the \tcpls session (\emph{SESSID($\alpha$)}).
 %It uniquely identifies the \tcpls session on the server.
 Third, the server provides a list of \tcpls session cookies $\beta_1,\beta_2$ in the \emph{COOKIE} extension. Each of these session cookies enables the client
@@ -193,8 +197,8 @@ cookies and update its list of addresses.
 
 To join a new \tcp connection to the \tcpls session, for instance over IPv6, the
 client sends a \textsc{ClientHello} message containing the session identifier
-(SESSID($\alpha$) in Fig.~\ref{fig:join-example}) and one of the cookies
-provided by the server (COOKIE($\beta_1$) in Fig.~\ref{fig:join-example}). The
+(SESSID($\alpha$) in Figure~\ref{fig:join-example}) and one of the cookies
+provided by the server (COOKIE($\beta_1$) in Figure~\ref{fig:join-example}). The
 server uses the session identifier $\alpha$ to find the corresponding \tcpls
 session and checks the validity of the cookie. If the \tcpls session and cookie
 are valid, the \tcp connection is joined to the \tcpls session. The session
@@ -227,15 +231,16 @@ used once by the client.
 %existing \mptcp connection~\cite{rfc6181}. \tcpls leverages its secure channel
 %to solves this \texttt{``connection join''} problem in a more secure
 %manner. Consider a client connecting to a dual-stack server
-%(Fig.~\ref{fig:join-example} depicts the \tls messages exchanged in such a
+%(Figure~\ref{fig:join-example} depicts the \tls messages exchanged in such a
 %scenario). The client sends a \textsc{ClientHello} containing the \tls
 %extension to negotiate \tcpls. The server replies with a \textsc{ServerHello}
 %with three types of encrypted extensions. First, the server announces its IPv4
 %and IPv6 addresses. Second, it associates one identifier to the \tcpls session
-%(SESSID($\alpha$) in Fig.~\ref{fig:join-example}). It uniquely
+%(SESSID($\alpha$) in Figure~\ref{fig:join-example}). It uniquely
 %identifies the \tcpls session on the server. Third, the server provides a list
 %of \tcpls session cookies (COOKIE($\beta_1,\beta_2$) on
-%Fig.~\ref{fig:join-example}). Each of these session cookies enables the client
+%Figure~\ref{fig:join-example}). Each of these session cookies enables the 
+%client
 %to attach one additional \tcp connection to the \tcpls session. By sending $n$
 %cookies, the server indicates that it currently accepts the attachment of only
 %$n$ \tcp connections to this session. This prevents resource exhaustion attacks
@@ -244,8 +249,8 @@ used once by the client.
 %
 %To attach a new connection, e.g., using the server's IPv6 address, the client
 %sends a \textsc{ClientHello} message containing the session identifier
-%(SESSID($\alpha$) on Fig.~\ref{fig:join-example}) and one of the server's
-%cookies (COOKIE($\beta_1$) on Fig.~\ref{fig:join-example}). The server checks
+%(SESSID($\alpha$) on Figure~\ref{fig:join-example}) and one of the server's
+%cookies (COOKIE($\beta_1$) on Figure~\ref{fig:join-example}). The server checks
 %the validity of the cookie and then uses the session identifier to attach the
 %new \tcp connection to the right \tcpls session. The session identifier and
 %cookie play that same role as \mptcp's token. From a security viewpoint, \tcpls'
