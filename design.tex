@@ -302,16 +302,20 @@ To achieve such a \emph{break-before-make},
 \tcpls sends acknowledgments for the received records of each stream, allowing
 the sender to remove them from its sending buffer.
 %Upon reception of Stream-level acknowledgments, the sender can
-%manage its sending buffer and remove acknowledged encrypted records. 
-When the \tcp connection fails, the sender switches to the other one and 
-explicitly notifies the failure to the receiver. The sender then synchronizes 
-the transmission sequence using a dedicated \tcpls record type (i.e. SYNC in 
-Figure~\ref{fig:failover}) and retransmits the 
-unacknowledged stream data records (i.e. the second record of stream 0 in 
-Figure~\ref{fig:failover}). 
+%manage its sending buffer and remove acknowledged encrypted records.
+Looking at \textbf{1.} in Figure~\ref{fig:failover}, we can observe that three 
+records were sent but only the first two were received and acknowledged due to 
+a failure.
+Then, looking at \textbf{2.}, the sender notices that the \tcp connection has 
+failed, switches to the other one and explicitly notifies the failure to the 
+receiver. The sender then synchronizes the transmission sequence using a 
+dedicated \tcpls record type (i.e. SYNC in Figure~\ref{fig:failover}) and 
+retransmits the unacknowledged stream data records (i.e. the second record of 
+stream 0 in Figure~\ref{fig:failover}). 
 Explicit synchronization %is required as the \tcpls stream sequence number is 
 %implicit and thus 
 prevents a lost acknowledgment from desynchronizing the endpoints. 
+Notifying the failure to the peer shortens its reaction time.
 Thanks to the per-stream cryptographic context, the ciphertext of lost stream 
 data records can be retransmitted as is.
 
@@ -345,7 +349,7 @@ different type of outages.
 %Appendix~\ref{app:failover}.
 %\todo{Let see if we can bring it back in the text later}
 
-\textbf{Application Connection Migration}. \tcpls also enables the
+\textbf{Application-triggered Connection Migration}. \tcpls also enables the
 application to trigger a connection migration, for instance based on application-level metrics qualifying its experience over the current path.
 %expected to be used
 %over
