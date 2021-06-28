@@ -14,7 +14,8 @@ services: stream multiplexing (Section~\ref{sec:datastreams}), connection
 migration (Section~\ref{sec:multipath}), and bandwidth aggregation 
 (Section~\ref{sec:multipath}). We leverage the \tcpls records
 to multiplex concurrent encrypted bytestreams. By extending the \tls handshake, \tcpls allows joining several \tcp connections to a single \tcpls session to support
-connection migration and %multipath capabilities, mitigating Head-of-Line
+connection migration, stream steering and %multipath capabilities, mitigating 
+%Head-of-Line
 %blocking and enabling
 bandwidth aggregation.
 %aggregation and Head-of-Line blocking resilience.
@@ -61,32 +62,27 @@ right-most bits are XORed with the stream 64-bit record sequence number. Each
 IV manipulation guarantees that the resulting IV is unique for each record of
 all \tcpls streams as long as the Stream ID is unique and no sequence number is
 used twice in a given stream. The Stream ID space is split between the client
-and the server. Stream ID 0 is equivalent to the cryptographic context directly
-derived from the handshake.
+and the server. Stream ID 0 is equivalent to the cryptographic context
+derived directly from the handshake.
 %\todo{Il faut expliquer comment les stream id sont choisis pour garantir
 %l'unicité}
 
 To avoid possible middleboxes interference, in addition to the record sequence
 number, the \tcpls Stream ID is kept implicit as well. When an endpoint receives
 a \tcpls record, we leverage the AEAD cipher to check the authentication tag
-repeatedly until the correct \tcpls Stream ID is found. An optimized
-implementation would not involve a complete decryption as all TLS 1.3 AEAD
+repeatedly until the correct \tcpls Stream ID is found. 
+%An optimized implementation would not involve 
+It does not involve a complete decryption as all TLS 1.3 AEAD
 ciphers use an Encrypt-then-MAC construct~\cite{rfc7366, rfc8446}, and the tag
-verification, especially on AES-GCM is computationnaly light. Besides, streams
-are attached to a given \tcp connection (i.e., records of a given stream are all
-sent within the same \tcp connection), leading to a search of the right
-cryptographic context limited to the streams attached to the connection upon
-which the record is received. Note also that the receiver needs to search for
-the right cryptographic context only when the sender writes to another stream (i.e.,
-usually when it has flushed the data of the previous one), meaning that this
-operation is occasional and has negligible impact upon regular usage of the
-protocol~\footnote{If many streams are multiplexed to the same connection, and
-  the sender heavily rotates within the streams (worst case would be sending 1
-  record then rotating the stream for $N$ streams attached to the connection),
-  then
-  \tcpls may announce within the last record of $stream_i$ the 
-  $stream_{j}$ that decrypts the next record, thanks to \tcp ordered delivery
-of \tcpls data and control records.}.
+verification is computationally light, especially on 
+AES-GCM~\cite{mcgrew2004galois}. Reducing this cost could be achieved by adding 
+explicit signaling when an other stream is scheduled over the \tcp connection
+~\footnote{The worst case is when the sender schedules records of $N$ streams 
+over a \tcp connection. Then,
+  \tcpls may announce within the last record of the current stream the Stream 
+  ID of the following record%, thanks to \tcp ordered delivery
+%of \tcpls data and control records.
+}.
 %\todo{citer rfc7366 ? ou les références de ce rfc ?}
 
 From a security standpoint, each failed decryption is considered as a forgery

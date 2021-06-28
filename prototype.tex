@@ -58,13 +58,31 @@ We leverage the \tcpls records and the \tcpls stream cryptographic contexts to
 build our prototype with a zero-copy receive path. When a record is received,
 \tcpls first finds the corresponding cryptographic context, i.e. the
 corresponding \tcpls stream for which the derived IV leads to a successful
-authentication of the tag. At this stage, prior to full decryption, the 
+authentication of the tag. This search is limited to the streams attached to 
+\tcp connection of the received record. Our prototype tries first the last 
+successful \tcpls stream. The receiver only has to find the right cryptographic 
+context occasionally depending on the application, i.e. when the sender 
+schedules an other stream over the \tcp connection.
+
+At this stage, prior to full decryption, the 
 \tcpls stream of the record is known. Our prototype can then locate the 
 corresponding buffer
 to perform full decryption at the expected offset without any extra copy.
 Applications can benefit from large contiguous
 buffers to perform reads instead of receiving stream data on a per-packet basis,
 as often found in QUIC implementations.
+
+%Besides, streams
+%are attached to a given \tcp connection (i.e., records of a given stream are 
+%all
+%sent within the same \tcp connection), leading to a search of the right
+%cryptographic context limited to the streams attached to the connection upon
+%which the record is received. Note also that the receiver needs to search for
+%the right cryptographic context only when the sender writes to another stream 
+%(i.e.,
+%usually when it has flushed the data of the previous one), meaning that this
+%operation is occasional and has negligible impact upon regular usage of the
+%protocol
 
 %\fr{I don't want to give the impression that everything works like a charm -- I
 %would need 1 more year to have something production ready}

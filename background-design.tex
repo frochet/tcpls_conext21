@@ -102,17 +102,18 @@ with \tls in a secure and flexible manner.
 %\todo{Is the following enough regarding Olivier email?}
 We chose to design the \tcpls framing at the \tls record level so that
 decryption operations can be performed with a zero-copy codepath within a
-contiguous memory buffer (unlike \quic). Indeed, any \tcpls control information
-that is not relevant to the application is
+contiguous memory buffer, unlike \quic. Indeed, any \tcpls control information 
+not relevant to the application is
 %always encrypted and
 located at the end of the record so that, by adjusting the offset when
-decrypting the \tcpls records, the receiver can overwrite them and potentially
-achieve zero-copy within a contiguous allocated memory. This specific protocol
-design choice is expected to ease \tcpls implementation developers to offer
-zero-copy to the application and give a simple API for delivering the data. In
-comparison, \quic's design force developers to achieve zero-copy by offering a
-complex API for delivering potentially fragmented data (i.e., multiple pointers
-and sizes).
+decrypting the \tcpls records, the receiver can overwrite them and
+achieve zero-copy within a contiguous allocated memory. 
+This specific protocol
+design choice allow \tcpls implementations to easily offer
+zero-copy data delivery through a simple API. In
+comparison, \quic's design force developers to achieve zero-copy by offering a 
+more complex API delivering potentially fragmented data.% (i.e., multiple 
+%pointers and sizes).
 % for performance reasons: it
 %guarantees the availability of a zero-copy codepath after decryption.
 %(mp) implementation: -> section 4
@@ -186,7 +187,8 @@ provided that the server announced \tcpls support.  The censor would not be able
 to distinguish this behaviour from regular \tls, hardening potential
 attempts for censoring applications using \tcpls. The server handshake
 extensions are encrypted and part of the TLS handshake transcript hash,  and 
-thus cannot be dropped by the censor without breaking the \tls handshake. % of 
+thus cannot be dropped by the censor without breaking the \tls handshake for 
+all \tls clients. % of 
 %regular \tls clients.
 %\todo{Il manque l'explication sur la clôture de la session. Est ce à cause 
 %d'un problème d'espace?}
