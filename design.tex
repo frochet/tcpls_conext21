@@ -74,8 +74,8 @@ cryptographic context limited to the streams attached to the connection upon
 which the record is received. Note also that the receiver needs to search for
 the right cryptographic context only when the sender writes to another stream (i.e.,
 usually when it has flushed the data of the previous one), meaning that this
-operation is occasional and negligible upon regular usage of the
-protocol \footnote{If many streams are multiplexed to the same connection, and
+operation is occasional and has negligible impact upon regular usage of the
+protocol~\footnote{If many streams are multiplexed to the same connection, and
   the sender heavily rotates within the streams (worst case would be sending 1
   record then rotating the stream for $N$ streams attached to the connection),
   then
