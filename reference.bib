@@ -1253,3 +1253,38 @@ author={Anonymous},
 	year={2018},
 	publisher={IEEE}
 }
+
+@inproceedings{boccassi-binder,
+author = {Boccassi, Luca and Fayed, Marwan M. and Marina, Mahesh K.},
+title = {Binder: A System to Aggregate Multiple Internet Gateways in Community Networks},
+year = {2013},
+isbn = {9781450323659},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/2502880.2502894},
+doi = {10.1145/2502880.2502894},
+abstract = {We present a novel system termed Binder that seamlessly aggregates multiple geographically distributed Internet gateways in community networks. The proxy based approach taken in Binder allows for applications on end-user devices to enjoy the benefits from gateway aggregation without requiring any modifications. Binder makes novel use of multipath TCP (MPTCP), and additionally leverages OpenVPN tunneling and loose source routing (in a limited form that avoids security concerns) as part of an easily deployable implementation. Binder supports flexible gateway aggregation without negative effects from packet reordering through its use of MPTCP and generalizes link aggregation mechanisms to handle distributed links. Our proof of concept evaluation of Binder using a real implementation over an emulation based lab testbed demonstrate its benefits in terms of bandwidth aggregation, load balancing and fault tolerance relative to common practice.},
+booktitle = {Proceedings of the 2013 ACM MobiCom Workshop on Lowest Cost Denominator Networking for Universal Access},
+pages = {3–8},
+numpages = {6},
+keywords = {gateway aggregation, MPTCP, challenged networks, rural networks},
+location = {Miami, Florida, USA},
+series = {LCDNet '13}
+}
+@inproceedings{hesmans-smapp,
+author = {Hesmans, B. and Detal, G. and Barre, S. and Bauduin, R. and Bonaventure, O.},
+title = {SMAPP: Towards Smart Multipath TCP-Enabled Applications},
+year = {2015},
+isbn = {9781450334129},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/2716281.2836113},
+doi = {10.1145/2716281.2836113},
+abstract = {Multipath TCP was designed and implemented as a backward compatible replacement for TCP. For this reason, it exposes the standard socket API to the applications that cannot control the utilisation of the different paths. This is a key feature for applications that are unaware of the multipath nature of the network. On the contrary, this is a limitation for applications that could benefit from specific knowledge to use multiple paths in a way that fits their needs. As the specific knowledge of an application can not be known in advance, we propose a Multipath TCP path manager that delegates the management of the paths to the applications. This path manager enables applications to control how the different paths are used to transfer data. We implement this path manager above the Linux Multipath TCP kernel. It is composed of a kernel part that exposes events and commands to an userspace application that controls the key functions of Multipath TCP such as the creation/suppression of subflows or reactions to retransmissions. We demonstrate the benefits of this path manager on different use cases.},
+booktitle = {Proceedings of the 11th ACM Conference on Emerging Networking Experiments and Technologies},
+articleno = {28},
+numpages = {7},
+location = {Heidelberg, Germany},
+series = {CoNEXT '15}
+}
+
