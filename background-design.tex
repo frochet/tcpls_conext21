@@ -25,7 +25,12 @@ modification.
 Following the recent advances in the transport layer, we go back to
 {\small{\textit{RQ1}}} and ask \textit{How can TCP and TLS be combined to address these issues}?
 
-Our answer to {\small{\textit{RQ1}}} is fully positive. Indeed, by leveraging the flexible encrypted \tls records, we can supplement the \tls-encrypted application data with transport-level control data allowing \tcpls to provide a large range of new transport services. In addition, existing \tcp \texttt{Options} can be securely conveyed in new \tls records. %and new transport services can be built
+We answer {\small{\textit{RQ1}}} by leveraging the flexible encrypted \tls
+records, we can supplement the \tls-encrypted application data with
+transport-level control data allowing \tcpls to provide a large range of new
+transport services. In addition, existing \tcp \texttt{Options} can be securely
+conveyed in new \tls records. These new records are wire-indistinguishable from
+TLS 1.3 \texttt{AppData} records, leading to middlebox compatibility. %and new transport services can be built
 
 %(mp): C'est une vue de l'esprit, pour moi on peut enlever cette mention qui
 %est effectivement parfois embrouillante
