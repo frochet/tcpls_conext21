@@ -73,22 +73,32 @@ how \tcpls uses them to provide modern transport services (sec.~\ref{sec:transpo
 \end{figure}
 
 Each protocol has a basic unit for exchanging application and control data.
-For instance, \tcp segments are split in two with only the header dedicated to control data. In \quic, the basic unit is a \quic packet which can carry several and different types of \quic frames. \tls supports \tls records of different types and lengths.  As illustrated in Fig.~\ref{fig:tls-tcpls-records}, \tcpls leverages the \tls encrypted records that hide from middleboxes their true type and content in opaque \texttt{AppData} records. In this way, \tcpls can extend the messages exchanged with \tls in a secure and flexible manner.
+For instance, \tcp segments are split in two with only the header dedicated to
+control data. In \quic, the basic unit is a \quic packet which can carry several
+and different types of \quic frames. \tls supports \tls records of different
+types and lengths.  As illustrated in Fig.~\ref{fig:tls-tcpls-records}, \tcpls
+leverages the \tls encrypted records that hide their true type and content from
+middleboxes using opaque \texttt{AppData} records. In this way, \tcpls can extend the messages exchanged with \tls in a secure and flexible manner.
 %Some \tcpls control information may sometimes be packaged
 %within a record containing Application Data, such as a sequence number for
 %bandwidth aggregation.
 
 %\todo{Is the following enough regarding Olivier email?}
 We chose to design the \tcpls framing at the \tls record level so that
-encryption and decryption operations can be performed atomically and with
-a zero-copy codepath. Indeed, any \tcpls control information that is not relevant to the application is
+decryption operations can be performed with a zero-copy codepath within a
+contiguous memory buffer (unlike \quic). Indeed, any \tcpls control information
+that is not relevant to the application is
 %always encrypted and
 located at the end of the record so that, by adjusting the offset when
-decrypting the \tcpls records, the receiver can overwrite them and achieve a zero-copy codepath.
+decrypting the \tcpls records, the receiver can overwrite them and potentially
+achieve zero-copy within a contiguous allocated memory. This specific protocol
+design choice is expected to ease \tcpls implementation developers to offer
+zero-copy to the application and give a simple API for delivering the data. In
+comparison, \quic's design force developers to achieve zero-copy by offering a
+complex API for delivering potentially fragmented data (i.e., multiple pointers
+and sizes).
 % for performance reasons: it
-%guarantees the
-%availability
-%of a zero-copy codepath after decryption.
+%guarantees the availability of a zero-copy codepath after decryption.
 %(mp) implementation: -> section 4
 %In our implementation, a contiguous
 %zero-copy to the receiver is made possible thanks to this careful protocol
@@ -148,7 +158,8 @@ provided that the server announced \tcpls support.  The censor would not be able
 to trivially distinguish this behaviour from regular \tls, hardening potential
 attempts for censoring applications using \tcpls. The server handshake
 extensions are encrypted and part of the TLS handshake transcript hash,  and thus
-cannot be targeted by such attacks.
+cannot be dropped by the censor without breaking the handshake of regular \tls
+clients.
 
 
 %\todo{Is the following best here? -> Background ?}
