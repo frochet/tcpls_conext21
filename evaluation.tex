@@ -9,9 +9,6 @@ Mininet~\cite{handigol2012reproducible}, more complex scenarios involving
 Failover (Sec.~\ref{sec:eval_failover}), Application Connection Migration (Sec.
 ~\ref{sec:app-migration}) and bandwidth aggregation~\ref{sec:bwaggr}.
 
-\todo{State against which protocol we compare tcpls and outline the global 
-results.}
-
 For the two first experiments of 
 our \tcpls prototype (Sec.~\ref{sec:perf} and~\ref{sec:middlebox}), we use the 
 testbed depicted
@@ -141,7 +138,8 @@ Our measurements show that Failover has a small impact on raw throughput as
 \tcpls reaches 9.66 Gbps with a $1500$ bytes MTU.
 This is due to an increase in control records that are exchanged during the file 
 transfer, and buffer management within \tcpls.
-This impact could be reduced by reducing the number of record acknowledgments. We 
+This impact could be reduced by reducing the number of record acknowledgments,
+which should also improve the throughput under larger MTU. We 
 leave finding the optimal acknowledgment frequency as future work.
 %From a performance viewpoint, they increase the 
 %number of control records 
@@ -149,7 +147,7 @@ leave finding the optimal acknowledgment frequency as future work.
 %Our prototype currently sends a 
 %\tcpls-ack for every
 %16 received records. 
-\todo{Commenter Failover mtu 9000}
+%\todo{Commenter Failover mtu 9000}
 
 
 %% We also compared \tcpls's native bandwidth aggregation using two streams with a
@@ -429,7 +427,7 @@ two paths and reach a goodput of $\approx$ 50 Mbps.
 Both have two major differences. First, for MPTCP, there is a delay before it becomes fully utilized. 
 This delay is the time required by the Linux kernel
 to configure the new network interface IP address, add the required routes, and
-finally inform \mptcp~\cite{paasch2012exploring} \todo{Est ce qu'il n'en est pas de même pour \tcpls indirectement?}.
+finally inform \mptcp~\cite{paasch2012exploring}.
 %This explains the time that \mptcp needs to start to use the new path.
 Second, \tcpls's aggregated goodput seems less stable than \mptcp. We explain 
 this discrepancy by the difference of chunk size manipulated by the reordering 
@@ -447,7 +445,10 @@ encryption and decryption are performed more often.
 Appendix~\ref{appendix:aggr} shows the results of the same experiment but using
 a \tls record size of 1,500 bytes instead.
 
-\todo{Manque un takeaway qui cloture la section}
+Bandwidth aggregation may be useful for some application use-cases. \tcpls's
+strength is to let the application decides whether such a feature would be
+useful for it. This decision may be negotiated at the beginning or dynamically
+during the session.
 
 \begin{figure}[!t]
   \begin{center}
@@ -493,7 +494,8 @@ quickly and resume the transfer. However, a network outage
 is more difficult to detect. Both stacks rely on timers to decide to switch 
 paths. In the case of \tcpls, we
 configure a timer using the \tcp \texttt{User} \texttt{Timeout} 
-option, which is set to $250~ms$ in our experiment \todo{why $250~ms$?? small justification is needed}.
+option, which is set to $250~ms$ in our experiment. This value can also be
+chosen by the application to reflect specific use cases.
 %(mp): (should) already been explained in sec. prototype
 %When the server enables failover, it sets a timeout to protect 
 %the transfer. This option is sent in encrypted \tcpls records to 
