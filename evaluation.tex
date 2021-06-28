@@ -15,7 +15,7 @@ results.}
 For the two first experiments of 
 our \tcpls prototype (Sec.~\ref{sec:perf} and~\ref{sec:middlebox}), we use the 
 testbed depicted
-in Fig.~\ref{fig:perf_testbed}. It consists of three servers equipped
+in Figure~\ref{fig:perf_testbed}. It consists of three servers equipped
 with Intel Xeon CPU E5-2630 2.40GHz, 16~GB RAM, running
 Debian with Linux 5.9 and 5.7 kernels. Two of these machines are used as,
 respectively, Client and Server, while the third one is used as a router or a
@@ -267,7 +267,7 @@ are intended for production use and
 include throughput measurement applications.
 Furthermore, \mvfst and \quicly support Generic Segmentation Offload (GSO), 
 which
-offloads \udp segmentation and checksum computation to the NICs. 
+offloads \udp segmentation and checksum computation to the kernel and NICs. 
 %We use the 
 %implementation's benchmarking application as
 %is, exploiting the optional arguments provided by their interface to increase
@@ -423,7 +423,7 @@ managing paths is different: the application can use the API to add local or
 peer-related addresses at any point of the session. In this experiment, we send
 this information at $5$ seconds, create a new \tcp connection to the peer, and
 attach a new stream to it. The two streams are coupled together. Our results 
-appear in Fig.~\ref{fig:multipath_aggregation}. Both protocols aggregate the 
+appear in Figure~\ref{fig:multipath_aggregation}. Both protocols aggregate the 
 two paths and reach a goodput of $\approx$ 50 Mbps. 
 
 Both have two major differences. First, for MPTCP, there is a delay before it becomes fully utilized. 
@@ -474,7 +474,7 @@ interface unless an issue is detected on the first interface.
 We consider two 
 types of outages: a middlebox blackholing all the traffic and the reception of a 
 spurious \rst.
-Fig.~\ref{fig:recovery}
+Figure~\ref{fig:recovery}
 compares the goodput achieved by \mptcp and \tcpls over time when encountering 
 these events.
 
@@ -532,7 +532,7 @@ prototypes.
 %detect network failures and correctly switch the network path, thus we 
 %preferred to ignore those results. 
 \mptcp is a more mature multipath transport implementation that is maintained 
-and used in production. Fig.~\ref{fig:failover} compares how 
+and used in production. Figure~\ref{fig:failover} compares how 
 \mptcp and \tcpls recovers when three paths out of four are blackholed every 
 five seconds. We rotate the working path so that each implementation has 
 first to find it before recovering the transfer. 
@@ -549,7 +549,8 @@ We also tried injecting \tcp \rst instead of blackholing paths and \mptcp
 indefinitely stalled after the second \rst.
 However, \tcpls finds the right path quicker and recovers the session in a 
 short time similarly to the drop and \rst outage studied in 
-Fig.~\ref{fig:recovery}. Moreover, since those connections are fresh, they can 
+Figure~\ref{fig:recovery}. Moreover, since those connections are fresh, they 
+can 
 quickly use the available bandwidth.
 
 \subsection{Application-level Connection Migration}
@@ -561,7 +562,7 @@ based on application metrics.
 
 Applications can migrate their traffic from 
 one network path to another in a few \tcpls API calls. 
-Fig.~\ref{fig:conn_migration} shows the goodput 
+Figure~\ref{fig:conn_migration} shows the goodput 
 obtained when performing such a migration during a file transfer. % using the 
 %API 
 %(i.e., the application decides 
@@ -608,7 +609,7 @@ records.
 %Once the last record 
 %of the first path is sent, 
 \tcpls reorders the records and deliver the data to the 
-client. The goodput peak corresponds to the sum of bandwidth over 
+client. The goodput increase corresponds to the sum of bandwidth over 
 the new path during the migration time window.
 
 \begin{figure}[!t]
