@@ -161,7 +161,7 @@ to detect them.
 %(mp): Je suis d'accord, je bouge ça dans la section suivante.
 %\todo{pour comprendre ce para, il faut comprendre l'ouverture}
 
-\subsection{\tcpls Session Management}\label{design.start}
+\subsection{Starting a \tcpls Session}\label{design.start}
 
 A \tcpls session starts with a \tcp handshake followed by a \tls handshake.
 This process can be safely accelerated through the use of \tcp Fast Open~\cite{rfc7413}.
@@ -186,10 +186,11 @@ could choose to enable \tcpls after the handshake using \tcpls control records,
 provided that the server announced \tcpls support.  The censor would not be able
 to distinguish this behaviour from regular \tls, hardening potential
 attempts for censoring applications using \tcpls. The server handshake
-extensions are encrypted and part of the TLS handshake transcript hash,  and thus
-cannot be dropped by the censor without breaking the handshake of regular \tls
-clients. 
-%\todo{Il manque l'explication sur la clôture de la session. Est ce à cause d'un problème d'espace?}
+extensions are encrypted and part of the TLS handshake transcript hash,  and 
+thus cannot be dropped by the censor without breaking the \tls handshake. % of 
+%regular \tls clients.
+%\todo{Il manque l'explication sur la clôture de la session. Est ce à cause 
+%d'un problème d'espace?}
 
 %\todo{Is the following best here? -> Background ?}
 %A reasonable approach to design extensibility mechanisms in the Internet
