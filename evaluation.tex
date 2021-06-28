@@ -493,7 +493,7 @@ quickly and resume the transfer. However, a network outage
 is more difficult to detect. Both stacks rely on timers to decide to switch 
 paths. In the case of \tcpls, we
 configure a timer using the \tcp \texttt{User} \texttt{Timeout} 
-option, which is set to $250~ms$ in our experiment.
+option, which is set to $250~ms$ in our experiment \todo{why $250~ms$?? small justification is needed}.
 %(mp): (should) already been explained in sec. prototype
 %When the server enables failover, it sets a timeout to protect 
 %the transfer. This option is sent in encrypted \tcpls records to 
@@ -503,7 +503,7 @@ option, which is set to $250~ms$ in our experiment.
 When the timer expires, the client creates a connection over the other path and 
 joins it to the session. The server then replays the unacknowledged records. 
 Once these steps have succeeded, the transfer can continue. We can observe that 
-this process take $\approx 1$ second to recover from this single outage in our 
+this process takes $\approx 1$ second to recover from this single outage in our 
 experiment.
 
 
@@ -557,7 +557,7 @@ quickly use the available bandwidth.
 
 When there are multiple network paths, connection migration might be a
 powerful tool for applications to adapt to the changing network conditions 
-based on applications metrics.
+based on application metrics.
 
 Applications can migrate their traffic from 
 one network path to another in a few \tcpls API calls. 
