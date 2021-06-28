@@ -7,7 +7,11 @@
 %l'esprit, ça équivaut a dire qu'on peut utiliser des nouveaux records tls}
 
 By leveraging \tcpls records and extensions, we can design new modern transport
-services atop the combination of \tcp and \tls. In this subsection, we answer our second research question {\small\textit{RQ2}} by presenting three transport services: stream multiplexing (Sec.~\ref{sec:datastreams}), connection migration (Sec.~\ref{sec:multipath}), and bandwidth aggregation (Sec.~\ref{sec:multipath}). We leverage the \tcpls records
+services atop the combination of \tcp and \tls. In this subsection, we answer 
+our second research question {\small\textit{RQ2}} by presenting three transport 
+services: stream multiplexing (Section~\ref{sec:datastreams}), connection 
+migration (Section~\ref{sec:multipath}), and bandwidth aggregation 
+(Section~\ref{sec:multipath}). We leverage the \tcpls records
 to multiplex concurrent encrypted bytestreams. By extending the \tls handshake, \tcpls allows joining several \tcp connections to a single \tcpls session to support
 connection migration and %multipath capabilities, mitigating Head-of-Line
 %blocking and enabling
@@ -31,15 +35,15 @@ bandwidth aggregation.
 	\label{fig:aead-iv}
 \end{figure}
 
-Stream Multiplexing is a modern transport service that has been part of recent
+Stream Multiplexing is a transport service that has been part of recent
 protocols such as \sctp~\cite{rfc4960}, \quic~\cite{rfc9000} and HTTP/2.0
 \cite{rfc7540}. The latter also proposes multiplexing with an independent
 framing system atop the \tls-encrypted \tcp bytestream. In \tcpls, we choose to
 implement multiplexing with \tcpls records. We dedicate a \tcpls record type to
 \tcpls stream data. Each stream has a separate cryptographic context allowing
 concurrent encryption and decryption of data within the same session.  A \tcpls
-stream consists of a sequence of \tcpls stream data records encrypted with its
-cryptographic context. Each stream is attached to one \tcp connection.
+stream consists of a sequence of \tcpls stream data records encrypted with their
+cryptographic contexts. Each stream is attached to one \tcp connection.
 
 One simple way to provide separate cryptographic contexts is to use multiple
 application-level keys. But this is known to degrade the security properties
@@ -183,15 +187,21 @@ short keys inside cleartext \tcp \texttt{Options} during the \tcp handshake~\cit
 	\label{fig:join-example}
 \end{figure}
 
-\textbf{Joining \tcp connections}. \tcpls leverages its secure records and 
+\textbf{Joining \tcp connections}. \tcpls leverages \tls
 extensions to solve this problem in a more secure manner. 
 Figure~\ref{fig:join-example} illustrates the \tls and \tcpls messages 
 exchanged when a client connects to a server over IPv4 and later joins another 
 connection over IPv6.
-First, the client sends a \textsc{ClientHello} containing a \hello. The server replies with a \textsc{ServerHello} containing three types of encrypted extensions. First, the server announces its IPv6 address ($ADDR(v6)$). Second, it associates one identifier $\alpha$ to the \tcpls session (\emph{SESSID($\alpha$)}).
+First, the client sends a \textsc{ClientHello} containing a \hello. The server 
+replies with a \textsc{ServerHello} containing three encrypted extensions. 
+First, the server announces its IPv6 address ($ADDR(v6)$). Second, it 
+associates one identifier $\alpha$ to the \tcpls session 
+(\emph{SESSID($\alpha$)}).
 %It uniquely identifies the \tcpls session on the server.
 Third, the server provides a list of \tcpls session cookies $\beta_1,\beta_2$ in the \emph{COOKIE} extension. Each of these session cookies enables the client
-to associate one additional \tcp connection to the \tcpls session. Thus by sending $n$ cookies over a session, the server limits the client to associate up to $n$ \tcp connections. This prevents resource exhaustion attacks
+to join one additional \tcp connection to the \tcpls session. Thus by 
+sending $n$ cookies over a session, the server restricts the client to 
+join up to $n$ \tcp connections. This prevents resource exhaustion attacks
 that are difficult to counter with \mptcp. The server can later send additional
 cookies and update its list of addresses.
 
@@ -204,8 +214,8 @@ session and checks the validity of the cookie. If the \tcpls session and cookie
 are valid, the \tcp connection is joined to the \tcpls session. The session
 identifier plays the same role as the \mptcp token, but is sent encrypted. The
 cookie provides stronger protection than \mptcp's HMAC with security keys
-exchanged in cleartext. The server sends cookies encrypted and they can only be
-used once by the client.
+exchanged in cleartext. The \tcpls cookies are sent encrypted by the server and 
+can only be used once by the client.
 %(i.e.,
 %when the server receives a valid cookie, it accepts the connection, attaches it
 %to the right \tcpls session, and discards the cookie).
@@ -259,35 +269,65 @@ used once by the client.
 %when the server receives a valid cookie, it accepts the connection, attaches it
 %to the right \tcpls session, and discards the cookie).
 
+\begin{figure}[!t]
+	\begin{center}
+		\includegraphics[width=\columnwidth]{figures/tcpls_failover}
+	\end{center}
+	\caption{Failover resynchronises and retransmits lost \tcpls records 
+	from a failed \tcp connection to an other.}
+	\label{fig:failover}
+\end{figure}
 
 \textbf{Failover}.
-Upon network outage, \tcpls leverages its joining mechanism to recover the session
-over another \tcp connection. To achieve such a \emph{break-before-make}, \tcpls sends stream-level record
-acknowledgments for the records that have been received
-over each stream. Upon reception of Stream-level acknowledgments, the sender can
-manage its sending buffer and remove acknowledged encrypted records. Upon network outage, \tcpls moves the
-active streams out of the failed \tcp connection to an active one. Furthermore,
-the unacknowledged data records sent over the failed \tcp connection are
-transmitted again over a functional one. To resynchronize the session (i.e., the
-implicit encryption/decryption sequence numbers), the
-failover protocol makes the client sends the sequence number of the first record
-within its sending buffer, an $id$ to specify the failed \tcp connection and
-the Stream ID of the stream being moved. This information is encrypted with
-the default context and sent within the new \tcp connection. Receiving this protocol message, the server now knows
-the sequence number to decrypt some record arriving next on the connection that
-read the failover message. Either the server already processed that record, and can safely
-ignore it and increase the sequence number, or the server did not yet seen that
-record, and can decrypt and process it. The same protocol message and operations
-then goes from the server to the client, and the stream is then resyncronized
-over a new \tcp connection. No messages are required to be encrypted twice.
+When a \tcp connection fails, e.g. due to middleboxes or network outages, 
+\tcpls leverages its joining mechanism to recover 
+the session over another \tcp connection. Figure~\ref{fig:failover} illustrates 
+how \tcpls reacts to such events during a transfer with two \tcpls streams.
+To achieve such a \emph{break-before-make}, 
+\tcpls sends acknowledgments for the received records of each stream, allowing
+the sender to remove them from its sending buffer.
+%Upon reception of Stream-level acknowledgments, the sender can
+%manage its sending buffer and remove acknowledged encrypted records. 
+When the \tcp connection fails, the sender switches to the other one and 
+explicitly notifies the failure to the receiver. The sender then synchronizes 
+the transmission sequence using a dedicated \tcpls record type (i.e. SYNC in 
+Figure~\ref{fig:failover}) and retransmits the 
+unacknowledged stream data records (i.e. the second record of stream 0 in 
+Figure~\ref{fig:failover}). 
+Explicit synchronization %is required as the \tcpls stream sequence number is 
+%implicit and thus 
+prevents a lost acknowledgment from desynchronizing the endpoints. 
+Thanks to the per-stream cryptographic context, the ciphertext of lost stream 
+data records can be retransmitted as is.
+
+%Furthermore,
+%the unacknowledged data records sent over the failed \tcp connection are
+%transmitted again over a functional one. To resynchronize the session (i.e., 
+%the
+%implicit encryption/decryption sequence numbers), the
+%failover protocol makes the client sends the sequence number of the first 
+%record
+%within its sending buffer, an $id$ to specify the failed \tcp connection and
+%the Stream ID of the stream being moved. This information is encrypted with
+%the default context and sent within the new \tcp connection. Receiving this 
+%protocol message, the server now knows
+%the sequence number to decrypt some record arriving next on the connection that
+%read the failover message. Either the server already processed that record, 
+%and can safely
+%ignore it and increase the sequence number, or the server did not yet seen that
+%record, and can decrypt and process it. The same protocol message and 
+%operations
+%then goes from the server to the client, and the stream is then resyncronized
+%over a new \tcp connection. No messages are required to be encrypted twice.
 %\tcpls' Failover mode is optional. Both peers need to activate it or
 %negotiate the feature throught the Secure Control Channel.
 We present in Section~\ref{sec:perf} measurements quantifying the
 performance impact of adding \tcpls record-level acknowledgments. We also
-present in Section~\ref{sec:eval_failover} an analysis of recovery speed against
-different type of outages. We also give a
-trace example involving a file transfer and the failover protocol in
-Appendix~\ref{app:failover}.
+present in Section~\ref{sec:eval_failover} an analysis of recovery speeds during
+different type of outages.
+%We also give a
+%trace example involving a file transfer and the failover protocol in
+%Appendix~\ref{app:failover}.
 %\todo{Let see if we can bring it back in the text later}
 
 \textbf{Application Connection Migration}. \tcpls also enables the
@@ -301,7 +341,7 @@ application to trigger a connection migration, for instance based on application
 %(mp): Yet the following meta-info are not described, and again implementation
 %-> section
 %4
-\tcpls enables the exchange of network paths meta-information to help this
+\tcpls enables the exchange of meta-information to help this
 decision.
 %The TCPLS protocol and implementation's job is to make it quite simple by
 %supporting the exchange of interface's related meta-information to help the
@@ -309,7 +349,8 @@ decision.
 %making and by offering a simple API.
 %Essentially, it means that \tcpls provides a simple API that enables an
 %application to migrate when it wishes to do so (e.g.,
-For instance, an interactive running on a smartphone could migrate from
+For instance, an interactive application running on a smartphone could migrate 
+from
 LTE to Wi-Fi when it senses an increase in delays due to bufferbloat for a
 given period of time, or when a mobile client detects its home Wi-Fi and the
 user's preference is to move its traffic to the Wi-Fi if detected.
@@ -375,8 +416,9 @@ connections. Several path managers were proposed in the Linux kernel
 implementation \cite{TODO}.\todo{ref} However, few advanced applications have taken
 advantage of these advanced path managers. Apple's \mptcp stack was tuned for
 specific applications. For example, the Siri voice recognition application can
-use both cellular and Wi-Fi to optimize performance. Apple Music mainly
-performs handovers. As applications have very different requirements, \tcpls
+use both cellular and Wi-Fi to optimize performance. Apple Music mainly uses 
+\mptcp to perform seamless handovers. As applications have very different 
+requirements, \tcpls
 exposes the underlying \tcp connections to the application through its API. The
 applications use this API to implement their own policy to manage the
 underlying \tcp connections.
@@ -398,9 +440,9 @@ streams over the different \tcp connections. While Failover moves
 steering allows the application to distribute at any time the streams over the
 different
 \tcp connections of a \tcpls session. We already discussed a very simple use of
-stream steering when performing Application Connection Migration, which plays
-with opening, attaching and closing \tcpls stream protocols to move the
-application data to a new connection.
+stream steering when performing Application Connection Migration %, which plays
+%with opening, attaching and closing \tcpls stream protocols 
+to move application data to a new connection.
 
 %Like \mptcp \cite{raiciu2012hard,rfc6824} or Multipath QUIC
 %\cite{de2017multipath,draft-liu-multipath-quic-02}, \tcpls supports an
@@ -433,17 +475,17 @@ Head-of-Line blocking by placing them on separate \tcp connections.
 %\todo{OB: paragraphe ci-dessous pas clair. (mp): C'est m-à-j}
 %\todo{Multipath congestion control appliqué a TCPLS, eBPF, pas trivial}
 
-\textbf{Coupling streams for aggregated bandwidths}. Recall that each stream is
-attached to only one \tcp connection. Applications that benefit
+\textbf{Coupling streams for aggregated bandwidth}. 
+%Recall that each stream isbattached to only one \tcp connection. 
+Applications that benefit
 from the aggregated bandwidth of several network paths when transmitting a
 single application object can use \tcpls \textit{coupled streams}. Coupled
 streams send data alongside a sequence number located at the end of
-the record. The sender can schedule \tcpls records of application
-object over these
-streams and benefit from their aggregated bandwidth by sending data over the two
-stream using a strategy that fits the application usage. The receiving application
-reads the application object in order, as \tcpls handles the reordering when
-processing the decrypted records.
+the record. The sender can schedule \tcpls records of an application
+object over these streams and benefit from their aggregated bandwidth by 
+sending data over the two streams using a strategy that fits the application 
+usage. The receiving application reads the application object in order, as 
+\tcpls handles the reordering of coupled streams decrypted records.
 %That is, with coupled streams, \tcpls offers
 %to the application an explicit interface to the sender, and an agnostic
 %interface to the receiver
@@ -561,29 +603,34 @@ impacting the application goodput.
 %Timeout option \cite{rfc5482}, \mptcp's \texttt{ADD\_ADDR} and
 %\texttt{REMOVE\_ADDR} option and experimental \tcp options \cite{rfc6994}.
 
-\subsection{Finishing a \tcpls Connection}\label{design.closing}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\todo{OB: pas critique pour moi, ou alors il faut comparer MPTCP et QUIC}
-
-\todo{What's left here that does not belong to the Failover or implementation section?}
-\tcpls's semantic offers a secure stream abstraction to the application.
-%(mp): This is implementation not design
-%Streams can be attached to and closed from what we call a \texttt{transportid}
-%(the application does not have any knowledge of the \tcp interface).
-%When a stream is attached for the first time to a \tcp connection, this connection becomes active.
-The only way to gracefully close a \tcp connection in a \tcpls session
-is by securely closing all streams attached to it, then \tcpls gracefully closes the
-\tcp connection. That is, if \tcpls receives a \rst or a \fin over an active
-\tcp connection, it tries to re-establish a \tcp connection.
+%\subsection{Finishing a \tcpls Session}\label{design.closing}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\todo{OB: pas critique pour moi, ou alors il faut comparer MPTCP et QUIC}
+%
+%\todo{What's left here that does not belong to the Failover or implementation 
+%section?}
+%\tcpls's semantic offers a secure stream abstraction to the application.
+%%(mp): This is implementation not design
+%%Streams can be attached to and closed from what we call a \texttt{transportid}
+%%(the application does not have any knowledge of the \tcp interface).
+%%When a stream is attached for the first time to a \tcp connection, this 
+%%connection becomes active.
+%The only way to gracefully close a \tcp connection in a \tcpls session
+%is by securely closing all \tcpls streams attached to it
+%%, then \tcpls gracefully closes the \tcp connection. 
+%When \tcpls receives a \rst or a \fin over a
+%\tcp connection actively conveying \tcpls streams, it tries to re-establish a 
+%\tcp connection.
 %(mp): This is implementation not design
 %If failover is enabled, \tcpls tries another network path first. Otherwise, a connection over
 %the same IP source and destination is reestablished and the streams are moved to
 %this new \tcp connection.
 %If failover is not enabled, \tcpls would
 %opportunistically try to reestablish the connection.
-When Failover is enabled, in-flight records that were lost after receiving
-an illegitimate \rst or \fin, e.g. sent by a middlebox, can be transmitted again by \tcpls
-on this new \tcp connection.
+%When Failover is enabled, in-flight records that were lost after receiving
+%an illegitimate \rst or \fin, e.g. sent by a middlebox, can be transmitted 
+%again by \tcpls
+%on this new \tcp connection.
 
 %\subsection{Limitations}
 %\tcpls's design ensures that middleboxes are not going to distinguish

@@ -31,8 +31,18 @@ Our answer to {\small{\textit{RQ1}}} is fully positive. Indeed, by leveraging th
 %est effectivement parfois embrouillante
 %\todo{On ne voit pas qu'on a créé un nouveau secure channel à ce stade}
 
-In this section, we explain how we combine \tcp and \tls into \tcpls. In particular, We first introduce the \tcpls records which are the basic unit of communication in \tcpls (Sec.~\ref{design.records}).  We next explain how a \tcpls connection starts (Sec.~\ref{design.start}). We finally show
-how \tcpls uses them to provide modern transport services (sec.~\ref{sec:transport-services}) such as multiplexing, connection migration, and a novel multipath approach, answering so to {\small{\textit{RQ2}}} (\textit{What are the new transport services this combination can offer?}).  Finally, we explain how to close a \tcpls connection (Sec.~\ref{design.closing}).
+In this section, we explain how we combine \tcp and \tls into \tcpls. In 
+particular, Section~\ref{design.records} first introduces the \tcpls records 
+which are the basic unit of 
+communication in \tcpls. Section~\ref{design.start} explains how a 
+\tcpls session starts Section~\ref{design.start}. 
+Section~\ref{sec:transport-services} then shows
+how \tcpls uses them to provide modern transport services such as 
+multiplexing, connection migration, and a novel multipath approach, answering 
+{\small{\textit{RQ2}}} 
+(\textit{What are the new transport services this 
+combination can offer?}).  Finally, Section~\ref{design.closing} explains how 
+to close a \tcpls session.
 
 
 \subsection{\tls Records and Extensions}\label{design.records}
@@ -118,11 +128,23 @@ session through request/response messages called \tls \texttt{Encrypted}
 \texttt{Extensions}.
 %They are exchanged during
 %the \tls handshake with some security guaranteesa. \todo{state them briefly}
-\tcpls extends these messages to negotiate during the handshake some of the new
-transport services it offers.
+\tcpls leverages these messages to negotiate during the handshake some of the 
+new transport services it offers.
 
-\tcpls leverages these records and extensions to exchange \tcp \texttt{Options}. They can be negotiated at the start of the connection using \tls extensions and exchanged later throughout the connection in \tcpls encrypted control records. Since \tls messages are conveyed in the \tcp payload, they are not space-constrained as existing \tcp options.
-They are also exchanged reliably, which is a requirement of many \tcp \texttt{Options} including \tcp User Timeout option~\cite{rfc5482}, \mptcp's \texttt{ADD\_ADDR} and \texttt{REMOVE\_ADDR} option and some experimental \tcp options~\cite{rfc6994}. They also cannot be modified by middleboxes as they are secured by \tls. However, \tcp proxies could prevent an end-to-end \tcp connection, in which case this mechanism should not be used. Detecting \tcp proxies is easy as one could echo a part of the \tcp header in a \tcpls record to detect them.
+\tcpls uses these records and extensions to exchange \tcp \texttt{Options}. 
+They can be negotiated at the start of the connection using \tls extensions and 
+exchanged later throughout the connection in encrypted \tcpls records. 
+Since \tls messages are conveyed in the \tcp payload, they are not 
+space-constrained as existing \tcp options.
+They are also exchanged reliably, which is a requirement for several \tcp 
+\texttt{Options} including \tcp User Timeout option~\cite{rfc5482}, \mptcp's 
+\texttt{ADD\_ADDR} and \texttt{REMOVE\_ADDR} option and some experimental \tcp 
+options~\cite{rfc6994}. They also cannot be modified by middleboxes as they are 
+secured by \tls. However, \tcp proxies could prevent an end-to-end \tcp 
+connection and only exchanging the \tcp bytestream, in which case this 
+mechanism should not be used. Detecting \tcp 
+proxies is easy as one could echo a part of the \tcp header in a \tcpls record 
+to detect them.
 
 %\todo{Detecting proxies arrive de façon un peu bizarre. (mp): Mieux
 %maintenant? On peut le bouger ailleurs sinon}
@@ -130,9 +152,9 @@ They are also exchanged reliably, which is a requirement of many \tcp \texttt{Op
 %(mp): Je suis d'accord, je bouge ça dans la section suivante.
 %\todo{pour comprendre ce para, il faut comprendre l'ouverture}
 
-\subsection{Starting a \tcpls Connection}\label{design.start}
+\subsection{\tcpls Session Management}\label{design.start}
 
-A \tcpls connection starts with a \tcp handshake followed by a \tls handshake.
+A \tcpls session starts with a \tcp handshake followed by a \tls handshake.
 This process can be safely accelerated through the use of \tcp Fast Open~\cite{rfc7413}.
 %\tls 1.3~\cite{rfc8446} has been designed with careful consideration for
 %potential extensions and to prevent middlebox interference.
@@ -157,7 +179,6 @@ to distinguish this behaviour from regular \tls, hardening potential
 attempts for censoring applications using \tcpls. The server handshake
 extensions are encrypted and part of the TLS handshake transcript hash,  and 
 thus cannot be targeted by such attacks.
-
 
 %\todo{Is the following best here? -> Background ?}
 %A reasonable approach to design extensibility mechanisms in the Internet

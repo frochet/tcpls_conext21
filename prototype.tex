@@ -3,7 +3,8 @@
 
 In this section, we describe our \tcpls implementation which provides the 
 following benefits.
-($i$, \textit{Sec. \ref{sec:prot-multiplexing}}) Applications can use parallel 
+($i$, \textit{Section \ref{sec:prot-multiplexing}}) Applications can use 
+parallel 
 streams with 
 different cryptographic 
 contexts and multiplex them over a \tcp connection.
@@ -15,7 +16,7 @@ contexts and multiplex them over a \tcp connection.
 the extensibility of \tcp. We presented this service in a workshop
 paper~\cite{rochet2020tcpls} by implementing the \tcp User Timeout option.
 %(as described in
-   %Sec.~\ref{sec:background-design})
+   %Section~\ref{sec:background-design})
    %. We demonstrate this possibility by
    %implementing the \tcp User Timeout option%, which is a building block for
    %our Failover protocol
@@ -26,17 +27,17 @@ paper~\cite{rochet2020tcpls} by implementing the \tcp User Timeout option.
    %extending the sender's API and processing the option on the receiver side.
    %\tcpls's internal machinery allows to the server (resp. client) to send any
    %TCP option during (resp. after) the \tls handshake.
-($iii$, \textit{Sec. \ref{sec:prot-migration}}) Applications can enable 
+($iii$, \textit{Section \ref{sec:prot-migration}}) Applications can enable 
 Failover and 
 trigger Connection Migration.
-($iv$, \textit{Sec. \ref{sec:prot-multipath}}) Applications can leverage 
+($iv$, \textit{Section \ref{sec:prot-multipath}}) Applications can leverage 
 multipath 
 capabilities such as stream 
 steering %over several \tcp connections 
 and bandwidth aggregation.
 %\todo{MP: en faire une petite section qui présente l'implémentation, a 
 %combiner p-ê avec (ii)}
-($v$, \textit{Sec. \ref{sec:prot-ebpf}}) The server can securely send eBPF 
+($v$, \textit{Section \ref{sec:prot-ebpf}}) The server can securely send eBPF 
 bytecode to the client 
 to upgrade its \tcp congestion control scheme or tune other \tcp 
 mechanisms~\cite{brakmo2017tcp,tran2019beyond}. These prototype examples
@@ -132,7 +133,8 @@ Our prototype handles failover over IPv4 and IPv6 \tcp connections, and by defau
 Application running on more constrained devices can choose to disable Failover
 to gain in performance. They can also enable Failover during a \tcpls session 
 by sending a message on the secure channel. 
-We evaluate the performance impact of Failover in Sec.~\ref{sec:eval_failover}
+We evaluate the performance impact of Failover in 
+Section~\ref{sec:eval_failover}
 
 \textbf{Application Connection Migration}.
 \todo{Is there something to write implementation-wise?}
@@ -168,7 +170,7 @@ them in a zero-copy fashion to the application. When a record is received
 out-of-sequence, its content is pushed on an efficient reordering heap in 
 $O(log(n))$ for $n$ elements in the heap. Retrieving ordered records is in
 in $\Theta(1)$. The performance of our multipath bandwidth aggregation is evaluated 
-in Sec.~\ref{sec:bwaggr}.
+in Section~\ref{sec:bwaggr}.
 
 %\subsubsection{Failover}\label{failover}
 %Failover is a binary mode (on/off) that is fully internal to \tcpls.
@@ -179,7 +181,10 @@ in Sec.~\ref{sec:bwaggr}.
 %When a \tcp connection conveying \tcpls streams suffers from a network outage (e.g., a \rst is received or the connection becomes idle for too long), we move the stream to a new \tcp connection, retransmit the unacked records, and resume the transfer. Our prototype handles failover over IPv4 and IPv6 \tcp connections, and by default, chooses different source and destination addresses than the failed \tcp connection if some are available.
 %%Failover might be negotiated by both party, or
 %%enabled by default by both party.
-%Depending on the application type, Failover might be enabled or not by default. It is also possible to activate Failover during a \tcpls session by sending a message on the secure channel. We evaluate the performance of Failover in Sec.~\ref{sec:eval_failover}
+%Depending on the application type, Failover might be enabled or not by 
+%default. It is also possible to activate Failover during a \tcpls session by 
+%sending a message on the secure channel. We evaluate the performance of 
+%Failover in Section~\ref{sec:eval_failover}
 
 %\subsubsection{Application-level Connection Migration}
 %\label{sec:connmigr}
