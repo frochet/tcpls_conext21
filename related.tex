@@ -7,6 +7,13 @@ related works. Readers may refer to survey papers for additional
 context 
 information~\cite{polese2019survey,li2016multipath,papastergiou2016ossifying}.
 
+Regarding its transport features, \tcpls' stream abstraction has similarities to
+the Structured Streams Abstraction~\cite{ford2007structured}, in which each
+stream does not need 3-way handshaking, is independent if attached to a
+different \tcp connection and can proceeed in parallel without head-of-line
+blocking if the streams are not coupled. However, \tcpls pushes further the
+abstraction, involving benefits leveraged from multiple connections.
+
 Given its security features, \tcpls must be compared with 
 \tcpcrypt~\cite{bittau2010case,rfc8548} which predates \tls 1.3. It uses \tcp 
 options to support opportunistic encryption but is not secure against an active 
@@ -48,8 +55,6 @@ extends HTTP/2, MP-DASH~\cite{han2016mp} for video streaming or mHTTP~\cite{kim2
 solves the privacy issue with TFO by using TLS. However, \tcpls is more generic,
 and demonstrate how we leverage its extensibility work for more advanced 
 concerns and transport services.
-
-\todo{Structured stream}
 
 %% Several researchers have proposed techniques to extend various transport
 %% protocols. The IETF provides generic guidelines on the design of
