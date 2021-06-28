@@ -1,4 +1,3 @@
-
 % !TEX root = ./paper.tex
 %Notion de streams
 %Expliquer comment TLS et QUIC sont intégrés.
@@ -61,7 +60,7 @@ except a very small header. \quic leverages \tls 1.3~\cite{rfc8446} to
 negotiate the security keys and authenticate the server. \quic has a flexible 
 framing system and packets are encrypted separately, in a similar manner to 
 \tls records. \quic allows the application to use different datastreams over a 
-single connection such \sctp~\cite{rfc4960} or Structured 
+single connection such as \sctp~\cite{rfc4960} or Structured 
 Streams~\cite{ford2007structured}. \quic has been adopted by the industry and 
 standardized within the IETF~\cite{rfc9000}. There are more than a dozen \quic 
 implementations~\cite{quicimplem,marx2020same}. \quic is already used in 
