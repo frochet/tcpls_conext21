@@ -40,8 +40,7 @@ TLS 1.3 \texttt{AppData} records, leading to middlebox compatibility. %and new t
 In this section, we explain how we combine \tcp and \tls into \tcpls. In 
 particular, Section~\ref{design.records} first introduces the \tcpls records 
 which are the basic unit of 
-communication in \tcpls. Section~\ref{design.start} explains how a 
-\tcpls session starts Section~\ref{design.start}. 
+communication in \tcpls. Section~\ref{design.start} explains how a \tcpls session is managed. 
 Section~\ref{sec:transport-services} then shows
 how \tcpls uses them to provide modern transport services such as 
 multiplexing, connection migration, and a novel multipath approach, answering 
@@ -189,7 +188,7 @@ to distinguish this behaviour from regular \tls, hardening potential
 attempts for censoring applications using \tcpls. The server handshake
 extensions are encrypted and part of the TLS handshake transcript hash,  and thus
 cannot be dropped by the censor without breaking the handshake of regular \tls
-clients.
+clients. \todo{Il manque l'explication sur la clôture de la session. Est ce à cause d'un problème d'espace?}
 
 %\todo{Is the following best here? -> Background ?}
 %A reasonable approach to design extensibility mechanisms in the Internet
