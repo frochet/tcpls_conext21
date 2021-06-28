@@ -133,38 +133,46 @@ features at the same time).
 %  \label{table:tcplsvsquic}
 %\end{table*}
 
-\section{Failover Protocol}
-\label{app:failover}
-Fig.~\ref{fig:protocol_example} provides a closer look at the operation of \tcpls. It
-shows the key \tcpls messages that are exchanged during a \tcpls session using failover
-that transfers a file but suffers from a failure. First, during the \tcpls
-handshake, we observe the \tls encrypted extensions \texttt{Cookies}, \texttt{Sessid},
-\texttt{Multihoming v6} and \texttt{User Timeout} records sent with the
-\textsc{ServerHello} messages. The multihoming v6 extension announces an
-alternate address to the client. The User Timeout \tcpls extension
-announces to the peer that it should not wait more than the $X$~ms to expect
-more data to read. In this experiment, the User Timeout is $250ms$, and
-should in practice be an upper bound of the server-to-client path latency.
-At the end of the handshake, the Server attaches a stream and
-begins to send the file as TLS APPDATA records. The clients sends
-special \tcpls DATA\_ACK records to acknowledge the received records. In this
-experiment, the \tcp connection fails after around $16~s$. The Client creates
-a new \tcp connection towards the Server's IPv6 address. It sends Join \tcpls handshake
-and executes the Failover protocol over the new connection. Both peers
-resynchronize their decrypting sequence number and replay the records that have
-been lost during the failure. The send a FAILOVER\_END record after having replayed all
-the unacked records to indicate that the stream is recovered. The Server can then
-send new data and finishes by securely closing the stream.
-
-To be extra clear on any security concern, different records are never encrypted
-with the same sequence number, nor any (lost) record is encrypted twice or decrypted
-twice.
-
-% Agents
-\def\Client{Client}
-\def\Server{Server}
-\def\Inactivity{Inactivity}
-\def\Event{Event}
+%\section{Failover Protocol}
+%\label{app:failover}
+%Fig.~\ref{fig:protocol_example} provides a closer look at the operation of 
+%\tcpls. It
+%shows the key \tcpls messages that are exchanged during a \tcpls session using 
+%failover
+%that transfers a file but suffers from a failure. First, during the \tcpls
+%handshake, we observe the \tls encrypted extensions \texttt{Cookies}, 
+%\texttt{Sessid},
+%\texttt{Multihoming v6} and \texttt{User Timeout} records sent with the
+%\textsc{ServerHello} messages. The multihoming v6 extension announces an
+%alternate address to the client. The User Timeout \tcpls extension
+%announces to the peer that it should not wait more than the $X$~ms to expect
+%more data to read. In this experiment, the User Timeout is $250ms$, and
+%should in practice be an upper bound of the server-to-client path latency.
+%At the end of the handshake, the Server attaches a stream and
+%begins to send the file as TLS APPDATA records. The clients sends
+%special \tcpls DATA\_ACK records to acknowledge the received records. In this
+%experiment, the \tcp connection fails after around $16~s$. The Client creates
+%a new \tcp connection towards the Server's IPv6 address. It sends Join \tcpls 
+%handshake
+%and executes the Failover protocol over the new connection. Both peers
+%resynchronize their decrypting sequence number and replay the records that have
+%been lost during the failure. The send a FAILOVER\_END record after having 
+%replayed all
+%the unacked records to indicate that the stream is recovered. The Server can 
+%then
+%send new data and finishes by securely closing the stream.
+%
+%To be extra clear on any security concern, different records are never 
+%encrypted
+%with the same sequence number, nor any (lost) record is encrypted twice or 
+%decrypted
+%twice.
+%
+%% Agents
+%\def\Client{Client}
+%\def\Server{Server}
+%\def\Inactivity{Inactivity}
+%\def\Event{Event}
 
 
 %\begin{figure*}[!t]

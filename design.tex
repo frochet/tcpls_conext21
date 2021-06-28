@@ -290,28 +290,29 @@ can only be used once by the client.
 	\end{center}
 	\caption{Failover resynchronises and retransmits lost \tcpls records 
 	from a failed \tcp connection to an other.}
-	\label{fig:failover}
+	\label{fig:design-failover}
 \end{figure}
 
 \textbf{Failover}.
 When a \tcp connection fails, e.g. due to middleboxes or network outages, 
 \tcpls leverages its joining mechanism to recover 
-the session over another \tcp connection. Figure~\ref{fig:failover} illustrates 
+the session over another \tcp connection. Figure~\ref{fig:design-failover} 
+illustrates 
 how \tcpls reacts to such events during a transfer with two \tcpls streams.
 To achieve such a \emph{break-before-make}, 
 \tcpls sends acknowledgments for the received records of each stream, allowing
 the sender to remove them from its sending buffer.
 %Upon reception of Stream-level acknowledgments, the sender can
 %manage its sending buffer and remove acknowledged encrypted records.
-Looking at \textbf{1.} in Figure~\ref{fig:failover}, we can observe that three 
-records were sent but only the first two were received and acknowledged due to 
-a failure.
+Looking at \textbf{1.} in Figure~\ref{fig:design-failover}, we can observe that 
+three records were sent but only the first two were received and acknowledged 
+due to a failure.
 Then, looking at \textbf{2.}, the sender notices that the \tcp connection has 
-failed, switches to the other one and explicitly notifies the failure to the 
-receiver. The sender then synchronizes the transmission sequence using a 
-dedicated \tcpls record type (i.e. SYNC in Figure~\ref{fig:failover}) and 
-retransmits the unacknowledged stream data records (i.e. the second record of 
-stream 0 in Figure~\ref{fig:failover}). 
+failed and switches to the other one. It explicitly notifies the failure to the 
+receiver and synchronizes the transmission sequence using a 
+dedicated \tcpls record type (i.e. SYNC in Figure~\ref{fig:design-failover}). 
+Then it retransmits the unacknowledged stream data records (i.e. the second 
+record of stream 0 in Figure~\ref{fig:design-failover}). 
 Explicit synchronization %is required as the \tcpls stream sequence number is 
 %implicit and thus 
 prevents a lost acknowledgment from desynchronizing the endpoints. 
@@ -483,8 +484,8 @@ low-latency connections. By sending each application-level object in a separate
 stream, the application can benefit from multiple network paths while
 maintaining the ability to process each stream in a zero-copy manner, and
 with no head-of-line blocking.
-\tcpls enables the application to choose which streams are protected from
-Head-of-Line blocking by placing them on separate \tcp connections.
+\tcpls enables the application to attach streams to separate \tcp connections 
+to avoid Head-of-Line blocking. %by placing them on separate \tcp connections.
 %Applications objects that depend on others can cope with occasional
 %Head-of-Line blocking.
 
