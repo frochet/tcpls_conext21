@@ -35,7 +35,7 @@ cd pretty_plotify
 ./plot.sh
 ```
 
-All figures should then be in plots/
+All figures should then be in pretty_plotify/plots/
 
 ## Regenerate Results
 
@@ -80,7 +80,7 @@ picotcpls's readme to play with a client/server in IPMininet.
 
 ### Figures involving MPTCP.
 
-Notes: One of the repository is currently located offline in a different
+Notes: One of the repositories required for this part is currently located offline in a different
 country from which the main author's location currently is. This part
 will be updated when the main author returns (Early December 2021).
 Please ignore this part until further notice. If this part is still
