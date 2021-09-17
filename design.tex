@@ -76,8 +76,8 @@ It does not involve a complete decryption as all TLS 1.3 AEAD
 ciphers use an Encrypt-then-MAC construct~\cite{rfc7366, rfc8446}, and the tag
 verification is computationally light, especially on 
 AES-GCM~\cite{mcgrew2004galois}. Reducing this cost could be achieved by adding 
-explicit signaling when an other stream is scheduled over the \tcp connection
-~\footnote{The worst case is when the sender schedules records of $N$ streams 
+explicit signaling when an other stream is scheduled over the \tcp connection\footnote{
+The worst case is when the sender schedules records of $N$ streams 
 over a \tcp connection. Then,
   \tcpls may announce within the last record of the current stream the Stream 
   ID of the following record%, thanks to \tcp ordered delivery
