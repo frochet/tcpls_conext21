@@ -521,3 +521,19 @@ prototype implementation.
     \tls over \mptcp with 16,384 bytes record size}
   \label{fig:aggregation_1500bytes_records}
 \end{figure}
+
+\section{Artifacts description for AEC}
+
+As part of the artifacts released with this work, we release the TCPLS source 
+code, the scripts used for starting the experiments presented and 
+the scripts used to generate the figures of the paper.
+
+The source code contains 9k additional lines of C code we implemented on top of 
+\texttt{picotls} supporting the presented 
+features\footnote{\url{https://github.com/pluginized-protocols/picotcpls/}}.
+
+Figure \ref{fig:vegasCubic} can be reproduced by following a README on a 
+separate 
+branch\footnote{\url{https://github.com/pluginized-protocols/picotcpls/blob/tcpls/bpf-cc/t/ipmininet/readme_for_bpf_cc_test.md}}.
+
+Other figures presenting experiments results
