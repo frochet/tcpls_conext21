@@ -71,7 +71,7 @@ saturate the 40~Gbps link when setting the MTU to 9000 bytes. With a 1500-byte
 MTU, a single \tcp connection reaches 22~Gbps. We also benchmarked the 
 AES128-GCM-SHA256 cipher with in-memory 16,384-byte \tls records and observed 
 that decryption in our client reaches 24.59~Gbps while encryption on our 
-server reaches 13,62~Gbps.
+server reaches 13.62~Gbps.
 
 %With this first experiment, we demonstrate that \tcpls can be implemented at a
 %low cost compared to \tcp and \tls while 
@@ -523,7 +523,7 @@ In this experiment, we reuse the Mininet topology %introduced in
 %Section~\ref{sec:bwaggr}%. We
 and set a bandwidth of 30~Mbps on each path, a 40~ms 
 round-trip-time for the IPv4 link, and 80~ms for the IPv6 link. Our test application
-downloads a 60MB file and migrates once from the IPv4 to 
+downloads a 60~MB file and migrates once from the IPv4 to 
 the IPv6 path and once again back to the IPv4 path.
 
 %\todo{Est-ce necessaire? A aligner avec la place que l'on veut pour l'API vs 
@@ -567,7 +567,7 @@ the new path during the migration time window.
   \begin{center}
     \includegraphics[width=.8\columnwidth]{figures/migration.png}
   \end{center}
-  \caption{Application-level connection migration during a 60MB file download.
+  \caption{Application-level connection migration during a 60~MB file download.
     \tcpls temporarily aggregates the two network paths during such a migration.}
   \label{fig:conn_migration}
 \end{figure}
@@ -582,7 +582,7 @@ We compare the \tcpls bandwidth aggregation capability to the state-of-the-art
 %completely disjoint in this emulated network. Both protocols run in the same
 %Mininet topology with two IP paths available, each offering 25Mbps and 10ms
 %latency. 
-Our experiment consists of transferring a 60MB file over a single path
+Our experiment consists of transferring a 60~MB file over a single path
 and enabling the second one after $5$ seconds. \mptcp automatically detects
 the new path once we enable the Client's second network interface. For \tcpls,
 managing paths is different: the application can use the API to add local or
