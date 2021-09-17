@@ -1,8 +1,8 @@
 % !TEX root = ./paper.tex
 
 In this section, we evaluate \tcpls with several experiments.
-First, we evaluate the raw performance of our \tcpls prototype (
-Section~\ref{sec:perf}). Then we report how \tcpls
+First, we evaluate the raw performance of our \tcpls prototype
+(Section~\ref{sec:perf}). Then, we report how \tcpls
 interacts with middleboxes in a controlled environment in 
 Section~\ref{sec:middlebox}. We then emulate, using
 Mininet~\cite{handigol2012reproducible}, more complex scenarios involving 
@@ -19,7 +19,7 @@ with Intel Xeon CPU E5-2630 2.40GHz, 16~GB RAM, running
 Debian with Linux 5.9 and 5.7 kernels. Two of these machines are used as,
 respectively, Client and Server, while the third one is used as a router or a
 middlebox, depending on the scenario. Each machine is equipped with an Intel
-XL710 2x40Gbps NIC. For all measurements, with all implementations, we use a 
+XL710 2x40~Gbps NIC. For all measurements, with all implementations, we use a 
 single thread on each machine to run the client and server.
 
 \begin{figure}[!t]
@@ -31,11 +31,11 @@ single thread on each machine to run the client and server.
 	\label{fig:perf_testbed}
 \end{figure}
 
-In the emulated experiments of Sections~\ref{sec:bwaggr}, 
-\ref{sec:eval_failover} and \ref{sec:app-migration} we use a Mininet 
+In the emulated experiments of Sections~\ref{sec:eval_failover}, 
+\ref{sec:app-migration} and \ref{sec:bwaggr} we use a Mininet 
 network~\cite{handigol2012reproducible} composed of a client and a server, both 
 dual-stacks. The IPv4 and IPv6 paths are completely disjoint in this emulated 
-network, each offering 25Mbps and 10ms latency if not stated otherwise. 
+network, each offering 25~Mbps and 10~ms latency if not stated otherwise. 
 
 
 
@@ -137,7 +137,7 @@ acknowledgments. % of adding the \tcpls-level
 %described in Section~\ref{failover} to support failover.
 % Thanks to these acknowledgments, \tcpls can support failover.
 Our measurements show that Failover has a small impact on raw throughput as
-\tcpls reaches 9.66 Gbps with a $1500$ bytes MTU.
+\tcpls reaches 9.66~Gbps with a $1500$ bytes MTU.
 This is due to an increase in control records that are exchanged during the 
 file transfer and additional buffer management within \tcpls.
 This impact could be reduced by lowering the number of record acknowledgments,
@@ -190,7 +190,7 @@ an efficient heap.
 %paths~\cite{paasch2014experimental} since it will force the
 %receiver to reorder the received records.  
 Our measurements show that coupling when two streams in our testbed,
-\tcpls reaches a throughput of 8.8 Gbps, i.e. less than 10\% below Failover.
+\tcpls reaches a throughput of 8.8~Gbps, i.e. less than 10\% below Failover.
 
 \begin{figure}[!t]
   \begin{center}
@@ -521,8 +521,8 @@ obtained when performing such a migration during a file transfer. % using the
 %perform it). 
 In this experiment, we reuse the Mininet topology %introduced in 
 %Section~\ref{sec:bwaggr}%. We
-and set a bandwidth of 30Mbps on each path, a 40ms 
-round-trip-time for the v4 link, and 80ms for the v6 link. Our test application 
+and set a bandwidth of 30~Mbps on each path, a 40~ms 
+round-trip-time for the IPv4 link, and 80~ms for the IPv6 link. Our test application 
 downloads a 60MB file and migrates once from the IPv4 to 
 the IPv6 path and once again back to the IPv4 path.
 
@@ -591,7 +591,7 @@ this information after $5$ seconds, create a new \tcp connection to the peer,
 and
 attach a new stream to it. The two streams are coupled together. Our results 
 appear in Figure~\ref{fig:multipath_aggregation}. Both protocols aggregate the 
-two paths and reach a goodput of $\approx$ 50 Mbps. 
+two paths and reach a goodput of $\approx$ 50~Mbps. 
 
 They have two differences. First, for MPTCP, there is a delay before it 
 becomes fully utilized. 
@@ -656,7 +656,7 @@ To illustrate how \tcpls can be dynamically extended, we show how a server can
 send an eBPF congestion controller to its client that attaches it in the middle 
 of a \tcpls session. Figure~\ref{fig:vegasCubic} reports the goodput obtained 
 by two \tcpls sessions during a file upload on a Mininet network with a 
-100Mbps and 60ms RTT link.
+100~Mbps and 60~ms RTT link.
 %We use Mininet over a single 100Mbps emulated link with a 
 %60msec rtt. Fig.~\ref{fig:vegasCubic} shows a client that uses the \tcp
 The orange curve is the first \tcpls session that starts with the Vegas 
@@ -666,7 +666,7 @@ started with the CUBIC congestion controller~\cite{rfc8312}. This quickly
 results in an unfair distribution of the bandwidth. The server then sends an 
 eBPF bytecode implementing the CUBIC congestion controller to the first \tcpls 
 session which attaches it. The bandwidth distribution becomes fair. We 
-performed the same experiment for different delays, varying from 10ms to 100ms 
+performed the same experiment for different delays, varying from 10~ms to 100~ms 
 and obtained similar results.
 
 \begin{figure}[!t]

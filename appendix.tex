@@ -87,7 +87,7 @@ lower latency~\cite{bajpai2019longitudinal}.
   \label{fig:api}
 \end{figure}
 
-Fig.~\ref{fig:api} shows an example of our current API workflow. The API can
+Figure~\ref{fig:api} shows an example of our current API workflow. The API can
 handle explicit multipath techniques such as Happy Eyeball by chaining
 \texttt{tcpls\_connect()} with an appropriate timeout of 50ms, as shown in the
 Figure. \tcpls lets the application explicitly choose the multipath mesh by
@@ -504,14 +504,14 @@ features at the same time).
 \section{Multipath Aggregation}
 \label{appendix:aggr}
 
-Fig.~\ref{fig:aggregation_1500bytes_records} shows the same experiment as
+Figure~\ref{fig:aggregation_1500bytes_records} shows the same experiment as
 the one provided in Section~\ref{sec:bwaggr}. However, we now configure
 \tcpls with a 1,500 bytes record size to demonstrate that the
 irregularities are mainly due to the payload chunk size that the reordering
 algorithm has to manipulate. The larger the records, the bigger
 the payload chunk size, and higher irregularities should be observed. We
 observe here a steady goodput with several large irregularities, which is a
-progress compared to Fig.~\ref{fig:multipath_aggregation}. However, large
+progress compared to Figure~\ref{fig:multipath_aggregation}. However, large
 peaks remain, which are probably linked to the some remaining bugs in our current \tcpls
 prototype implementation.
 
