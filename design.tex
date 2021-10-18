@@ -27,13 +27,14 @@ middleboxes interference that modify the TCP header.
 
 \begin{figure}[!t]
 	\centering
-	\begin{bytefield}[bitheight=\widthof{aw}]{32}
+	\begin{bytefield}[bitheight=\widthof{abc}]{32}
 		\bitbox[]{1}{\small N} & \bitbox[]{9}{} & \bitbox[]{3}{\small N-32} &
 		& \bitbox[]{7}{} &
 		\bitbox[]{1}{\small 64} & \bitbox[]{9}{} & \bitbox[]{3}{\small 0} \\
 		\bitbox{32}{TLS 1.3 AEAD Initial Vector}  \\
 		\bitbox[]{12}{+} & \bitbox[]{8}{} & \bitbox[]{12}{$\oplus$} \\
-		\bitbox{12}{\tcpls Stream ID} & \bitbox[]{8}{} & \bitbox{12}{Record sequence}
+		\bitbox{12}{\tcpls Stream ID} & \bitbox[]{8}{} & \bitbox{12}{\small 
+		Stream record sequ.}
 	\end{bytefield}
 	\caption{The AEAD Nonce of \tcpls Streams is derived from \tls 1.3.}
 	\label{fig:aead-iv}
@@ -45,7 +46,8 @@ protocols such as \sctp~\cite{rfc4960}, \quic~\cite{rfc9000} and HTTP/2.0
 framing system atop the \tls-encrypted \tcp bytestream. In \tcpls, we choose to
 implement multiplexing with \tcpls records. We dedicate a \tcpls record type to
 \tcpls stream data. Each stream has a separate cryptographic context allowing
-concurrent encryption and decryption of data within the same session.  A \tcpls
+concurrent encryption and decryption of data within the same session with 
+per-stream buffers. A \tcpls
 stream consists of a sequence of \tcpls stream data records encrypted with their
 cryptographic contexts. Each stream is attached to one \tcp connection.
 
