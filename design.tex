@@ -33,7 +33,7 @@ bandwidth aggregation.
 		\bitbox[]{12}{+} & \bitbox[]{8}{} & \bitbox[]{12}{$\oplus$} \\
 		\bitbox{12}{\tcpls Stream ID} & \bitbox[]{8}{} & \bitbox{12}{Record sequence}
 	\end{bytefield}
-	\caption{The AEAD IV of \tcpls Streams is derived from \tls 1.3}
+	\caption{The AEAD Nonce of \tcpls Streams is derived from \tls 1.3.}
 	\label{fig:aead-iv}
 \end{figure}
 
@@ -51,8 +51,11 @@ One simple way to provide separate cryptographic contexts is to use multiple
 application-level keys. But this is known to degrade the security properties
 proportionally to the number of additional keys~\cite{chatterjee2011another}. To
 overcome this, we propose an Initial Vector (IV) derivation technique that
-enables independent encryption/decryption to each stream without the security
-degradation.
+enables independent encryption/decryption for each stream without this security
+degradation. We add two goals to the design of this technique. First, the 
+TLS 1.3 wire format must be preserved to avoid possible middleboxes 
+interference. Second, the resulting nonce must be unique for each record of 
+each stream in order to maintain the security properties of AEAD.
 
 Figure~\ref{fig:aead-iv} illustrates how the AEAD IV is computed for a given
 \tcpls record of a \tcpls stream. First the left-most bits of the IV derived
@@ -60,8 +63,8 @@ from the \tls handshake are summed with the 32-bit \tcpls Stream ID. Then the
 right-most bits are XORed with the stream 64-bit record sequence number. Each
 \tcpls stream has a separate record sequence number space. This combination of
 IV manipulation guarantees that the resulting IV is unique for each record of
-all \tcpls streams as long as the Stream ID is unique and no sequence number is
-used twice in a given stream. The Stream ID space is split between the client
+all \tcpls streams given a unique Stream ID and sequence number. The 
+Stream ID space is split between the client
 and the server. Stream ID 0 is equivalent to the cryptographic context
 derived directly from the handshake.
 %\todo{Il faut expliquer comment les stream id sont choisis pour garantir
