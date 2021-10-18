@@ -17,35 +17,24 @@
 
 The slow pace of innovation in \tcp-based transport services can be explained by
 several factors. First, the amount of bytes for extensions in the \tcp header is
-limited to 40 bytes. Second, \tcp is often implemented as a 
-part of the OS kernel, which adds complexity to implement and deploy any 
-modification. Third, it is exchanged in cleartext and is known to have
-heavily ossified due to middleboxes, strongly restraining changes in the header
-semantics and to \tcp \texttt{Options}.
-Following the recent advances in the transport layer, we go back to
-{\small{\textit{RQ1}}} and ask \textit{How can TCP and TLS be 
+limited to 40 bytes. Second, \tcp is often implemented as a  part of the OS kernel, which adds complexity to implement and deploy any  modification. Third, it is exchanged in cleartext and is known to have heavily ossified due to middleboxes, strongly restraining changes in the header semantics and to \tcp \texttt{Options}. Following the recent advances in the transport layer, we go back to {\small{\textit{RQ1}}} and ask \textit{How can \tcp and \tls be
 combined to improve extensibility and middlebox resilience} ?
 
 We answer {\small{\textit{RQ1}}} by leveraging the flexible encrypted \tls
 records to supplement the \tls-encrypted application data with
 transport-level control data allowing \tcpls to provide a large range of new
 transport services. In addition, existing \tcp \texttt{Options} can be securely
-conveyed in new \tls records. These records are indistinguishable on the wire 
-from TLS 1.3 \texttt{AppData} records, leading to middlebox compatibility. %and 
+conveyed in new \tls records. These records are indistinguishable on the wire
+from TLS 1.3 \texttt{AppData} records, leading to middlebox compatibility. %and
 %new transport services can be built
 
 %(mp): C'est une vue de l'esprit, pour moi on peut enlever cette mention qui
 %est effectivement parfois embrouillante
 %\todo{On ne voit pas qu'on a créé un nouveau secure channel à ce stade}
 
-In this section, we explain how we combine \tcp and \tls into \tcpls. In 
-particular, Section~\ref{design.records} first introduces the \tcpls records 
-which are the basic unit of 
-communication in \tcpls. Section~\ref{design.start} explains how a \tcpls session is managed. 
-Section~\ref{sec:transport-services} then shows what are the new transport 
-services this combination can offer ({\small{\textit{RQ2}}}) by showing
-how \tcpls uses \tcpls records to provide modern transport services such as 
-multiplexing, connection migration, and a novel multipath approach.
+In this section, we explain how we combine \tcp and \tls into \tcpls. In
+particular, Sec.~\ref{design.records} first introduces the \tcpls records
+which are the basic unit of communication in \tcpls. Sec.~\ref{design.start} explains how a \tcpls session is managed. Sec.~\ref{sec:transport-services} then shows what are the new transport services this combination can offer ({\small{\textit{RQ2}}}) by showing how \tcpls uses \tcpls records to provide modern transport services such as multiplexing, connection migration, and a novel multipath approach.
 
 
 \subsection{\tls Records and Extensions}\label{design.records}
@@ -81,19 +70,18 @@ multiplexing, connection migration, and a novel multipath approach.
 	\colorbitbox{lightgray}{16}{\small Encrypted control \\ or application data}{tlb} & \colorbitbox{lightgray}{8}{\small Record type \\ \scriptsize TCPLS}{trb}
 	\end{rightwordgroup}
 \end{bytefield}
-
 	\caption{\tcpls extends the encrypted \tls records to convey control and application data.}
 	\label{fig:tls-tcpls-records}
 \end{figure}
 
 Each protocol has a basic unit for exchanging application and control data.
-For instance, \tcp segments are split in two with only the header dedicated to 
-control data. In \quic, the basic unit is a \quic packet which can carry 
-several and different types of \quic frames. \tls supports \tls records of 
-different types and lengths.  As illustrated in 
-Figure~\ref{fig:tls-tcpls-records}, \tcpls leverages the \tls encrypted records 
-that hide their true type and content from middleboxes in opaque 
-\texttt{AppData} records. In this way, \tcpls can extend the messages exchanged 
+For instance, \tcp segments are split in two with only the header dedicated to
+control data. In \quic, the basic unit is a \quic packet which can carry
+several and different types of \quic frames. \tls supports \tls records of
+different types and lengths.  As illustrated in
+Fig.~\ref{fig:tls-tcpls-records}, \tcpls leverages the \tls encrypted records
+that hide their true type and content from middleboxes in opaque
+\texttt{AppData} records. In this way, \tcpls can extend the messages exchanged
 with \tls in a secure and flexible manner.
 %Some \tcpls control information may sometimes be packaged
 %within a record containing Application Data, such as a sequence number for
@@ -102,17 +90,10 @@ with \tls in a secure and flexible manner.
 %\todo{Is the following enough regarding Olivier email?}
 We chose to design the \tcpls framing at the \tls record level so that
 decryption operations can be performed with a zero-copy codepath within a
-contiguous memory buffer, unlike \quic. Indeed, any \tcpls control information 
+contiguous memory buffer, unlike \quic. Indeed, any \tcpls control information
 not relevant to the application is
 %always encrypted and
-located at the end of the record so that, by adjusting the offset when
-decrypting the \tcpls records, the receiver can overwrite them and
-achieve zero-copy within a contiguous allocated memory. 
-This specific protocol
-design choice allow \tcpls implementations to easily offer
-zero-copy data delivery through a simple API. In
-comparison, \quic's design force developers to achieve zero-copy by offering a 
-more complex API delivering potentially fragmented data.% (i.e., multiple 
+located at the end of the record so that, by adjusting the offset when decrypting the \tcpls records, the receiver can overwrite them and achieve zero-copy within a contiguous allocated memory. This specific protocol design choice allow \tcpls implementations to easily offer zero-copy data delivery through a simple API. In comparison, \quic's design force developers to achieve zero-copy by offering a more complex API delivering potentially fragmented data.% (i.e., multiple
 %pointers and sizes).
 % for performance reasons: it
 %guarantees the availability of a zero-copy codepath after decryption.
@@ -137,23 +118,14 @@ session through request/response messages called \tls \texttt{Encrypted}
 \texttt{Extensions}.
 %They are exchanged during
 %the \tls handshake with some security guaranteesa. \todo{state them briefly}
-\tcpls leverages these messages to negotiate during the handshake some of the 
+\tcpls leverages these messages to negotiate during the handshake some of the
 new transport services it offers.
 
-\tcpls uses these records and extensions to exchange \tcp \texttt{Options}. 
-They can be negotiated at the start of the connection using \tls extensions and 
-exchanged later throughout the connection in encrypted \tcpls records. 
-Since \tls messages are conveyed in the \tcp payload, they are not 
-space-constrained as existing \tcp options.
-They are also exchanged reliably, which is a requirement for several \tcp 
-\texttt{Options} including \tcp User Timeout option~\cite{rfc5482}, \mptcp's 
-\texttt{ADD\_ADDR} and \texttt{REMOVE\_ADDR} option and some experimental \tcp 
-options~\cite{rfc6994}. They also cannot be modified by middleboxes as they are 
-secured by \tls. However, \tcp proxies could prevent an end-to-end \tcp 
-connection and only exchanging the \tcp bytestream, in which case this 
-mechanism should not be used. Detecting \tcp 
-proxies is easy as one could echo a part of the \tcp header in a \tcpls record 
-to detect them.
+\tcpls uses these records and extensions to exchange \tcp \texttt{Options}.
+They can be negotiated at the start of the connection using \tls extensions and
+exchanged later throughout the connection in encrypted \tcpls records.
+Since \tls messages are conveyed in the \tcp payload, they are not
+space-constrained as existing \tcp options. They are also exchanged reliably, which is a requirement for several \tcp \texttt{Options} including \tcp \texttt{User Timeout} option~\cite{rfc5482}, \mptcp's \texttt{ADD\_ADDR} and \texttt{REMOVE\_ADDR} option and some experimental \tcp options~\cite{rfc6994}. They also cannot be modified by middleboxes as they are secured by \tls. However, \tcp proxies could prevent an end-to-end \tcp connection and only exchanging the \tcp bytestream, in which case this mechanism should not be used. Detecting \tcp proxies is easy as one could echo a part of the \tcp header in a \tcpls record to detect them.
 
 %\todo{Detecting proxies arrive de façon un peu bizarre. (mp): Mieux
 %maintenant? On peut le bouger ailleurs sinon}
@@ -162,14 +134,12 @@ to detect them.
 %\todo{pour comprendre ce para, il faut comprendre l'ouverture}
 
 \subsection{Starting a \tcpls Session}\label{design.start}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 A \tcpls session starts with a \tcp handshake followed by a \tls handshake.
 This process can be safely accelerated through the use of \tcp Fast Open~\cite{rfc7413}.
 %\tls 1.3~\cite{rfc8446} has been designed with careful consideration for
 %potential extensions and to prevent middlebox interference.
-A \tcpls client
-indicates its willingness to use \tcpls with the \tcpls \texttt{Hello} extension
-in its \tls \textsc{ClientHello} message. Upon reception of this extension, the \tcpls server replies with a \tls \textsc{ServerHello} message echoing the \tcpls \texttt{Hello} extension in \tls \textsc{EncryptedExtensions}.
+A \tcpls client indicates its willingness to use \tcpls with the \tcpls \texttt{Hello} extension in its \tls \textsc{ClientHello} message. Upon reception of this extension, the \tcpls server replies with a \tls \textsc{ServerHello} message echoing the \tcpls \texttt{Hello} extension in \tls \textsc{EncryptedExtensions}.
 %It can opportunistically add
 %lightweight \tcpls data and \tcp options as \textsc{EncryptedExtensions}.
 These are encrypted with the handshake key which is not part of the context used to derive the eventual application key.
@@ -186,11 +156,11 @@ could choose to enable \tcpls after the handshake using \tcpls control records,
 provided that the server announced \tcpls support.  The censor would not be able
 to distinguish this behaviour from regular \tls, hardening potential
 attempts for censoring applications using \tcpls. The server handshake
-extensions are encrypted and part of the TLS handshake transcript hash,  and 
-thus cannot be dropped by the censor without breaking the \tls handshake for 
-all \tls clients. % of 
+extensions are encrypted and part of the TLS handshake transcript hash,  and
+thus cannot be dropped by the censor without breaking the \tls handshake for
+all \tls clients. % of
 %regular \tls clients.
-%\todo{Il manque l'explication sur la clôture de la session. Est ce à cause 
+%\todo{Il manque l'explication sur la clôture de la session. Est ce à cause
 %d'un problème d'espace?}
 
 %\todo{Is the following best here? -> Background ?}
