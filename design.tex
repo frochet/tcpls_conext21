@@ -171,7 +171,8 @@ probability $2^{-33}$.
 \subsubsection{Connection Migration}\label{sec:multipath}
 
 \tcpls allows joining several \tcp connections to an existing \tcpls session.
-We leverage this mechanism to implement new transport services such as connection migration. Compared to the subflow joining mechanism of
+We leverage this mechanism to implement new transport services such as 
+connection migration. Compared to the subflow joining mechanism of
 \mptcp~\cite{raiciu2012hard,hesmans2015smapp,hesmans2016enhanced}, our design is
 more secure. Indeed, \mptcp supports additional subflows by initially exchanging
 short keys inside cleartext \tcp \texttt{Options} during the \tcp handshake~\cite{rfc6824, rfc8684}. These keys are then used to authenticate the association of subflows. An attacker having observed the key exchange during the \tcp handshake can associate subflows to an existing \mptcp connection~\cite{rfc6181}.
@@ -298,7 +299,12 @@ can only be used once by the client.
 \textbf{Failover}.
 When a \tcp connection fails, e.g. due to middleboxes or network outages, 
 \tcpls leverages its joining mechanism to recover 
-the session over another \tcp connection. Figure~\ref{fig:design-failover} 
+the session over another \tcp connection. This is particularly useful on 
+multihomed devices that often move out of reach of an given access network, for 
+instance a smartphone moving away from a WiFi access point, but also on all 
+devices that suffer from middleboxes disrupting TCP connections, for instance a 
+firewall introducing TCP RST on idle TCP connections.
+Figure~\ref{fig:design-failover} 
 illustrates 
 how \tcpls reacts to such events during a transfer with two \tcpls streams.
 To achieve such a \emph{break-before-make}, 
@@ -353,7 +359,11 @@ different type of outages.
 %\todo{Let see if we can bring it back in the text later}
 
 \textbf{Application-triggered Connection Migration}. \tcpls also enables the
-application to trigger a connection migration, for instance based on application-level metrics qualifying its experience over the current path.
+application to trigger a connection migration, e.g. based on application-level 
+metrics qualifying its experience over the current path. For instance, a video 
+streaming application could choose to move its connection to another access 
+network whenever the obtained bandwidth does not satisfy the video bitrate 
+requirements.
 %expected to be used
 %over
 %healthy networks. %and leveraging a transient usage of bandwidth aggregation.
