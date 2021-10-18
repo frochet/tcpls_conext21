@@ -1,7 +1,7 @@
 % !TEX root = ./paper.tex
 % !TEX engine = latexmk -pdf
 % !TEX buildOnSave = true
-\documentclass[10pt,sigconf,letterpaper,nonacm]{acmart}
+\documentclass[sigconf]{acmart}
 
 \usepackage[english]{babel}
 \usepackage{hyperref}
@@ -22,8 +22,9 @@
 \hypersetup{draft}
 
 % Copyright
-\renewcommand\footnotetextcopyrightpermission[1]{} % removes footnote with conference info
-\setcopyright{none}
+%\renewcommand\footnotetextcopyrightpermission[1]{} % removes footnote with 
+%%conference info
+%\setcopyright{none}
 %\setcopyright{acmcopyright}
 %\setcopyright{acmlicensed}
 %\setcopyright{rightsretained}
@@ -32,7 +33,7 @@
 %\setcopyright{cagov}
 %\setcopyright{cagovmixed}
 
-\settopmatter{printacmref=false, printccs=false, printfolios=true}
+%\settopmatter{printacmref=false, printccs=false, printfolios=true}
 
 % DOI
 %\acmDOI{}
@@ -67,7 +68,7 @@
 \newcommand{\xtp}{\texttt{XTP}\xspace}
 \newcommand{\tls}{\texttt{TLS}\xspace}
 \newcommand{\quic}{\texttt{QUIC}\xspace}
-\newcommand{\tcpcrypt}{\texttt{tcpcrypt}\xspace}
+\newcommand{\tcpcrypt}{\texttt{tcp\-crypt}\xspace}
 
 \newcommand{\mvfst}{\texttt{mvfst}\xspace}
 \newcommand{\msquic}{\texttt{msquic}\xspace}
@@ -84,21 +85,50 @@
 %\titlenote{Produces the permission block, and copyright information}
 %\subtitle{Extended Abstract}
 
-\author{Paper \#435}
-% \author{Firstname Lastname}
-% \authornote{Note}
-% \orcid{1234-5678-9012}
-% \affiliation{%
-%   \institution{Affiliation}
-%   \streetaddress{Address}
-%   \city{City}
-%   \state{State}
-%   \postcode{Zipcode}
-% }
-% \email{email@domain.com}
+\author{Florentin Rochet}
+\affiliation{%
+   \institution{University of Edinburgh}
+   \country{Scotland}
+}
+\email{frochet@ed.ac.uk}
 
-% The default list of authors is too long for headers}
-\renewcommand{\shortauthors}{X.et al.}
+\author{Maxime Piraux}
+\affiliation{%
+	\institution{UCLouvain}
+    \country{Belgium}
+}
+\email{maxime.piraux@uclouvain.be}
+
+\author{Emery Assogba}
+\affiliation{%
+	\institution{UCLouvain}
+	\country{Belgium}
+}
+\email{emery.assogba@uclouvain.be}
+
+\author{Korian Edeline}
+\affiliation{%
+	\institution{University of Liège}
+	\country{Belgium}
+}
+\email{korian.edeline@gmail.com}
+
+\author{Benoît Donnet}
+\affiliation{%
+	\institution{University of Liège}
+	\country{Belgium}
+}
+\email{benoit.donnet@uliege.be}
+
+\author{Olivier Bonaventure}
+\affiliation{%
+	\institution{UCLouvain}
+	\country{Belgium}
+}
+\email{olivier.bonaventure@uclouvain.be}
+
+
+\renewcommand{\shortauthors}{F. Rochet et al.}
 
 
 \begin{abstract}
