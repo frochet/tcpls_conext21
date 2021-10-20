@@ -83,7 +83,7 @@ It does not involve a complete decryption as all TLS 1.3 AEAD
 ciphers use an Encrypt-then-MAC construct~\cite{rfc7366, rfc8446}, and the tag
 verification is computationally light, especially on 
 AES-GCM~\cite{mcgrew2004galois}. Reducing this cost could be achieved by adding 
-explicit signaling when an other stream is scheduled over the \tcp connection\footnote{
+explicit signaling when another stream is scheduled over the \tcp connection\footnote{
 The worst case is when the sender schedules records of $N$ streams 
 over a \tcp connection. Then,
   \tcpls may announce within the last record of the current stream the Stream 
@@ -219,7 +219,7 @@ associates one identifier $\alpha$ to the \tcpls session
 (\emph{SESSID($\alpha$)}).
 %It uniquely identifies the \tcpls session on the server.
 Third, the server provides a list of \tcpls session cookies $\beta_1,\beta_2$ in the \emph{COOKIE} extension. Each of these session cookies enables the client
-to join one additional \tcp connection to the \tcpls session. Thus by 
+to join one additional \tcp connection to the \tcpls session. Thus, by 
 sending $n$ cookies over a session, the server restricts the client to 
 join up to $n$ \tcp connections. This prevents resource exhaustion attacks
 that are difficult to counter with \mptcp. The server can later send additional
@@ -294,7 +294,7 @@ can only be used once by the client.
 		\includegraphics[width=\columnwidth]{figures/tcpls_failover}
 	\end{center}
 	\caption{Failover resynchronizes and retransmits lost \tcpls records 
-	from a failed \tcp connection to an other.}
+	from a failed \tcp connection to another.}
 	\label{fig:design-failover}
 \end{figure}
 
@@ -302,8 +302,8 @@ can only be used once by the client.
 When a \tcp connection fails, e.g. due to middleboxes or network outages, 
 \tcpls leverages its joining mechanism to recover 
 the session over another \tcp connection. This is particularly useful on 
-multihomed devices that often move out of reach of an given access network, for 
-instance a smartphone moving away from a WiFi access point, but also on all 
+multihomed devices that often move out of reach of a given access network, for 
+instance a smartphone moving away from a Wi-Fi access point, but also on all 
 devices that suffer from middleboxes disrupting TCP connections, for instance a 
 firewall introducing TCP RST on idle TCP connections.
 Figure~\ref{fig:design-failover} 

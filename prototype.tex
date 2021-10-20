@@ -62,7 +62,7 @@ authentication of the tag. This search is limited to the streams attached to
 \tcp connection of the received record. Our prototype tries first the last 
 successful \tcpls stream. The receiver only has to find the right cryptographic 
 context occasionally depending on the application, i.e. when the sender 
-schedules an other stream over the \tcp connection.
+schedules another stream over the \tcp connection.
 
 At this stage, prior to full decryption, the 
 \tcpls stream of the record is known. Our prototype can then locate the 
@@ -165,7 +165,7 @@ Section~\ref{sec:eval_failover}
 the application to directly distribute the \tcpls streams over the \tcp 
 connections at any point of the \tcpls session. A simple distribution is to 
 move all \tcpls streams from one connection to another, as performed during 
-Application-triggered Connection Migration. Our prototype enable these 
+Application-triggered Connection Migration. Our prototype enables these 
 operations in a few API calls. More complex stream attachment policies can be 
 implemented by the application to meet its requirements.
 %The application, using our \tcpls API can create, attach and steer data within
@@ -279,7 +279,7 @@ to implement novel transport mechanisms.
 Our prototype is fully compatible with \tls 1.3 0-RTT session resumption
 and \tcp Fast Open option (TFO)~\cite{radhakrishnan2011tcp}. By combining them,
 the \tcpls handshake can be sent together with the \tcp \texttt{SYN} starting 
-the three way handshake. This provides a low-latency and secure connection establishment.
+the three-way handshake. This provides a low-latency and secure connection establishment.
 It is not enabled by default in \tcpls, as TFO trades off some privacy~\cite{sy2020enhanced}.
 More advanced techniques such as \tcp Fast Open Privacy~\cite{sy2020enhanced} 
 could be
