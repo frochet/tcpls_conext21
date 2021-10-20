@@ -14,6 +14,18 @@ different \tcp connection and can proceeed in parallel without head-of-line
 blocking if the streams are not coupled. However, \tcpls pushes further the
 abstraction, involving benefits leveraged from multiple connections.
 
+\tcpls uses \tls records to encode data and control information. Researchers
+have also explored the idea encoding control information in the bytestream in
+different protocols. During the initial discussions for Multipath TCP, 
+Multi-Connection TCP (MCTCP) \cite{draft-scharf-mptcp-mctcp-01}
+was proposed as an alternative that encodes control information in the bytestream.
+The MPTCP Working did not adopt this solution because it notably feared of
+possible problems with middleboxes. Multipath TCP \cite{raiciu2012hard,rfc6824}
+uses TCP Options to encode control information and use different paths. \tcpls
+uses \tls records for this purpose. Minion \cite{nowlan2012fitting} also
+encodes the \tcp payload but to support unreliable data over a connection. 
+
+
 Given its security features, \tcpls must be compared with 
 \tcpcrypt~\cite{bittau2010case,rfc8548} which predates \tls 1.3. It uses \tcp 
 options to support opportunistic encryption but is not secure against an active 
