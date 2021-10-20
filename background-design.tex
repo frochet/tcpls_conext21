@@ -17,7 +17,7 @@
 
 The slow pace of innovation in \tcp-based transport services can be explained by
 several factors. First, the amount of bytes for extensions in the \tcp header is
-limited to 40 bytes. Second, \tcp is often implemented as a  part of the OS kernel, which adds complexity to implement and deploy any  modification. Third, it is exchanged in cleartext and is known to have heavily ossified due to middleboxes, strongly restraining changes in the header semantics and to \tcp \texttt{Options}. Following the recent advances in the transport layer, we go back to {\small{\textit{RQ1}}} and ask \textit{How can \tcp and \tls be
+limited to 40 bytes. Second, \tcp is often implemented as a  part of the OS kernel, which adds complexity to implement and deploy any  modification. Third, it is exchanged in cleartext and is known to be heavily ossified due to middleboxes, strongly restraining changes in the header semantics and to \tcp \texttt{Options}. Following the recent advances in the transport layer, we go back to {\small{\textit{RQ1}}} and ask \textit{How can \tcp and \tls be
 combined to improve extensibility and middlebox resilience} ?
 
 We answer {\small{\textit{RQ1}}} by leveraging the flexible encrypted \tls
@@ -93,7 +93,7 @@ decryption operations can be performed with a zero-copy codepath within a
 contiguous memory buffer, unlike \quic. Indeed, any \tcpls control information
 not relevant to the application is
 %always encrypted and
-located at the end of the record so that, by adjusting the offset when decrypting the \tcpls records, the receiver can overwrite them and achieve zero-copy within a contiguous allocated memory. This specific protocol design choice allow \tcpls implementations to easily offer zero-copy data delivery through a simple API. In comparison, \quic's design force developers to achieve zero-copy by offering a more complex API delivering potentially fragmented data.% (i.e., multiple
+located at the end of the record so that, by adjusting the offset when decrypting the \tcpls records, the receiver can overwrite them and achieve zero-copy within a contiguous allocated memory. This specific protocol design choice allow \tcpls implementations to easily offer zero-copy data delivery through a simple API. In comparison, \quic's design forces developers to achieve zero-copy by offering a more complex API delivering potentially fragmented data.% (i.e., multiple
 %pointers and sizes).
 % for performance reasons: it
 %guarantees the availability of a zero-copy codepath after decryption.

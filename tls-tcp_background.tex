@@ -48,12 +48,12 @@ These middleboxes severely limit the \tcp extensibility. Multipath \tcp~\cite{rf
 Google took a different approach at solving this problem by developing an entirely new secure transport protocol, \quic~\cite{langley2017quic}, combining \tcp, \tls, and HTTP features in a single protocol implemented in a userspace library and running above \udp. \quic prevents middlebox interference by encrypting and authenticating the data, but also most of the control information such as the acknowledgments except a very small header. \quic leverages \tls 1.3~\cite{rfc8446} to negotiate the security keys and authenticate the server. This results in latency reduction, more security, and better extensibility. \quic has a flexible framing system and packets are encrypted separately, in a similar manner to \tls records. \quic allows the application to use different datastreams over a single connection such as \sctp~\cite{rfc4960} or Structured Streams~\cite{ford2007structured}. \quic has been adopted by the industry and standardized within the IETF~\cite{rfc9000}. There are more than a dozen \quic implementations~\cite{quicimplem,marx2020same}. \quic is already used in
 production as shown by recent measurement studies~\cite{trevisan2020five}.
 
-Table~\ref{table:tcpquictcpls} summarises the main features of \tcp, \mptcp,
+Table~\ref{table:tcpquictcpls} summarizes the main features of \tcp, \mptcp,
 \tls over \tcp, and \quic. All protocols include reliability and congestion
 control. \tls and \quic provide the same security features. \mptcp efficiently
 supports failovers and \quic includes a connection migration capability. \quic
 supports stream and prevents Head-of-Line (HoL) blocking. \mptcp is the only
-standardised protocol that is able to aggregate different paths bandwidth.
+standardized protocol that is able to aggregate different paths bandwidth.
 \mptcp implementations include several path management
 strategies~\cite{hesmans2015smapp,hesmans2016enhanced} to control the different
 paths utilization. \quic allows the client to migrate its connection, although
