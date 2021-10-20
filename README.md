@@ -59,8 +59,7 @@ All figures should then be in pretty_plotify/plots/
 ## Regenerate Results
 
 You may want to use docker and ubuntu 20.04 to reproduce those results.
-Install docker and pull a unbuntu 20.04. Install also dockerx for X11
-forwarding:
+Install docker and pull a unbuntu 20.04. 
 
 ```
  docker run -it --rm --privileged -e DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix <IMAGE>
