@@ -88,7 +88,7 @@ You will need a compiling environment, and the following packages:
 git clone https://github.com/pluginized-protocols/picotcpls
 ```
 
-Follow the Readme to compile picotcpls and install IPMininet
+Follow the Readme to compile picotcpls.
 
 ### Application-level Migration
 
