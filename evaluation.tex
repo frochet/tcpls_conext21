@@ -120,7 +120,7 @@ configured to use the AES128-GCM-SHA256 cipher.
 We first compare \tcpls without the transport services 
 presented in Section~\ref{sec:transport-services}. We can observe that 
 \tcpls reaches similar throughput than \tls/\tcp over both 
-MTU. The small advantage of \tcpls at a MTU of 1500 bytes may be 
+MTU. The small advantage of \tcpls at an MTU of 1500 bytes may be 
 attributed by implementation differences in the two benchmarks tools. \tcpls 
 has thus a similar throughput than \tcp/\tls when using the base 
 protocol. %We now evaluate the cost of the transport services.
@@ -141,7 +141,7 @@ Our measurements show that Failover has a small impact on raw throughput as
 This is due to an increase in control records that are exchanged during the 
 file transfer and additional buffer management within \tcpls.
 This impact could be reduced by lowering the number of record acknowledgments,
-which could further improve the throughput with a MTU of 9000 bytes. 
+which could further improve the throughput with an MTU of 9000 bytes. 
 We leave finding the optimal acknowledgment frequency as future work.
 %From a performance viewpoint, they increase the 
 %number of control records 
@@ -554,8 +554,8 @@ vertical black bars. % indicating the
 %attachment of the new stream and the closing of the initial stream), the 
 %client.
 During this window, the client uses coupled streams to transition smoothly from 
-one \tcp connection to the other, i.e. the first \tcp connection finishes to 
-transmit the queued \tcpls record while the second transmits the following 
+one \tcp connection to the other, i.e. the first \tcp connection finishes 
+transmitting the queued \tcpls record while the second transmits the following 
 records.
 %is taking advantage of both paths to receive its data: the first path finishes 
 %to flush its data while the second path is already used.
