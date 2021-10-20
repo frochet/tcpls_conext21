@@ -29,10 +29,29 @@ Besides the main implementation, there are the following materials:
 
 ## Regenetate the figures
 
+### Requirements
+
+- python3
+- pip
+- texlive
+- texlive-latex-extra
+- cm-super
+- dvipng
+- matplotlib
+- pandas
+
+On a debian-based system:
+
+```
+apt install python3 pip texlive texlive-latex-extra cm-super dvipng
+python3 -m pip install matplotlib
+python3 -m pip install pandas
+```
+
 ```
 git clone git@github.com:frochet/tcpls_conext21.git
 cd pretty_plotify
-./plot.sh
+./plots.sh <ext> where ext in {pdf, png, eps}
 ```
 
 All figures should then be in pretty_plotify/plots/
