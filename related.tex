@@ -22,7 +22,11 @@ was proposed as an alternative that encodes control information in the bytestrea
 The MPTCP Working did not adopt this solution because it notably feared of
 possible problems with middleboxes. Multipath TCP \cite{raiciu2012hard,rfc6824}
 uses TCP Options to encode control information and use different paths. \tcpls
-uses \tls records for this purpose. Minion \cite{nowlan2012fitting} also
+uses \tls records for this purpose. Since \tls records are encrypted and
+authenticated, middleboxes cannot interfere with the control information that
+\tcpls exchanges in contrast with MCTCP where a middlebox that modifies the payload,
+such as a transparent TCP proxy or an application level gateway running on a NAT \cite{3027}
+Minion \cite{nowlan2012fitting} also
 encodes the \tcp payload but to support unreliable data over a connection. 
 
 
