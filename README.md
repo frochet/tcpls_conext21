@@ -58,6 +58,33 @@ All figures should then be in pretty_plotify/plots/
 
 ## Regenerate Results
 
+You may want to use docker and ubuntu 20.04 to reproduce those results.
+Install docker and pull a unbuntu 20.04. Install also dockerx for X11
+forwarding:
+
+```
+ docker run -it --rm --privileged -e DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix <IMAGE>
+```
+
+Running it in privileged mode is required by IPMininet.
+
+### Requirements
+
+You will need [IPMininet](https://ipmininet.readthedocs.io/en/latest/).
+Your best shot would be doing:
+
+
+```
+pip install --upgrade git+https://github.com/cnp3/ipmininet.git@v1.0
+python3 -m ipmininet.install -q
+```
+You will need a compiling environment, and the following packages:  
+
+- cmake
+- pkg-config
+- libssl-dev
+- sudo (for IPMininet)
+
 ```
 git clone https://github.com/pluginized-protocols/picotcpls
 ```
