@@ -140,8 +140,8 @@
   modify the \tcp wire format and are resistant to middleboxes. \tcpls offers a
   powerful API enabling applications to precisely express the required
   transport services, ranging from a single-path single-stream connection to a
-  multi-stream connection over several network paths, enabling aggregated
-  bandwidth and Head-of-Line blocking avoidance.
+  multi-stream connection over several network paths, enabling choices between
+  aggregated bandwidth and Head-of-Line blocking avoidance.
 
 %(mp): L'abstract revient un peu en arrière par rapport au schéma du papier,
 %j'ai proposé une version qui suit mieux la trame actuelle.
@@ -163,7 +163,10 @@
 %  more adapted for several connection migration scenarios.
 
   Compared to \mptcp, our \tcpls prototype offers more control to the
-  application and can be easily deployed as an extension to user-space \tls libraries,  while being implemented at a low cost. Measurements demonstrate that it offers higher performance than existing \quic libraries with a super set of transport services.
+  application and can be easily deployed as an extension to user-space \tls
+  libraries,  while being implemented at a low cost. Measurements demonstrate
+  that it offers higher performance than existing \quic libraries with a super
+  set of transport services.
 \end{abstract}
 
 \maketitle
