@@ -59,7 +59,7 @@ All figures should then be in pretty_plotify/plots/
 ## Regenerate Results
 
 You may want to use docker and ubuntu 20.04 to reproduce those results.
-Install docker and pull a unbuntu 20.04. 
+Install docker and pull a ubuntu 20.04. 
 
 ```
  docker run -it --rm --privileged -e DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix <IMAGE>
@@ -69,8 +69,10 @@ Running it in privileged mode is required by IPMininet.
 
 ### Requirements
 
-You will need [IPMininet](https://ipmininet.readthedocs.io/en/latest/).
-Your best shot would be doing:
+You will need [IPMininet](https://ipmininet.readthedocs.io/en/latest/)
+inside the docker, or in your machine if you don't go with the docker
+option.
+Your best shot would be doing (inside the docker):
 
 
 ```
