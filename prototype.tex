@@ -36,7 +36,7 @@ we demonstrate that our design enables modern transport services.
 %enabled.
 %($v$) Different connection migration modes: Failover and Application-level
 %Connection Migration.
-Our prototype is a fork of the \texttt{picotls} \tls 1.3 implementation 
+Our prototype is a fork of the \texttt{picotls} \tls 1.3 implementation
 to which we added 9k lines of C code to implement \tcpls.
 
 \subsection{Multiplexing}
@@ -44,21 +44,14 @@ to which we added 9k lines of C code to implement \tcpls.
 
 We leverage the \tcpls records and the \tcpls stream cryptographic contexts to
 build our prototype with a zero-copy receive path. When a record is received,
-\tcpls first finds the corresponding cryptographic context, i.e. the
-corresponding \tcpls stream for which the derived IV leads to a successful
+\tcpls first finds the corresponding cryptographic context, i.e., the corresponding \tcpls stream for which the derived IV leads to a successful
 authentication of the tag. This search is limited to the streams attached to
 \tcp connection of the received record. Our prototype tries first the last
 successful \tcpls stream. The receiver only has to find the right cryptographic
-context occasionally depending on the application, i.e. when the sender
+context occasionally depending on the application, i.e., when the sender
 schedules another stream over the \tcp connection.
 
-At this stage, prior to full decryption, the
-\tcpls stream of the record is known. Our prototype can then locate the
-corresponding buffer
-to perform full decryption at the expected offset without any extra copy.
-Applications can benefit from large contiguous
-buffers to perform reads instead of receiving stream data on a per-packet basis,
-as often found in QUIC implementations.
+At this stage, prior to full decryption, the \tcpls stream of the record is known. Our prototype can then locate the corresponding buffer to perform full decryption at the expected offset without any extra copy. Applications can benefit from large contiguous buffers to perform reads instead of receiving stream data on a per-packet basis, as often found in \quic implementations.
 
 %Besides, streams
 %are attached to a given \tcp connection (i.e., records of a given stream are
@@ -116,14 +109,7 @@ as often found in QUIC implementations.
 \label{sec:prot-migration}
 
 %\textbf{Failover}.
-We leverage the \tcpls records to securely exchange the \tcp User Timeout option.
-This option enables endpoints to detect blackholed and failed \tcp connections
-after a given time threshold. We use this as one trigger of the Failover. The
-sender configures this time threshold at the receiver side by sending this \tcp
-option in a \tcpls record. The receiver can then notice when it stops receiving
-data and trigger the Failover.
-Receiving a \tcp \texttt{RST} or \texttt{FIN} over a \tcp connection for which
-\tcpls streams are attached does also trigger the Failover.
+We leverage the \tcpls records to securely exchange the \tcp User Timeout option. This option enables endpoints to detect blackholed and failed \tcp connections after a given time threshold. We use this as one trigger of the Failover. The sender configures this time threshold at the receiver side by sending this \tcp option in a \tcpls record. The receiver can then notice when it stops receiving data and trigger the Failover. Receiving a \tcp \rst or \fin over a \tcp connection for which \tcpls streams are attached does also trigger the Failover.
 
 The stream-level acknowledgments required for the Failover to detect the lost
 \tcpls records can be enabled at the start of a \tcpls session. The default
@@ -131,16 +117,13 @@ policy is to acknowledge every 16 received records, or when a
 stream has processed
 %more than $249600$
 %\todo{Maybe explain the number?}
-a given amount of
-bytes since the last acknowledgment.
+a given amount of bytes since the last acknowledgment.
 
 Our prototype handles failover over IPv4 and IPv6 \tcp connections, and by default, chooses different source and destination addresses than the failed \tcp connection if possible.
 
 Application running on more constrained devices can choose to disable Failover
 to gain in performance. They can also enable Failover during a \tcpls session
-by sending a message on the secure channel.
-We evaluate the performance impact of Failover in
-Section~\ref{sec:eval_failover}
+by sending a message on the secure channel. We evaluate the performance impact of Failover in Sec.~\ref{sec:eval_failover}
 
 %\textbf{Application Connection Migration}.
 %\todo{Is there something to write implementation-wise?}
@@ -188,14 +171,7 @@ after decryption. Our prototype only supports coupling all streams together.
 %Such a feature may be implemented through a negotiation of the aggregation
 %mode.
 The sending application implements the scheduling coupled streams over the
-different \tcpls connections.
-Our implementation currently includes a round-robin scheduler on the receiver
-side. We expect to
-support other schedulers in the future and allow the application to select its
-preferred scheduler through the API, or even send it as eBPF bytecode over the
-session. The more \tcpls receives records in order, the more it can deliver
-them in a zero-copy fashion to the application. When a record is received
-out-of-sequence, its content is pushed on an efficient reordering heap. %in
+different \tcpls connections. Our implementation currently includes a round-robin scheduler on the receiver side. We expect to support other schedulers in the future and allow the application to select its preferred scheduler through the API, or even send it as eBPF bytecode over the session. The more \tcpls receives records in order, the more it can deliver them in a zero-copy fashion to the application. When a record is received out-of-sequence, its content is pushed on an efficient reordering heap. %in
 %$O(log(n))$ for $n$ elements in the heap. Checking the minimum sequence number
 %in the heap is in $\Theta(1)$ and retrieving is in $O(log(n))$.
 The performance of our multipath bandwidth aggregation is evaluated in
@@ -232,7 +208,7 @@ Sec.~\ref{sec:bwaggr}.
 
 %\subsection{TCP Options and Kernel extensibility}
 
-\subsection{eBPF code remote attachment}
+\subsection{eBPF Code Remote Attachment}
 \label{sec:prot-ebpf}
 
 Recent work on restructuring congestion control has proposed a generic
@@ -247,14 +223,7 @@ Pluginizing \quic~\cite{de2019pluginizing}.
 
 Our \tcpls prototype enables the server %to use \tcpls streams
 to attach a new eBPF congestion controller to the client over the \tcpls
-session. The type of eBPF code
-that can be attached could be easily extended to other points of the TCP
-execution path.
-The eBPF code is conveyed securely in a dedicated \tcpls record. When
-the code is larger than a single \tls record, it can be chunked in several
-records and sent using a \tcpls stream cryptographic context. This service
-illustrates how the flexibility of \tcpls record and streams can be leveraged
-to implement novel transport mechanisms.
+session. The type of eBPF code that can be attached could be easily extended to other points of the \tcp execution path. The eBPF code is conveyed securely in a dedicated \tcpls record. When the code is larger than a single \tls record, it can be chunked in several records and sent using a \tcpls stream cryptographic context. This service illustrates how the flexibility of \tcpls record and streams can be leveraged to implement novel transport mechanisms.
 
 %The \tcpls streams enable new use cases. A \tcpls application can
 %create and use different streams to carry data. However, since these streams
@@ -266,33 +235,19 @@ to implement novel transport mechanisms.
 
 Our prototype is fully compatible with \tls 1.3 0-RTT session resumption
 and \tcp Fast Open option (TFO)~\cite{radhakrishnan2011tcp}. By combining them,
-the \tcpls handshake can be sent together with the \tcp \texttt{SYN} starting
-the three-way handshake. This provides a low-latency and secure connection establishment.
-It is not enabled by default in \tcpls, as TFO trades off some privacy~\cite{sy2020enhanced}.
-More advanced techniques such as \tcp Fast Open Privacy~\cite{sy2020enhanced}
-could be
-integrated into \tcpls to solve this issue.
+the \tcpls handshake can be sent together with the \tcp \syn starting
+the three-way handshake. This provides a low-latency and secure connection establishment. It is not enabled by default in \tcpls, as TFO trades off some privacy~\cite{sy2020enhanced}. More advanced techniques such as \tcp Fast Open Privacy~\cite{sy2020enhanced} could be integrated into \tcpls to solve this issue.
 
 \subsection{\tcpls API}
 \label{sec-api}
 
-The API used by applications to interact with a protocol plays an important
-role in leveraging all the protocol features. The most popular
-API to interact with the transport layer is the BSD socket API.
-But researchers and the IETF have explored other ways to expose a transport
-API~\cite{draft-ietf-taps-arch,hruby2014sockets,rfc6458,schmidt2013socket}.
+The API used by applications to interact with a protocol plays an important role in leveraging all the protocol features. The most popular API to interact with the transport layer is the BSD socket API. But researchers and the IETF have explored other ways to expose a transport API~\cite{draft-ietf-taps-arch,hruby2014sockets,rfc6458,schmidt2013socket}.
 
 The \tcpls API builds upon good practices proposed by the outlined research.
-In this spirit, application-level developers are only required to
-configure a \tcpls context and register function callbacks.
-We design the \tcpls API such
-that application-level developers can ignore any notion of inter-process
-communication, e.g. as defined by the POSIX API, the Berkeley socket API or
+In this spirit, application-level developers are only required to configure a \tcpls context and register function callbacks. We design the \tcpls API such
+that application-level developers can ignore any notion of inter-process communication, e.g., as defined by the POSIX API, the Berkeley socket API or
 Winsock, facilitating application-level development by offering a more concrete
-session-level interface based on asynchronous network events.
-The \tcpls API offers the opportunity to tune
-the transport protocol to application developers. They can then make the best
-choices for their applications.
+session-level interface based on asynchronous network events. The \tcpls API offers the opportunity to tune the transport protocol to application developers. They can then make the best choices for their applications.
 % for a better usage of the
 %network from their own application protocol, which might depend on its
 %distinguishing
@@ -358,15 +313,10 @@ results in lower latency~\cite{bajpai2019longitudinal}.
 	\label{fig:api}
 \end{figure}
 
-Figure~\ref{fig:api} shows an example of our current API workflow. The API can
-handle explicit multipath techniques such as Happy Eyeball by chaining
-\texttt{tcpls\_connect()} with an appropriate timeout of 50ms, as shown in the
+Fig.~\ref{fig:api} shows an example of our current API workflow. The API can
+handle explicit multipath techniques such as Happy Eyeball by chaining \texttt{tcpls\_connect()} with an appropriate timeout of 50ms, as shown in the
 Figure. \tcpls lets the application explicitly choose the pairs of addresses
-between which a TCP connection should be established by
-calling several times \texttt{tcpls\_connect(src, dest, timeout)}. The
-application may configure callbacks to connection events that occur within
-\tcpls, such as connection establishments, stream attachments, multipath
-joins, the receipt of a \tcp option to tune \tcp.
+between which a \tcp connection should be established by calling several times \texttt{tcpls\_connect(src, dest, timeout)}. The application may configure callbacks to connection events that occur within \tcpls, such as connection establishments, stream attachments, multipath joins, the receipt of a \tcp option to tune \tcp.
 
 %When streams are attached to multiple \tcp connections, the application may
 %configure various \tcpls behaviours. Among them, we support HOL-blocking
