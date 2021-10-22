@@ -53,7 +53,7 @@ enables independent encryption/decryption for each stream without this security
 degradation. We add two goals to the design of this technique. First, the
 \tls 1.3 wire format must be preserved to avoid possible middleboxes
 interference. Second, the resulting nonce must be unique for each record of
-each stream in order to maintain the security properties of AEAD.
+the \tcpls session in order to maintain the security properties of AEAD.
 
 Fig.~\ref{fig:aead-iv} illustrates how the AEAD IV is computed for a given
 \tcpls record of a \tcpls stream. First the left-most bits of the IV derived
@@ -74,7 +74,7 @@ It does not involve a complete decryption as all \tls 1.3 AEAD
 ciphers use an Encrypt-then-MAC construct~\cite{rfc7366, rfc8446}, and the tag
 verification is computationally light, especially on
 AES-GCM~\cite{mcgrew2004galois}. Reducing this cost could be achieved by adding
-explicit signaling when another stream is scheduled over the \tcp connection.\footnote{The worst case is when the sender schedules records of $N$ streamsover a \tcp connection. Then, \tcpls may announce within the last record of the current stream the Stream ID of the following record.%, thanks to \tcp ordered delivery %of \tcpls data and control records.
+explicit signaling when another stream is scheduled over the \tcp connection.\footnote{The worst case is when the sender schedules records of $N$ streams over a \tcp connection. Then, \tcpls may announce within the last record of the current stream the Stream ID of the following record.%, thanks to \tcp ordered delivery %of \tcpls data and control records.
 }
 %\todo{citer rfc7366 ? ou les références de ce rfc ?}
 
@@ -423,7 +423,13 @@ Applications assign \tcpls streams to \tcp connections through the \tcpls API.
 %The choice of assigning to the \tcpls streams to the \tcp connections is left
 %to the application through the \tcpls API.
 An interactive game could use different streams for chat messages and player's
-commands.  Also, an HTTP server could choose the \tcp connection for the stream of each response based on the content type of the response. Latency-critical objects could be sent over low-latency connections. By sending each application-level object in a separate stream, the application can benefit from multiple network paths while maintaining the ability to process each stream in a zero-copy manner, and with no head-of-line blocking. \tcpls enables the application to attach streams to separate \tcp connections to avoid Head-of-Line blocking. %by placing them on separate \tcp connections.
+commands.  Also, an HTTP server could choose the \tcp connection for the stream
+of each response based on the content type of the response. Latency-critical
+objects could be sent over low-latency connections. By sending each
+application-level object in a separate stream, the application can benefit from
+multiple network paths while maintaining the ability to process each stream in a
+zero-copy manner, and with no head-of-line blocking. \tcpls enables the
+application to attach streams to separate \tcp connections to avoid head-of-line blocking. %by placing them on separate \tcp connections.
 %Applications objects that depend on others can cope with occasional
 %Head-of-Line blocking.
 
