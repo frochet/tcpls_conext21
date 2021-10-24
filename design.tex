@@ -61,7 +61,10 @@ from the \tls handshake are summed with the 32-bit \tcpls Stream ID. Then the
 right-most bits are XORed with the stream 64-bit record sequence number. Each
 \tcpls stream has a separate record sequence number space. This combination of
 IV manipulation guarantees that the resulting IV is unique for each record of
-all \tcpls streams given a unique Stream ID and sequence number. The Stream ID space is split between the client and the server. Stream ID 0 is equivalent to the cryptographic context derived directly from the handshake.
+all \tcpls streams given a unique Stream ID and sequence number, which is the
+main security concern. The Stream ID space is split between the client and the
+server. Stream ID 0 is equivalent to the cryptographic context derived directly
+from the handshake.
 %\todo{Il faut expliquer comment les stream id sont choisis pour garantir
 %l'unicité}
 
@@ -74,7 +77,11 @@ It does not involve a complete decryption as all \tls 1.3 AEAD
 ciphers use an Encrypt-then-MAC construct~\cite{rfc7366, rfc8446}, and the tag
 verification is computationally light, especially on
 AES-GCM~\cite{mcgrew2004galois}. Reducing this cost could be achieved by adding
-explicit signaling when another stream is scheduled over the \tcp connection.\footnote{The worst case is when the sender schedules records of $N$ streams over a \tcp connection. Then, \tcpls may announce within the last record of the current stream the Stream ID of the following record.%, thanks to \tcp ordered delivery %of \tcpls data and control records.
+explicit signaling when another stream is scheduled over the \tcp
+connection.\footnote{The worst case is when the sender schedules records of $N$
+  streams over a \tcp connection. Then, \tcpls may announce within the last
+  record of the current stream the Stream ID of the following record.%, thanks
+  to \tcp ordered delivery %of \tcpls data and control records.
 }
 %\todo{citer rfc7366 ? ou les références de ce rfc ?}
 
@@ -83,7 +90,10 @@ attempt. However, the limits on confidentiality and integrity for AEAD ciphers
 are large before a successful forgery may be considered with non-negligible
 probability~\cite{luykx2015limits, aeadlimits}. For example, in the case of
 ChaCha20 + Poly1305, an adversary making $2^{60}$ forgery attempts succeeds with
-probability $2^{-33}$.
+probability $2^{-33}$. What this result means is that an unvalid payload would
+check correctly after an unachievable number of failed decryptions (and would
+decrypt to a pseudo-random payload anyway).
+
 %\todo{Should we mention that one stream cannot be used on two connections at
 %the same time?}
 
@@ -386,7 +396,10 @@ the application traffic to the new connection.
 %this connection. Note that these messages are \tls records and are thus sent
 %securely and reliably.% by the underlying \tcp connection.
 
-This second type of migration does not require application-level acknowledgments, but it cannot survive from one of the underlying connections' failure. During such a migration, data may be sent over two connections, which brings us to explain how multipath is designed.
+This second type of migration does not require application-level
+acknowledgments, but it cannot survive from one of the underlying connections'
+failure. During such a migration, data may be sent over two connections, which
+brings us to explain how multipath is designed.
 
 \subsubsection{Multipath Capabilities}
 
@@ -407,7 +420,13 @@ However, few advanced applications have taken advantage of these advanced path m
 %state. We leave this engineering effort as future work.
 
 \textbf{Stream Steering}. \tcpls enables the application to combine
-multiplexing with the ability to join several \tcp connections to a \tcpls session. This allows the application to steer \tcpls streams over the different \tcp connections. While Failover moves \tcpls streams from one connection to another when a \tcp connection fails, stream steering allows the application to distribute at any time the streams over the different \tcp connections of a \tcpls session. We already discussed a very simple use of stream steering when performing Application Connection Migration %, which plays
+multiplexing with the ability to join several \tcp connections to a \tcpls
+session. This allows the application to steer \tcpls streams over the different
+\tcp connections. While Failover moves \tcpls streams from one connection to
+another when a \tcp connection fails, stream steering allows the application to
+distribute at any time the streams over the different \tcp connections of a
+\tcpls session. We already discussed a very simple use of stream steering when
+performing Application Connection Migration %, which plays
 %with opening, attaching and closing \tcpls stream protocols
 to move application data to a new connection.
 
@@ -459,13 +478,32 @@ each record. A remote terminal application running over \tcpls could send the
 screen updates over a high bandwidth but high latency connection and the
 keyboard input over the lower latency one.
 %(mp): On ne peut pas il me semble
-Using socket options such as \texttt{tcp\_info}, an application can retrieve useful statistics about the performance of the underlying \tcp connections (e.g. RTT, congestion window, \ldots). %If required, it is also possible to
-A more advanced application could also define \tcpls records to actively
-probe a connection, e.g., with an echo/request record to actively measure
-delays, or retrieve information from the remote host, e.g. by retrieving the
-remote host's \texttt{tcp\_info} structure.
+Using socket options such as \texttt{tcp\_info}, an application can retrieve
+useful statistics about the performance of the underlying \tcp connections (e.g.
+RTT, congestion window, \ldots). %If required, it is also possible to A more
+advanced application could also define \tcpls records to actively probe a
+connection, e.g., with an echo/request record to actively measure delays, or
+retrieve information from the remote host, e.g. by retrieving the remote host's
+\texttt{tcp\_info} structure.
 
-Coupled streams can be used when performing Application Connection Migration to smoothly transition from one network path to another without impacting the application goodput.
+Coupled streams can be used when performing Application Connection Migration to
+smoothly transition from one network path to another without impacting the
+application goodput.
+
+\subsection{Security and Information Leakage}
+
+Compared to \mptcp, \tcpls achieves a secure Join protocol in which
+cryptographically authenticated endpoints can join an existing session with
+further \tcp connections. It contrasts to \mptcp for which any
+observer of the initial handshake would own the required information to join the
+\mptcp connection. The new transport capabilities of \tcpls may also require
+situational stronger attacker models. One example would be to prevent different
+IP networks to collude and link together different \tcp connections belonging to
+the same \tcpls session. The \tcpls initial handshake and the Join protocol can
+be enhanced to support this goal, offering encrypted Session IDs in the initial
+handshake. We could then spent those session ids for each Join handshake,
+effectively acting as both a session identifier and a cookie. Further more
+session ids could be generated and shared upon successful Joins.
 
 %In this subsection, we also present how streams can be coupled to aggregate
 %the
