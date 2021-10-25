@@ -314,9 +314,13 @@ results in lower latency~\cite{bajpai2019longitudinal}.
 \end{figure}
 
 Fig.~\ref{fig:api} shows an example of our current API workflow. The API can
-handle explicit multipath techniques such as Happy Eyeball by chaining \texttt{tcpls\_connect()} with an appropriate timeout of 50ms, as shown in the
+handle explicit multipath techniques such as Happy Eyeball by chaining an optional call to \texttt{tcpls\_connect()} with an appropriate timeout of 50ms, as shown in the
 Figure. \tcpls lets the application explicitly choose the pairs of addresses
-between which a \tcp connection should be established by calling several times \texttt{tcpls\_connect(src, dest, timeout)}. The application may configure callbacks to connection events that occur within \tcpls, such as connection establishments, stream attachments, multipath joins, the receipt of a \tcp option to tune \tcp.
+between which a \tcp connection should be established by calling several times
+\texttt{tcpls\_connect(src, dest, timeout)}. The application may configure
+callbacks to connection events that occur within \tcpls, such as connection
+establishments, stream attachments, multipath joins, the receipt of a \tcp
+option to tune \tcp.
 
 %When streams are attached to multiple \tcp connections, the application may
 %configure various \tcpls behaviours. Among them, we support HOL-blocking
@@ -331,7 +335,6 @@ between which a \tcp connection should be established by calling several times \
 
 %\tls 1.3 also includes a fast handshake for subsequent connections. When used with \tcp Fast Open (TFO)~\cite{radhakrishnan2011tcp}, the \tls handshake can be sent together with \tcp's three way handshake. However, TFO suffers from privacy issues~\cite{sy2020enhanced}. For this reason, we did not enable it by default in \tcpls. We could revise this decision if a solution similar to \tcp
 %FOP~\cite{sy2020enhanced} is included in mainline TCP implementations.
-
 
 %One argument for QUIC's usage on the web was its first 1-rtt secure connection.
 %Compared to TLS/TCP, QUIC has only one handshake and can then proceed with the
