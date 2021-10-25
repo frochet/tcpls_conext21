@@ -71,9 +71,10 @@ and improves by $\approx 40\%$ the throughput of \texttt{picotls}'s measurement
 client. Our \tcpls prototype avoids these mistakes by design by offering to the
 application developers a transport API preventing them. Indeed, for example in
 \tcpls the question of \textit{how much} the caller wants to read does not map
-to how much \tcpls should read from \tcp due to the requirement of having a complete recor to decrypt it. We may want to read
-from \tcp more than the \textit{nbytes} instructed by the caller, or that could
-cause fragmentation. % adversely affecting the %throughput.  
+to how much \tcpls should read from \tcp due to the requirement of having a
+complete record to decrypt it. One may want to read more
+from \tcp than the amount of data instructed by the caller, otherwise it could
+leading to record fragmentation. % adversely affecting the %throughput.
 So with this modification in \texttt{picotls}, we can observe that \tcp/\tls reaches
 10.3~Gbps with a 1500-byte MTU and 12.6~Gbps with a 9000-byte MTU. Both
 leverage \tcp Segmentation Offload (TSO), which is a
@@ -297,10 +298,10 @@ While there are ongoing works to improve $i$, $ii$, and $iii$~\cite{udp-gso-paci
 %without offloading everything, which inherently breaks \quic's flexibility
 %argument
 
-Further works may also evaluate multiple \tcpls and
-\quic sessions at the same time. The effect of multiple parallel streams for both protocol
-stacks would also be interesting to compare for a fairness evaluation over
-realistic Internet-like experimental conditions.
+Further works should also evaluate multiple \tcpls and
+\quic sessions at the same time. In addition, the effect of multiple parallel
+streams for both protocol stacks would also be interesting to compare in a
+fairness evaluation over realistic Internet-like experimental conditions.
 
 %QUIC is young protocol, and all implementations are in active development, with
 %different states for their available features and optimizations. For example,
