@@ -344,3 +344,34 @@ between which a \tcp connection should be established by calling several times \
 %issues~\cite{sy2020enhanced}, thus we did not enable it by default. In the
 %future, we may expect to revise our choice if a solution similar to \tcp
 %FOP~\cite{sy2020enhanced} gets implemented in the Linux kernel.
+
+\subsection{TCPLS Fairness}
+
+Fairness is an important property of transport protocols
+guaranteeing an equal share of resources between users of the Internet. Our 
+TCPLS prototype leaves the congestion control as a part of TCP. As such, a 
+single connection of a TCPLS session is fair to a single TCP connection.
+However there are two situations in which this can be improved in future works.
+
+First, when two or more TCP connections are used in TCPLS over network paths 
+that are partly joint, TCPLS can be unfair proportionally to this joint part.
+This problem is well known and solutions proposed for MPTCP such as coupled 
+congestion control 
+schemes~\cite{wischik2011design,peng2014multipath,khalili2013mptcp} could be 
+applied to TCPLS using eBPF.
+
+Second, when an application using TCPLS multiplexes several streams over a 
+single connection, it has to compete with applications not using TCPLS that 
+spread these streams over several connections, such as HTTP/1.1. This problem 
+is also well known~\cite{min2019experimental}. Recently, it led Google adapting 
+\texttt{mulTCP}~\cite{crowcroft1998differentiated}, one of its solutions, when 
+implementing gQUIC~\cite{langley2017quic}. A similar approach could also be 
+integrated in TCPLS with eBPF.
+
+
+% From the gQUIC paper
+%QUIC uses
+%a variant of mulTCP [14] for Cubic during the congestion avoidance
+%phase to attain parity in flow-fairness with the use of TCP.
+
+
