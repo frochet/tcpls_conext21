@@ -57,14 +57,14 @@ which are the basic unit of communication in \tcpls. Sec.~\ref{design.start} exp
 }
 \begin{figure}
 \begin{bytefield}[bitheight=\widthof{abcde}]{24}
-	\begin{rightwordgroup}{\tls 1.3 Records}
+	\begin{rightwordgroup}{\tls 1.3 Record}
 	\bitbox{8}{\small Opaque Type \\ \scriptsize AppData} & \bitbox{8}{\small TLS Version && \scriptsize \texttt{0x303}} & \bitbox{8}{Length} \\
 	%\wordbox[tlr]{2}{Encrypted and \\ authenticated payload} \\
 	\colorbitbox{lightgray}{16}{Encrypted payload}{tlb} & \colorbitbox{lightgray}{8}{\small Record type \\ \scriptsize e.g. AppData}{trb}
-	\end{rightwordgroup}
-\end{bytefield}
-\begin{bytefield}[bitheight=\widthof{abcde}]{24}
-	\begin{rightwordgroup}{\tcpls Records}
+	\end{rightwordgroup} \vspace{0.5em} \\
+%\end{bytefield}
+%\begin{bytefield}[bitheight=\widthof{abcde}]{24}
+	\begin{rightwordgroup}{\tcpls Record}
 	\bitbox{8}{\small Opaque Type \\ \scriptsize AppData} & \bitbox{8}{\small TLS Version && \scriptsize \texttt{0x303}} & \bitbox{8}{Length} \\
 	%\wordbox[tlr]{2}{Encrypted and \\ authenticated payload} \\
 	\colorbitbox{lightgray}{16}{\small Encrypted control \\ or application data}{tlb} & \colorbitbox{lightgray}{8}{\small Record type \\ \scriptsize TCPLS}{trb}

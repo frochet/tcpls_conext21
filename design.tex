@@ -478,17 +478,18 @@ each record. A remote terminal application running over \tcpls could send the
 screen updates over a high bandwidth but high latency connection and the
 keyboard input over the lower latency one.
 %(mp): On ne peut pas il me semble
-Using socket options such as \texttt{tcp\_info}, an application can retrieve
-useful statistics about the performance of the underlying \tcp connections (e.g.
-RTT, congestion window, \ldots). %If required, it is also possible to A more
-advanced application could also define \tcpls records to actively probe a
-connection, e.g., with an echo/request record to actively measure delays, or
-retrieve information from the remote host, e.g. by retrieving the remote host's
-\texttt{tcp\_info} structure.
+Using socket options such as
+\texttt{tcp\_info}, an application can retrieve useful statistics about the
+performance of the underlying \tcp connections (e.g. RTT, congestion window,
+\ldots). %If required, it is also possible to
+A more advanced application could also define \tcpls records to actively
+probe a connection, e.g. with an echo/request record to actively measure
+delays, or retrieve information from the remote host, e.g. by retrieving the
+remote host's \texttt{tcp\_info} structure.
 
-Coupled streams can be used when performing Application Connection Migration to
-smoothly transition from one network path to another without impacting the
-application goodput.
+Coupled streams can also be used when performing Application Connection
+Migration to smoothly transition from one network path to another without
+impacting the application goodput.
 
 \subsection{Security and Information Leakage}
 
