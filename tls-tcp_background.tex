@@ -63,6 +63,7 @@ block other transport protocols than \tcp and \udp \cite{barik2020usability}.
   \caption{Comparison of \xmark\ the services not offered, (\checkmark)\
   partially available, and \checkmark\ offered by protocols.}
   \label{table:tcpquictcpls}
+  \vspace{-2em}
 \end{table}
 
 Google took a different approach at solving this problem by developing an entirely new secure transport protocol, \quic~\cite{langley2017quic}, combining \tcp, \tls, and HTTP features in a single protocol implemented in a userspace library and running above \udp. \quic prevents middlebox interference by encrypting and authenticating the data, but also most of the control information such as the acknowledgments except a very small header. \quic leverages \tls 1.3~\cite{rfc8446} to negotiate the security keys and authenticate the server. This results in latency reduction, more security, and better extensibility. \quic has a flexible framing system and packets are encrypted separately, similarly to \tls records. \quic allows the application to use different datastreams over a single connection such as \sctp~\cite{rfc4960} or Structured Streams~\cite{ford2007structured}. \quic has been adopted by the industry and standardized within the IETF~\cite{rfc9000}. There are more than a dozen \quic implementations~\cite{quicimplem,marx2020same}. \quic is already used in
