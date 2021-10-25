@@ -1,5 +1,4 @@
-%
-!TEX root = ./paper.tex
+%!TEX root = ./paper.tex
 
 In this section, we evaluate \tcpls with several experiments. First, we evaluate the raw performance of our \tcpls prototype (Sec.~\ref{sec:perf}). Then, we report how \tcpls interacts with middleboxes in a controlled environment in  Sec.~\ref{sec:middlebox}. We then emulate, using Mininet~\cite{handigol2012reproducible}, more complex scenarios involving
 Failover (Sec.~\ref{sec:eval_failover}), Application Connection Migration
@@ -311,7 +310,6 @@ fairness evaluation over realistic Internet-like experimental conditions.
 %case of quicly to more than 4 gb/s of throughput with a udp payload length
 %configured to match TCP (1460).
 
-
 %We perform a throughput evaluation of \tcpls and compare it to several major
 %QUIC implementations: mvfst~\cite{} from Facebook, msquic~\cite{} from Microsoft
 %and quicly~\cite{} from Fastly. Our choice of QUIC implementations was mainly
@@ -469,7 +467,7 @@ records.
 %to flush its data while the second path is already used.
 %Once the last record
 %of the first path is sent,
-\tcpls reorders the records and delivers the data to the client. The goodput increase corresponds to the sum of bandwidth over the new path during the migration time window.
+\tcpls reorders the records and delivers the data to the client. The goodput increase corresponds to the sum of bandwidth over the new path during the migration time window. Depending on each network path characteristic, this exposed capability can lead to migrate the application's connection without any friction felt by the user.
 
 \begin{figure}[!t]
   \begin{center}
@@ -560,7 +558,7 @@ congestion controller~\cite{brakmo1994tcp}. It rapidly reaches the full capacity
 started with the CUBIC congestion controller~\cite{rfc8312}. This quickly
 results in an unfair distribution of the bandwidth. The server then sends an
 eBPF bytecode implementing the CUBIC congestion controller to the first \tcpls
-session which attaches it. The bandwidth distribution becomes fair. We
+session which attaches it for the current connection only. The bandwidth distribution becomes fair. We
 performed the same experiment for different delays, varying from 10~ms to 100~ms
 and obtained similar results.
 
