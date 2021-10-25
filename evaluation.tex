@@ -334,7 +334,7 @@ spurious \rst. Fig.~\ref{fig:recovery} compares the goodput achieved by \mptcp a
 
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=.8\columnwidth]{figures/breakage_analysis.png}
+    \includegraphics[width=\columnwidth]{figures/breakage_analysis.png}
   \end{center}
   \caption{Recovery delays of \tcpls compared to \mptcp during a single outage.}
   \label{fig:recovery}
@@ -358,7 +358,7 @@ experiment.
     \includegraphics[width=\columnwidth]{figures/tcpls_mptcp.png}
   \end{center}
   \caption{\mptcp has difficulties to react to successive network outages.
-  \tcpls reacts quickly to such outages.}
+  \tcpls reacts quickly to such outages and completes the file transfer faster.}
   \label{fig:failover}
 \end{figure}
 
@@ -440,7 +440,7 @@ records.
 
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=.8\columnwidth]{figures/migration.png}
+    \includegraphics[width=\columnwidth]{figures/migration.png}
   \end{center}
   \caption{Application-level connection migration during a 60~MB file download.
     \tcpls temporarily aggregates the two network paths during such a migration.}
@@ -533,7 +533,7 @@ and obtained similar results.
 
 \begin{figure}[!t]
   \begin{center}
-    \includegraphics[width=.8\columnwidth]{pretty_plotify/plots/vegas_cubic.png}
+    \includegraphics[width=\columnwidth]{pretty_plotify/plots/vegas_cubic.png}
   \end{center}
   \caption{\tcpls hosts can exchange eBPF congestion controllers and enable
   them during a \tcpls session.}
