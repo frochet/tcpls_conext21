@@ -1,6 +1,3 @@
-% !TEX root = ./paper.tex
-% !TEX engine = latexmk -pdf
-% !TEX buildOnSave = true
 \documentclass[sigconf]{acmart}
 
 \usepackage[english]{babel}
@@ -33,8 +30,8 @@
 
 
 \newcommand{\tcpls}{\texttt{TCPLS}\xspace}
-\newcommand{\hello}{\textsc{TCPLS Hello}\xspace}
-\newcommand{\join}{\textsc{TCPLS Join}\xspace}
+\newcommand{\hello}{\tcpls \textsc{Hello}\xspace}
+\newcommand{\join}{\tcpls \textsc{Join}\xspace}
 \newcommand{\syn}{\texttt{SYN}\xspace}
 \newcommand{\ack}{\texttt{ACK}\xspace}
 \newcommand{\fin}{\texttt{FIN}\xspace}
@@ -75,19 +72,19 @@
 }
 \email{frochet@ed.ac.uk}
 
-\author{Maxime Piraux}
-\affiliation{%
-	\institution{UCLouvain}
-    \country{Belgium}
-}
-\email{maxime.piraux@uclouvain.be}
-
 \author{Emery Assogba}
 \affiliation{%
 	\institution{UCLouvain}
 	\country{Belgium}
 }
 \email{emery.assogba@uclouvain.be}
+
+\author{Maxime Piraux}
+\affiliation{%
+	\institution{UCLouvain}
+	\country{Belgium}
+}
+\email{maxime.piraux@uclouvain.be}
 
 \author{Korian Edeline}
 \affiliation{%
@@ -143,8 +140,8 @@
   modify the \tcp wire format and are resistant to middleboxes. \tcpls offers a
   powerful API enabling applications to precisely express the required
   transport services, ranging from a single-path single-stream connection to a
-  multi-stream connection over several network paths, enabling aggregated
-  bandwidth and Head-of-Line blocking avoidance.
+  multi-stream connection over several network paths, enabling choices between
+  aggregated bandwidth and Head-of-Line blocking avoidance.
 
 %(mp): L'abstract revient un peu en arrière par rapport au schéma du papier,
 %j'ai proposé une version qui suit mieux la trame actuelle.
@@ -166,7 +163,10 @@
 %  more adapted for several connection migration scenarios.
 
   Compared to \mptcp, our \tcpls prototype offers more control to the
-  application and can be easily deployed as an extension to user-space \tls libraries,  while being implemented at a low cost. Measurements demonstrate that it offers higher performance than existing \quic libraries with a super set of transport services.
+  application and can be easily deployed as an extension to user-space \tls
+  libraries,  while being implemented at a low cost. Measurements demonstrate
+  that it offers higher performance than existing \quic libraries with a super
+  set of transport services.
 \end{abstract}
 
 \maketitle

@@ -58,11 +58,39 @@ All figures should then be in pretty_plotify/plots/
 
 ## Regenerate Results
 
+You may want to use docker and ubuntu 20.04 to reproduce those results.
+Install docker and pull a ubuntu 20.04. 
+
+```
+ docker run -it --rm --privileged -e DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix <IMAGE>
+```
+
+Running it in privileged mode is required by IPMininet.
+
+### Requirements
+
+You will need [IPMininet](https://ipmininet.readthedocs.io/en/latest/)
+inside the docker, or in your machine if you don't go with the docker
+option.
+Your best shot would be doing (inside the docker):
+
+
+```
+pip install --upgrade git+https://github.com/cnp3/ipmininet.git@v1.0
+python3 -m ipmininet.install -q
+```
+You will need a compiling environment, and the following packages:  
+
+- cmake
+- pkg-config
+- libssl-dev
+- sudo (for IPMininet)
+
 ```
 git clone https://github.com/pluginized-protocols/picotcpls
 ```
 
-Follow the Readme to compile picotcpls and install IPMininet
+Follow the Readme to compile picotcpls.
 
 ### Application-level Migration
 
@@ -99,21 +127,13 @@ picotcpls's readme to play with a client/server in IPMininet.
 
 ### Figures involving MPTCP.
 
-Notes: One of the repositories required for this part is currently located offline in a different
-country from which the main author's location currently is. This part
-will be updated when the main author returns (Early December 2021).
-Please ignore this part until further notice. If this part is still
-missing early december, please open a github issue.
+Follow this repository's readme:
 
-You'll need two more repositories:
+https://github.com/frochet/tcpls_mptcp_experiments
 
-https://github.com/frochet/minitopo which contains a TCPLS script to
-automatically run a TCPLS experiment between 2 hosts with some
-perturbations. E.g., a TCP RST or a blackholing situation. Make sure to
-have picotcpls in ~/, or change
-https://github.com/frochet/minitopo/blob/minitopo2/experiments/tcpls.py
-variables accordingly.
-
+It will give you steps to reproduce MPTCP vs TCPLS results inside a
+Vagrant box. Eventually the log files obtained, and the timing events
+obtained need to be feeded to the plot script within this repository.
 
 
 
