@@ -493,18 +493,18 @@ impacting the application goodput.
 
 \subsection{Security and Information Leakage}
 
-Compared to \mptcp, \tcpls achieves a secure Join protocol in which
+Compared to \mptcp, \tcpls achieves a secure Join mechanism in which
 cryptographically authenticated endpoints can join an existing session with
 further \tcp connections. It contrasts to \mptcp for which any
 observer of the initial handshake would own the required information to join the
 \mptcp connection. The new transport capabilities of \tcpls may also require
 situational stronger attacker models. One example would be to prevent different
 IP networks to collude and link together different \tcp connections belonging to
-the same \tcpls session. The \tcpls initial handshake and the Join protocol can
-be enhanced to support this goal, offering encrypted Session IDs in the initial
-handshake. We could then spent those session ids for each Join handshake,
+the same \tcpls session. The \tcpls initial handshake and the Join mechanism can
+be enhanced to support this goal, offering encrypted tokens in the initial
+handshake. One could then spent these tokens for each Join handshake,
 effectively acting as both a session identifier and a cookie. Further more
-session ids could be generated and shared upon successful Joins.
+tokens could be generated and shared upon successful Joins.
 
 %In this subsection, we also present how streams can be coupled to aggregate
 %the
