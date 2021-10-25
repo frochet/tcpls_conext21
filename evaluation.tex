@@ -1,4 +1,5 @@
-% !TEX root = ./paper.tex
+%
+!TEX root = ./paper.tex
 
 In this section, we evaluate \tcpls with several experiments. First, we evaluate the raw performance of our \tcpls prototype (Sec.~\ref{sec:perf}). Then, we report how \tcpls interacts with middleboxes in a controlled environment in  Sec.~\ref{sec:middlebox}. We then emulate, using Mininet~\cite{handigol2012reproducible}, more complex scenarios involving
 Failover (Sec.~\ref{sec:eval_failover}), Application Connection Migration
@@ -48,7 +49,12 @@ large transfers with \tcp/\tls, \tcpls and three \quic implementations.
 The results are reported in Fig.~\ref{fig:perf} with the bandwidth
 in gigabits per second and packets per second obtained for each test.
 Each bar corresponds to the median measurement over 10 seconds of stable
-throughput. A preliminary test in our testbed shows that a single \tcp connection can saturate the 40~Gbps link when setting the MTU to 9000 bytes. With a 1500-byte MTU, a single \tcp connection reaches 22~Gbps. We also benchmarked the AES128-GCM-SHA256 cipher with in-memory 16,384-byte \tls records and observed that decryption in our client reaches 24.59~Gbps while encryption on our server reaches 13.62~Gbps.
+throughput. A preliminary test in our testbed shows that a single \tcp
+connection can saturate the 40~Gbps link when setting the MTU to 9000 bytes.
+With a 1500-byte MTU, a single \tcp connection reaches 22~Gbps. We also
+benchmarked the AES128-GCM-SHA256 cipher with in-memory 16,384-byte \tls
+records and observed that decryption in our client reaches 24.59~Gbps while
+encryption on our server reaches 13.62~Gbps.
 
 %With this first experiment, we demonstrate that \tcpls can be implemented at a
 %low cost compared to \tcp and \tls while
@@ -58,12 +64,24 @@ throughput. A preliminary test in our testbed shows that a single \tcp connectio
 
 \textbf{\tcp/\tls}. To get a fair reference point, we first evaluate \tls over
 \tcp using \texttt{picotls} with the AES128-GCM-SHA256 cipher at the commit
-starting our fork. We also manually configured the receiving and sending buffer size to match the ones we use internally in \tcpls. This modification fixes fragmentation and unnecessary copies of received \tls records that could occur and improves by $\approx 40\%$ the throughput of \texttt{picotls}'s measurement client. Our \tcpls prototype avoids these mistakes by design by offering to the application developers a transport API preventing them. % adversely affecting the %throughput.
-With the fix, we can observe that \tcp/\tls reaches 10.3~Gbps with a 1500-byte MTU and 12.6~Gbps with a 9000-byte MTU. Both leverage \tcp Segmentation Offload (TSO), which is a feature commonly enabled on high-speed NICs.
+starting our fork. We also manually configured the receiving and sending buffer
+size to match the ones we use internally in \tcpls. This modification fixes
+fragmentation and unnecessary copies of received \tls records that could occur
+and improves by $\approx 40\%$ the throughput of \texttt{picotls}'s measurement
+client. Our \tcpls prototype avoids these mistakes by design by offering to the
+application developers a transport API preventing them. Indeed, for example in
+\tcpls the question of \textit{how much} the caller wants to read does not map
+to how much \tcpls should read from \tcp due to the requirement of having a complete recor to decrypt it. We may want to read
+from \tcp more than the \textit{nbytes} instructed by the caller, or that could
+cause fragmentation. % adversely affecting the %throughput.  
+So with this modification in \texttt{picotls}, we can observe that \tcp/\tls reaches
+10.3~Gbps with a 1500-byte MTU and 12.6~Gbps with a 9000-byte MTU. Both
+leverage \tcp Segmentation Offload (TSO), which is a
+feature commonly enabled on high-speed NICs.
 
-\textbf{\tcpls}.
-To benchmark \tcpls, we use a simple application performing large
-memory-to-memory transfers over a \tcpls session using a single stream, also
+\textbf{\tcpls}.  To benchmark \tcpls, we use a simple application performing
+large memory-to-memory transfers over a \tcpls session using a single stream,
+also
 %For all the \tcpls measurements, we use a custom application that performs
 %large memory-to-memory transfers over a \tcpls session using a single stream.
 %\tcpls is
@@ -85,7 +103,12 @@ configured to use the AES128-GCM-SHA256 cipher.
 %size (1,500 bytes MTU), the throughput still reaches 10.84 Gbps. These
 %results should be compared with the 22~Gbps \tcp reaches in the same
 %environment using \texttt{iperf} but without any encryption.
-We first compare \tcpls without the transport services presented in Sec.~\ref{sec:transport-services}. We can observe that \tcpls reaches similar throughput than \tls/\tcp over both MTU. The small advantage of \tcpls at an MTU of 1500 bytes may be attributed by implementation differences in the two benchmarks tools. \tcpls has thus a similar throughput than \tcp/\tls when using the base protocol. %We now evaluate the cost of the transport services.
+We first compare \tcpls without the transport services presented in
+Sec.~\ref{sec:transport-services}. We can observe that \tcpls reaches similar
+throughput than \tls/\tcp over both MTU. The small advantage of \tcpls at an
+MTU of 1500 bytes may be attributed by implementation differences in the two
+benchmarks tools. \tcpls has thus a similar throughput than \tcp/\tls when
+using the base protocol. %We now evaluate the cost of the transport services.
 
 
 %the shows several interesting results. First, while offering similar (and more)
@@ -99,7 +122,12 @@ acknowledgments. % of adding the \tcpls-level
 %described in Section~\ref{failover} to support failover.
 % Thanks to these acknowledgments, \tcpls can support failover.
 Our measurements show that Failover has a small impact on raw throughput as
-\tcpls reaches 9.66~Gbps with a $1500$ bytes MTU. This is due to an increase in control records that are exchanged during the file transfer and additional buffer management within \tcpls. This impact could be reduced by lowering the number of record acknowledgments, which could further improve the throughput with an MTU of 9000 bytes. We leave finding the optimal acknowledgment frequency as future work.
+\tcpls reaches 9.66~Gbps with a $1500$ bytes MTU. This is due to an increase in
+control records that are exchanged during the file transfer and additional
+buffer management within \tcpls. This impact could be reduced by lowering the
+number of record acknowledgments, which could further improve the throughput
+with an MTU of 9000 bytes. We leave finding the optimal acknowledgment
+frequency as future work. 
 %From a performance viewpoint, they increase the
 %number of control records
 %exchanged and the number of system calls.
@@ -269,6 +297,10 @@ While there are ongoing works to improve $i$, $ii$, and $iii$~\cite{udp-gso-paci
 %without offloading everything, which inherently breaks \quic's flexibility
 %argument
 
+Further works may also evaluate multiple \tcpls and
+\quic sessions at the same time. The effect of multiple parallel streams for both protocol
+stacks would also be interesting to compare for a fairness evaluation over
+realistic Internet-like experimental conditions.
 
 %QUIC is young protocol, and all implementations are in active development, with
 %different states for their available features and optimizations. For example,
@@ -539,3 +571,4 @@ and obtained similar results.
   them during a \tcpls session.}
   \label{fig:vegasCubic}
 \end{figure}
+
