@@ -495,20 +495,19 @@ impacting the application goodput.
 
 Compared to \mptcp, \tcpls achieves a secure Join mechanism in which
 cryptographically authenticated endpoints can join an existing session with
-further \tcp connections. It contrasts to \mptcp for which any
-observer of the initial handshake would own the required information to join the
-\mptcp connection. The new transport capabilities of \tcpls may also require
-situational stronger attacker models. One example would be to prevent different
-IP networks to collude and link together different \tcp connections belonging to
-the same \tcpls session. The \tcpls initial handshake and the Join mechanism can
-be enhanced to support this goal, offering encrypted tokens in the initial
-handshake. One could then spent these tokens for each Join handshake,
+further \tcp connections. It contrasts to \mptcp for which any observer of the
+initial handshake would own the required information to join the \mptcp
+connection. The new transport capabilities of \tcpls may also require stronger
+situational attacker models. One example would be preventing different IP
+networks from colluding and linking other \tcp connections belonging to the same
+\tcpls session. The \tcpls initial handshake and the Join mechanism can be
+enhanced to support this goal, offering encrypted tokens in the initial
+handshake. One could then spend these tokens for each Join handshake,
 effectively acting as both a session identifier and a cookie. Further more
 tokens could be generated and shared upon successful Joins.
 
 %In this subsection, we also present how streams can be coupled to aggregate
-%the
-%bandwidth of several \tcp connections.
+%the bandwidth of several \tcp connections.
 %This provides various types of services,
 %such as easily performing active migration as discussed in the previous
 %Section~\ref{sec:multipath}. Bandwidth aggregation can also be activated. It is
