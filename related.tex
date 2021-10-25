@@ -25,8 +25,8 @@ network attacker. \tcpls extends \tls while retaining its security  properties, 
 
 %\tcpls also needs to be compared with
 %\mptcp \cite{raiciu2012hard,rfc6824}.
-\mptcp~\cite{raiciu2012hard,rfc6824} supports several coupled congestion
-control schemes~\cite{peng2014multipath,wischik2011design,khalili2013mptcp} that preserve fairness when different paths share the same bottleneck. A similar solution  could be applied to \tcpls by leveraging eBPF to access and modify the  congestion controller state. We leave this engineering effort as future work. The initial idea of coupling \mptcp and \tls was proposed in an
+\mptcp \cite{raiciu2012hard,rfc6824} supports several coupled congestion
+control schemes \cite{peng2014multipath,wischik2011design,khalili2013mptcp} that preserve fairness when different paths share the same bottleneck. A similar solution  could be applied to \tcpls by leveraging eBPF to access and modify the  congestion controller state. We leave this engineering effort as future work. The initial idea of coupling \mptcp and \tls was proposed in an
 Internet draft~\cite{draft-paasch-mptcp-ssl-00} that was not adopted by the
 IETF. MPTCPSec~\cite{jadin2017securing} adds security capabilities to \mptcp but
 comes with a large performance penalty.
