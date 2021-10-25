@@ -434,7 +434,7 @@ Applications can migrate their traffic from one network path to another using a 
 %perform it).
 In this experiment, we reuse the Mininet topology %introduced in
 %Section~\ref{sec:bwaggr}%. We
-and set a bandwidth of 30~Mbps on each path, a 40~ms round-trip-time for the IPv4 link, and 80~ms for the IPv6 link. Our test application downloads a 60~MB file and migrates once from the IPv4 to the IPv6 path and once again back to the IPv4 path.
+and set a bandwidth of 30~Mbps on each path, a 40~ms round-trip-time for the IPv4 link, and 80~ms for the IPv6 link. Our test application downloads a 60~MiB file and migrates once from the IPv4 to the IPv6 path and once again back to the IPv4 path.
 
 %\todo{Est-ce necessaire? A aligner avec la place que l'on veut pour l'API vs
 %les services. Le fonctionnement de connection migration à déjà été expliqué en
@@ -474,7 +474,7 @@ records.
   \begin{center}
     \includegraphics[width=\columnwidth]{figures/migration.png}
   \end{center}
-  \caption{Application-level connection migration during a 60~MB file download.
+  \caption{Application-level connection migration during a 60~MiB file download.
     \tcpls temporarily aggregates the two network paths during such a migration.}
   \label{fig:conn_migration}
 \end{figure}
@@ -489,7 +489,7 @@ We compare the \tcpls bandwidth aggregation capability to the state-of-the-art
 %completely disjoint in this emulated network. Both protocols run in the same
 %Mininet topology with two IP paths available, each offering 25Mbps and 10ms
 %latency.
-Our experiment consists of transferring a 60~MB file over a single path
+Our experiment consists of transferring a 60~MiB file over a single path
 and enabling the second one after $5$ seconds. \mptcp automatically detects
 the new path once we enable the Client's second network interface. For \tcpls,
 managing paths is different: the application can use the API to add local or
