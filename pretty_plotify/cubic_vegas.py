@@ -31,7 +31,7 @@ if __name__ == "__main__":
     ax.annotate(legend_label('injection of eBPF CUBIC'),
                 xy=(117.561356, 12.116826),
                 xytext=(150, 12.116826),
-                arrowprops=dict(arrowstyle="<|-", color='black'), fontsize=12,
+                arrowprops=dict(arrowstyle="<|-", color='black'), fontsize=15,
                 color='black')
 
     ax.set_ylim(0, 100)
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     ax.set_xlabel(latex_label('Time (s)'), fontsize=20)
     ax.set_ylabel(latex_label('Goodput (Mbps)'), fontsize=20)
 
-    plt.legend(loc='upper right', fontsize=12, edgecolor="black", fancybox=False)
+    plt.legend(loc='upper right', fontsize=15, edgecolor="black", fancybox=False)
     grid(True, color='gray', linestyle='dashed', which='major')
 
     savefig(args.oname+'.'+args.ext, bbox_inches='tight')

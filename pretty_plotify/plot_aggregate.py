@@ -158,7 +158,7 @@ if __name__ == "__main__":
         ax.annotate(legend_label(args.event_text[counter]),
                     xy=((event-min_timing)/1000000, args.event_pos[counter]+counter*25),
                     xytext=(-0.4, (args.event_pos[counter]-0.5)+counter*25),
-                    arrowprops=dict(arrowstyle="<|-", color='black'), fontsize=12,
+                    arrowprops=dict(arrowstyle="<|-", color='black'), fontsize=14,
                     color='black')
         counter+=1
 
@@ -172,7 +172,7 @@ if __name__ == "__main__":
     else:
         ax.set_ylim(-1, 200)
 
-    plt.legend(loc='upper left', fontsize=12, edgecolor="black", fancybox=False)
+    plt.legend(loc='upper left', fontsize=14, edgecolor="black", fancybox=False)
     grid(True, color='gray', linestyle='dashed', which='major')
 
     savefig(args.oname+'.'+args.ext, bbox_inches='tight')
