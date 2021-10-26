@@ -431,6 +431,14 @@
 \section{Multipath Aggregation}
 \label{appendix:aggr}
 
+\begin{figure}[b]
+  \includegraphics[width=.8\columnwidth]{figures/aggregate_1500bytes_records_dual.png}
+  \caption{\tcpls path aggregation with 1500, bytes record size, compared to
+    \tls over \mptcp with 16,384 bytes record size}
+  \label{fig:aggregation_1500bytes_records}
+\end{figure}
+
+
 Figure~\ref{fig:aggregation_1500bytes_records} shows the same experiment as
 the one provided in Section~\ref{sec:bwaggr}. However, we now configure
 \tcpls with a 1,500 bytes record size to demonstrate that the
@@ -442,14 +450,6 @@ progress compared to Figure~\ref{fig:multipath_aggregation}. However, large
 peaks remain, which are probably linked to the some remaining bugs in our current \tcpls
 prototype implementation.
 
-\begin{figure}[b]
-  \includegraphics[width=.8\columnwidth]{figures/aggregate_1500bytes_records_dual.png}
-  \caption{\tcpls path aggregation with 1500, bytes record size, compared to
-    \tls over \mptcp with 16,384 bytes record size}
-  \label{fig:aggregation_1500bytes_records}
-\end{figure}
-
-%\section{Artifacts description for AEC}
 %
 %As part of the artifacts released with this work, we release the TCPLS source 
 %code, the scripts used for starting the experiments presented and 
