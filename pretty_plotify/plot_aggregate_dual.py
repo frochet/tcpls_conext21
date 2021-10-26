@@ -160,7 +160,7 @@ if __name__ == "__main__":
         ax.annotate(legend_label(args.event_text[elem]),
                     xy=((event-min_timing_t)/1000000, args.event_pos[elem]),
                     xytext=(1, (args.event_pos[elem])),
-                    arrowprops=dict(arrowstyle="<|-", color='black'), fontsize=17,
+                    arrowprops=dict(arrowstyle="<|-", color='black'), fontsize=20,
                     color='black')
         elem+=1
 
@@ -168,7 +168,7 @@ if __name__ == "__main__":
     axis_aesthetic(axs[1])
 
     for ax in axs:
-        ax.legend(loc='upper left', fontsize=17, edgecolor="black", fancybox=False)
+        ax.legend(loc='upper left', fontsize=20, edgecolor="black", fancybox=False)
         ax.set_xlim(0, x_max)
         ax.set_ylim(0, 65)
         ax.set_xlabel(latex_label("Time (s)"), fontsize=24)

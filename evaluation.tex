@@ -73,7 +73,7 @@ application developers a transport API preventing them. Indeed, for example in
 to how much \tcpls should read from \tcp due to the requirement of having a
 complete record to decrypt it. One may want to read more
 from \tcp than the amount of data instructed by the caller, otherwise it could
-leading to record fragmentation. % adversely affecting the %throughput.
+lead to record fragmentation. % adversely affecting the %throughput.
 So with this modification in \texttt{picotls}, we can observe that \tcp/\tls reaches
 10.3~Gbps with a 1500-byte MTU and 12.6~Gbps with a 9000-byte MTU. Both
 leverage \tcp Segmentation Offload (TSO), which is a
