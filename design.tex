@@ -16,8 +16,8 @@ connection migration, stream steering and %multipath capabilities, mitigating
 %blocking and enabling
 bandwidth aggregation.
 %aggregation and Head-of-Line blocking resilience.
-These features are built atop the \tcp bytestream, and as such they avoid  
-middleboxes interferences modifying the \tcp header.
+These features are built atop the \tcp bytestream, and as such they avoid
+middleboxes interferences that modifies the \tcp header.
 
 \subsubsection{Stream Multiplexing}\label{sec:datastreams}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -53,20 +53,20 @@ overcome this, we propose an Initial Vector (IV) derivation technique that
 enables independent encryption/decryption for each stream without this security
 degradation. We add two goals to the design of this technique. First, the
 \tls 1.3 wire format must be preserved to avoid possible middleboxes
-interference. Second, each record of the \tcpls session must has a unique 
+interference. Second, each record of the \tcpls session must has a unique
 nonce in order to maintain the security properties of AEAD.
 
 Fig.~\ref{fig:aead-iv} illustrates how the AEAD IV is computed for a given
 \tcpls record of a \tcpls stream. First the left-most bits of the IV derived
 from the \tls handshake are summed with the 32-bit \tcpls Stream ID. Then the
 right-most bits are XORed with the stream 64-bit record sequence number. Each
-\tcpls stream has a separate record sequence number space. 
-These two operations guarantee that every record of every \tcpls streams has a 
+\tcpls stream has a separate record sequence number space.
+These two operations guarantee that every record of every \tcpls streams has a
 unique nonce.
 %This combination of
 %IV manipulation guarantees that the resulting IV is unique for each record of
 %all \tcpls streams given a unique Stream ID and sequence number, which is the
-%main security concern. 
+%main security concern.
 The Stream ID space is split between the client and the
 server. Stream ID 0 is equivalent to the cryptographic context derived directly
 from the handshake.
@@ -93,15 +93,16 @@ connection.\footnote{The worst case is when the sender schedules records of $N$
 %\todo{sheperd comments}
 From a security standpoint, each failed decryption is considered as a forgery
 attempt. However, the limits on confidentiality and integrity of AEAD ciphers
-force the attacker to commit to an important number of attempts before a 
-successful forgery may be considered with a non-negligible 
+force the attacker to commit to an important number of attempts before a
+successful forgery may be considered with a non-negligible
 probability~\cite{luykx2015limits, aeadlimits}. For instance, in the case of
-ChaCha20 + Poly1305, an adversary has to perform $2^{60}$ forgery attempts 
-before succeeding with probability $2^{-33}$. Also, note that succeeding the 
-decryption is very likely to result in a decrypted payload non-conforming to 
-the \tcpls protocol.
+ChaCha20 + Poly1305, an adversary has to perform $2^{60}$ forgery attempts
+before succeeding with probability $2^{-33}$. Also, note that in case the adversary succeeds in decrypting the packet, it is very likely it will lead to a plain payload non-conforming to the \tcpls protocol.
+%note that succeeding the
+%decryption is very likely to result in a decrypted payload non-conforming to
+%the \tcpls protocol.
 
-%What this result means is that an 
+%What this result means is that an
 %unvalid payload would
 %check correctly after an unachievable number of failed decryptions (and would
 %decrypt to a pseudo-random payload anyway).
@@ -294,7 +295,7 @@ can only be used once by the client.
 \end{figure}
 
 \textbf{Failover}.
-When a \tcp connection fails, e.g., due to middleboxes or network outages, \tcpls leverages its joining mechanism to recover the session over another \tcp connection. This is particularly useful on multihomed devices that often move out of reach of a given access network, for instance a smartphone moving away from a Wi-Fi access point, but also on all devices that suffer from middleboxes disrupting \tcp connections, for instance a firewall introducing \tcp \rst on idle \tcp connections. Fig.~\ref{fig:design-failover} illustrates
+When a \tcp connection fails, e.g., due to middleboxes or network outages, \tcpls leverages its joining mechanism to recover the session over another \tcp connection. This is particularly useful on multihomed devices that often move out of reach of a given access network, for instance a smartphone moving away from a Wi-Fi access point, but but it also helps devices that suffer from middleboxes disrupting \tcp connections, for instance a firewall introducing \tcp \rst on idle \tcp connections. Fig.~\ref{fig:design-failover} illustrates
 how \tcpls reacts to such events during a transfer with two \tcpls streams.
 To achieve such a \emph{break-before-make},
 \tcpls sends acknowledgments for the received records of each stream, allowing
@@ -506,16 +507,16 @@ impacting the application goodput.
 \subsection{Security and Information Leakage}
 
 Compared to \mptcp, the join mechanism of \tcpls allows
-cryptographically authenticated endpoints to add new \tcp connections to an 
+cryptographically authenticated endpoints to add new \tcp connections to an
 existing \tcpls session. It contrasts to \mptcp for which any observer of the
 initial handshake owns the required information to join the \mptcp
 connection. The multipath capabilities of \tcpls may also require stronger
 situational attacker models. One example would be preventing different IP
 networks from colluding and linking \tcp connections belonging to a
 \tcpls session. The \tcpls handshake and the join mechanism can be
-enhanced to support this goal by leveraging encrypted tokens. One could then 
-use a token for each connection join, effectively acting as both a session 
-identifier and a cookie. Additional tokens could be generated and shared upon 
+enhanced to support this goal by leveraging encrypted tokens. One could then
+use a token for each connection join, effectively acting as both a session
+identifier and a cookie. Additional tokens could be generated and shared upon
 successful joins.
 
 %In this subsection, we also present how streams can be coupled to aggregate

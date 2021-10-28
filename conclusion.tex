@@ -11,10 +11,10 @@ layer to create a secure control channel between the two communicating hosts.
 The messages exchanged over this channel are placed inside \tls records that are
 encrypted and authenticated and also hidden from middleboxes. \tcpls leverages
 these control messages to support fast failovers, smooth
-migration of the \tcpls session from one path to another and to provide 
+migration of the \tcpls session from one path to another and to provide
 bandwidth aggregation under full control of the application through an API. 
-\tcpls can also use the secure channel to extend \tcp with new options and even 
-use the \tcpls session to exchange a different congestion control scheme that 
+\tcpls can also use the secure channel to extend \tcp with new options and even
+use the \tcpls session to exchange a different congestion control scheme that
 is then used for this session.
 
 Thanks to \tcpls's design, our \tcpls implementation provides a

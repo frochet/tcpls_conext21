@@ -72,7 +72,7 @@ application developers a transport API preventing them. Indeed, for example in
 \tcpls the question of \textit{how much} the caller wants to read does not map
 to how much \tcpls should read from \tcp due to the requirement of having a
 complete record to decrypt it. In this case, one may want to read more
-from \tcp to prevent record fragmentation. % adversely affecting the 
+from \tcp to prevent record fragmentation. % adversely affecting the
 %%%throughput.
 So with this modification in \texttt{picotls}, we can observe that \tcp/\tls reaches
 10.3~Gbps with a 1500-byte MTU and 12.6~Gbps with a 9000-byte MTU. Both
@@ -127,7 +127,7 @@ control records that are exchanged during the file transfer and additional
 buffer management within \tcpls. This impact could be reduced by lowering the
 number of record acknowledgments, which could further improve the throughput
 with an MTU of 9000 bytes. We leave finding the optimal acknowledgment
-frequency as future work. 
+frequency as future work.
 %From a performance viewpoint, they increase the
 %number of control records
 %exchanged and the number of system calls.
@@ -419,7 +419,7 @@ and used in production. Fig.~\ref{fig:failover} compares how \mptcp and \tcpls r
 We also tried injecting \tcp \rst instead of blackholing paths and \mptcp
 indefinitely stalled after the second \rst. However, \tcpls finds the right path quicker and recovers the session in a short time similarly to the drop and \rst outage studied in Fig.~\ref{fig:recovery}. Moreover, since those connections are fresh, they can quickly use the available bandwidth.
 
-\subsection{Application-level Connection Migration}
+\subsection{Application-Level Connection Migration}
 \label{sec:app-migration}
 
 When there are multiple network paths, connection migration can be used by
@@ -467,13 +467,12 @@ records.
 %to flush its data while the second path is already used.
 %Once the last record
 %of the first path is sent,
-\tcpls reorders the records and delivers the data to the client. The goodput 
-increase corresponds to the additional bandwidth of the \tcp connection over 
-the new path during the migration time window. 
-The application can thus trigger a connection migration and sustain its 
+\tcpls reorders the records and delivers the data to the client. The goodput
+increase corresponds to the additional bandwidth of the \tcp connection over
+the new path during the migration time window.  The application can thus trigger a connection migration and sustain its
 bandwidth during the process.
-%Depending on each network path 
-%characteristic, this exposed capability can lead to migrate the application's 
+%Depending on each network path
+%characteristic, this exposed capability can lead to migrate the application's
 %connection without any friction felt by the user.
 
 \begin{figure}[!t]
@@ -577,4 +576,3 @@ and obtained similar results.
   them during a \tcpls session.}
   \label{fig:vegasCubic}
 \end{figure}
-

@@ -13,8 +13,8 @@ abstraction, involving benefits leveraged from multiple connections.
 
 \tcpls uses \tls records to encode data and control information. Researchers
 have also explored the idea of encoding control information in the \tcp
-bytestream in different protocols. During the initial discussions for Multipath \tcp, Multi-Connection TCP (\texttt{MCTCP})~\cite{draft-scharf-mptcp-mctcp-01}
-was proposed as an alternative that encodes control information in the bytestream. The \texttt{MCTCP} Working Group did not adopt this solution because it notably feared of possible problems with middleboxes. Multipath \tcp~\cite{raiciu2012hard,rfc8684} uses \tcp Options to encode control information and use different paths. \tcpls uses \tls records for this purpose and prevents middlebox tampering. Since \tls records are encrypted, their integrity protected, and protocol-level indistinguishable, middleboxes cannot interfere with the control information that \tcpls exchanges. In contrast, with \mptcp, a middlebox that modifies the payload, such as a transparent \tcp proxy or an application level gateway running on a NAT~\cite{rfc3027}, can disrupt the
+bytestream in different protocols. During the initial discussions for Multipath \tcp, Multi-Connection \tcp (\texttt{MCTCP})~\cite{draft-scharf-mptcp-mctcp-01}
+was proposed as an alternative that encodes control information in the bytestream. The \mptcp Working Group did not adopt this solution because it notably feared of possible problems with middleboxes. Multipath \tcp~\cite{raiciu2012hard,rfc8684} uses \tcp Options to encode control information and use different paths. \tcpls uses \tls records for this purpose and prevents middlebox tampering. Since \tls records are encrypted, their integrity protected, and protocol-level indistinguishable, middleboxes cannot interfere with the control information that \tcpls exchanges. In contrast, with \mptcp, a middlebox that modifies the payload, such as a transparent \tcp proxy or an application level gateway running on a NAT~\cite{rfc3027}, can disrupt the
 protocol. Minion~\cite{nowlan2012fitting} also encodes control information in
 the \tcp payload but to support unreliable data over a connection.
 
@@ -26,10 +26,10 @@ network attacker. \tcpls extends \tls while retaining its security  properties, 
 %\tcpls also needs to be compared with
 %\mptcp \cite{raiciu2012hard,rfc6824}.
 \mptcp \cite{raiciu2012hard,rfc6824} supports several coupled congestion
-control schemes \cite{peng2014multipath,wischik2011design,khalili2013mptcp} 
-that preserve fairness when different paths share the same bottleneck. A 
-similar solution  could be applied to \tcpls by leveraging eBPF to access and 
-modify the  congestion controller state. We leave this engineering effort as 
+control schemes \cite{peng2014multipath,wischik2011design,khalili2013mptcp}
+that preserve fairness when different paths share the same bottleneck. A
+similar solution  could be applied to \tcpls by leveraging eBPF to access and
+modify the  congestion controller state. We leave this engineering effort as
 future work. The initial idea of coupling \mptcp and \tls was proposed in an
 Internet draft~\cite{draft-paasch-mptcp-ssl-00} that was not adopted by the
 IETF. MPTCPSec~\cite{jadin2017securing} adds security capabilities to \mptcp but
@@ -45,7 +45,7 @@ Multipath extensions
 \cite{viernickel2018multipath,de2017multipath,draft-liu-multipath-quic-02}
 to \quic have been discussed but not yet adopted within the IETF. Finally,
 \texttt{PQUIC}~\cite{de2019pluginizing} proposed to convey eBPF code over \quic
-connections to deploy new protocol features. The same benefits are also being 
+connections to deploy new protocol features. The same benefits are also being
 considered for other distributed systems, such as BGP~\cite{xBGP} and
 anonymous overlay networks~\cite{fan-hotpets}. This goes beyond the exchange of
 congestion controller in \tcpls.

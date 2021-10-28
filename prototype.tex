@@ -245,12 +245,12 @@ The API used by applications to interact with a protocol plays an important role
 
 The \tcpls API builds upon good practices proposed by the outlined works.
 In this spirit, application-level developers are only required to configure a \tcpls context and register function callbacks. We design the \tcpls API such
-that %application-level developers can ignore any notion of inter-process 
+that %application-level developers can ignore any notion of inter-process
 %communication, e.g., as defined by the POSIX API, the Berkeley socket API or
 %Winsock, facilitating
 it facilitates application development by offering a %more concrete
-session-level interface based on asynchronous network events. The \tcpls API 
-offers to application developers the opportunity to tune the transport 
+session-level interface based on asynchronous network events. The \tcpls API
+offers to application developers the opportunity to tune the transport
 protocol. They can then make the best choices for their applications.
 % for a better usage of the
 %network from their own application protocol, which might depend on its
@@ -318,11 +318,11 @@ results in lower latency~\cite{bajpai2019longitudinal}.
 \end{figure}
 
 Fig.~\ref{fig:api} shows an example of our current API workflow. The API can
-handle explicit multipath techniques such as Happy Eyeball by chaining an 
-optional call to \texttt{tcpls\_connect()}, here with a timeout of 50ms, as 
+handle explicit multipath techniques such as Happy Eyeball by chaining an
+optional call to \texttt{tcpls\_connect()}, here with a timeout of 50ms, as
 shown in the Figure. \tcpls lets the application explicitly choose the addresses
 between which a \tcp connection should be established by calling several times
-\texttt{tcpls\_connect(src, dest, timeout)} in a \tcpls session. The 
+\texttt{tcpls\_connect(src, dest, timeout)} in a \tcpls session. The
 application may configure
 callbacks to connection events occurring within \tcpls, such as connection
 establishments, stream attachments, multipath joins and the receipt of a \tcp
@@ -354,34 +354,24 @@ option to tune \tcp.
 %future, we may expect to revise our choice if a solution similar to \tcp
 %FOP~\cite{sy2020enhanced} gets implemented in the Linux kernel.
 
-\subsection{TCPLS Fairness}
+\subsection{\tcpls Fairness}
 
-Fairness is an important property of transport protocols
-guaranteeing an equal share of resources between users of the Internet. Our 
-TCPLS prototype does not alter the congestion control algorithm of TCP. As 
-such, a single connection of a TCPLS session is fair to a single TCP connection.
-However there are two situations in which this can be improved in future works.
+Fairness is an important property of transport protocols guaranteeing an equal share of resources between users of the Internet. Our \tcpls prototype does not alter the congestion control algorithm of \tcp. As  such, a single connection of a \tcpls session is fair to a single \tcp connection. However there are two situations in which this can be improved in future works.
 
-First, when two or more TCP connections are used in TCPLS over network paths 
-that share a common bottleneck, TCPLS can be unfair proportionally to the 
-extent of this bottleneck.
-This problem is well known and solutions proposed for MPTCP such as coupled 
-congestion control 
-schemes~\cite{wischik2011design,peng2014multipath,khalili2013mptcp} could be 
-applied to TCPLS using eBPF.
+First, when two or more \tcp connections are used in \tcpls over network paths that share a common bottleneck, \tcpls can be unfair proportionally to the extent of this bottleneck. This problem is well known and solutions proposed for \mptcp such as coupled congestion control
+schemes~\cite{wischik2011design,peng2014multipath,khalili2013mptcp} could be
+applied to \tcpls using eBPF.
 
-Second, when an application using TCPLS multiplexes several streams over a 
-single connection, it has to compete with applications not using TCPLS that 
-spread these streams over several connections, such as HTTP/1.1. This problem 
-is also well known~\cite{min2019experimental}. Recently, it led Google adapting 
-\texttt{mulTCP}~\cite{crowcroft1998differentiated}, one of its solutions, when 
-implementing gQUIC~\cite{langley2017quic}. A similar approach could also be 
-integrated in TCPLS with eBPF.
+Second, when an application using \tcpls multiplexes several streams over a
+single connection, it has to compete with applications not using \tcpls that
+spread these streams over several connections, such as HTTP/1.1. This problem
+is also well known~\cite{min2019experimental}. Recently, it led Google adapting
+\texttt{mulTCP}~\cite{crowcroft1998differentiated}, one of its solutions, when
+implementing gQUIC~\cite{langley2017quic}. A similar approach could also be
+integrated in \tcpls with eBPF.
 
 
 % From the gQUIC paper
 %QUIC uses
 %a variant of mulTCP [14] for Cubic during the congestion avoidance
 %phase to attain parity in flow-fairness with the use of TCP.
-
-
