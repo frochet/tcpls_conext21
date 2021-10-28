@@ -243,11 +243,15 @@ the three-way handshake. This provides a low-latency and secure connection estab
 
 The API used by applications to interact with a protocol plays an important role in leveraging all the protocol features. The most popular API to interact with the transport layer is the BSD socket API. But researchers and the IETF have explored other ways to expose a transport API~\cite{draft-ietf-taps-arch,hruby2014sockets,rfc6458,schmidt2013socket}.
 
-The \tcpls API builds upon good practices proposed by the outlined research.
+The \tcpls API builds upon good practices proposed by the outlined works.
 In this spirit, application-level developers are only required to configure a \tcpls context and register function callbacks. We design the \tcpls API such
-that application-level developers can ignore any notion of inter-process communication, e.g., as defined by the POSIX API, the Berkeley socket API or
-Winsock, facilitating application-level development by offering a more concrete
-session-level interface based on asynchronous network events. The \tcpls API offers the opportunity to tune the transport protocol to application developers. They can then make the best choices for their applications.
+that %application-level developers can ignore any notion of inter-process 
+%communication, e.g., as defined by the POSIX API, the Berkeley socket API or
+%Winsock, facilitating
+it facilitates application development by offering a %more concrete
+session-level interface based on asynchronous network events. The \tcpls API 
+offers to application developers the opportunity to tune the transport 
+protocol. They can then make the best choices for their applications.
 % for a better usage of the
 %network from their own application protocol, which might depend on its
 %distinguishing
@@ -281,7 +285,7 @@ results in lower latency~\cite{bajpai2019longitudinal}.
 				\indent~~tcpls\_connect(addr6, timeout)*]};
 			\draw[black, thick, <->] (0.5,5.8) -- (4,5.8) node [midway,
 			fill=white] {\tcp Handshake};
-			\node[fill=white] at (0,5) (Callback) {Callback ev.};
+			\node[fill=white] at (0,5) (Callback) {Callback event};
 			\node at (1,4.8) (here) {};
 			\draw [->] (Callback) to[out=-80, in=-90,looseness=1.3] (here)
 			to[out=90,in=80,looseness=1.5] (Callback);
@@ -291,11 +295,11 @@ results in lower latency~\cite{bajpai2019longitudinal}.
 			\node[fill=white] at (4.6,4.1) {tcpls\_handshake()};
 			\draw[black, thick, <->] (0.5,3.6) -- (4,3.6) node [midway,
 			fill=white] {\tcpls Handshake};
-			\node[fill=white] at (0,3) (CB2) {Callback ev.};
+			\node[fill=white] at (0,3) (CB2) {Callback event};
 			\node at (1,2.8) (here2) {};
 			\draw [->] (CB2) to[out=-80, in=-90,looseness=1.3] (here2)
 			to[out=90,in=80,looseness=1.5] (CB2);
-			\node[fill=white] at (4.5,3) (CB3) {Callback ev.};
+			\node[fill=white] at (4.5,3) (CB3) {Callback event};
 			\node at (5.5,2.8) (here3) {};
 			\draw [->] (CB3) to[out=-80, in=-90,looseness=1.3] (here3)
 			to[out=90,in=80,looseness=1.5] (CB3);
@@ -314,12 +318,14 @@ results in lower latency~\cite{bajpai2019longitudinal}.
 \end{figure}
 
 Fig.~\ref{fig:api} shows an example of our current API workflow. The API can
-handle explicit multipath techniques such as Happy Eyeball by chaining an optional call to \texttt{tcpls\_connect()} with an appropriate timeout of 50ms, as shown in the
-Figure. \tcpls lets the application explicitly choose the pairs of addresses
+handle explicit multipath techniques such as Happy Eyeball by chaining an 
+optional call to \texttt{tcpls\_connect()}, here with a timeout of 50ms, as 
+shown in the Figure. \tcpls lets the application explicitly choose the addresses
 between which a \tcp connection should be established by calling several times
-\texttt{tcpls\_connect(src, dest, timeout)}. The application may configure
-callbacks to connection events that occur within \tcpls, such as connection
-establishments, stream attachments, multipath joins, the receipt of a \tcp
+\texttt{tcpls\_connect(src, dest, timeout)} in a \tcpls session. The 
+application may configure
+callbacks to connection events occurring within \tcpls, such as connection
+establishments, stream attachments, multipath joins and the receipt of a \tcp
 option to tune \tcp.
 
 %When streams are attached to multiple \tcp connections, the application may
@@ -352,12 +358,13 @@ option to tune \tcp.
 
 Fairness is an important property of transport protocols
 guaranteeing an equal share of resources between users of the Internet. Our 
-TCPLS prototype leaves the congestion control as a part of TCP. As such, a 
-single connection of a TCPLS session is fair to a single TCP connection.
+TCPLS prototype does not alter the congestion control algorithm of TCP. As 
+such, a single connection of a TCPLS session is fair to a single TCP connection.
 However there are two situations in which this can be improved in future works.
 
 First, when two or more TCP connections are used in TCPLS over network paths 
-that are partly joint, TCPLS can be unfair proportionally to this joint part.
+that share a common bottleneck, TCPLS can be unfair proportionally to the 
+extent of this bottleneck.
 This problem is well known and solutions proposed for MPTCP such as coupled 
 congestion control 
 schemes~\cite{wischik2011design,peng2014multipath,khalili2013mptcp} could be 

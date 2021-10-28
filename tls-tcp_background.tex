@@ -23,22 +23,22 @@ Several types of middlebox interference have been identified by researchers and
 network engineers. The most relevant ones for \tcp are: $(i)$ Network Address 
 Translators (NAT) which change IP addresses, port numbers and also the TCP 
 checksum~\cite{wang2011untold}, $(ii)$ Application Level Gateways which 
-modify the TCP payload \cite{rfc3207}, $(iii)$ some firewalls which discard 
+modify the TCP payload \cite{rfc3207}, $(iii)$ firewalls that discard 
 packets containing TCP Options that were not known when the firewall was 
-designed \cite{edeline2020evaluating}, $(iv)$ some firewalls which replace 
+designed \cite{edeline2020evaluating}, $(iv)$ firewalls that replace 
 unknown TCP Options with the NOP TCP Option, $(v)$ transparent proxies which 
 terminate TCP connections 
-\cite{weaver2014here}, and $(vi)$ high-speed network adapters which fragment 
+\cite{weaver2014here}, and $(vi)$ high-speed network adapters that fragment 
 large TCP packets in a series of smaller packets and reassemble them 
 \cite{honda2011still}. 
 All these in-path network functions make assumptions about the \tcp packets content, invalidating the initial \tcp end-to-end paradigm. Moreover, they do not always strictly follow the \tcp specifications~\cite{honda2011still, hesmans2013tcp}, which may negatively affect \tcp's evolution and performance~\cite{edeline2020evaluating}. Furthermore, deployed middleboxes remain inside the network for several years and sometimes up to a decade. Many of the older middleboxes are not regularly updated. 
 These middleboxes severely limit the \tcp extensibility. Multipath 
 \tcp~\cite{rfc8684,raiciu2012hard} (\mptcp) managed to cope with the 
-interferences listed above, but at the price of increased complexity with 
+interferences listed above, but at the price of increased complexity, most 
 notably the utilization of a second level of checksum to detect middlebox 
 interference~\cite{raiciu2012hard,hesmans2013tcp} and fallback mechanisms. 
 Choosing another transport is not a deployable approach as many middleboxes 
-block other transport protocols than \tcp and \udp \cite{barik2020usability}.
+block transport protocols other than \tcp and \udp \cite{barik2020usability}.
 
 \begin{table}[!t]
  \setlength\tabcolsep{2.8pt}

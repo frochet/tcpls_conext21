@@ -16,7 +16,8 @@ connection migration, stream steering and %multipath capabilities, mitigating
 %blocking and enabling
 bandwidth aggregation.
 %aggregation and Head-of-Line blocking resilience.
-These features are built atop the \tcp bytestream, and as such they avoid  middleboxes interference that modify the \tcp header.
+These features are built atop the \tcp bytestream, and as such they avoid  
+middleboxes interferences modifying the \tcp header.
 
 \subsubsection{Stream Multiplexing}\label{sec:datastreams}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -52,17 +53,21 @@ overcome this, we propose an Initial Vector (IV) derivation technique that
 enables independent encryption/decryption for each stream without this security
 degradation. We add two goals to the design of this technique. First, the
 \tls 1.3 wire format must be preserved to avoid possible middleboxes
-interference. Second, the resulting nonce must be unique for each record of
-the \tcpls session in order to maintain the security properties of AEAD.
+interference. Second, each record of the \tcpls session must has a unique 
+nonce in order to maintain the security properties of AEAD.
 
 Fig.~\ref{fig:aead-iv} illustrates how the AEAD IV is computed for a given
 \tcpls record of a \tcpls stream. First the left-most bits of the IV derived
 from the \tls handshake are summed with the 32-bit \tcpls Stream ID. Then the
 right-most bits are XORed with the stream 64-bit record sequence number. Each
-\tcpls stream has a separate record sequence number space. This combination of
-IV manipulation guarantees that the resulting IV is unique for each record of
-all \tcpls streams given a unique Stream ID and sequence number, which is the
-main security concern. The Stream ID space is split between the client and the
+\tcpls stream has a separate record sequence number space. 
+These two operations guarantee that every record of every \tcpls streams has a 
+unique nonce.
+%This combination of
+%IV manipulation guarantees that the resulting IV is unique for each record of
+%all \tcpls streams given a unique Stream ID and sequence number, which is the
+%main security concern. 
+The Stream ID space is split between the client and the
 server. Stream ID 0 is equivalent to the cryptographic context derived directly
 from the handshake.
 %\todo{Il faut expliquer comment les stream id sont choisis pour garantir
@@ -70,7 +75,7 @@ from the handshake.
 
 To avoid possible middleboxes interference, in addition to the record sequence
 number, the \tcpls Stream ID is kept implicit as well. When an endpoint receives
-a \tcpls record, we leverage the AEAD cipher to check the authentication tag
+a \tcpls record, it leverages the AEAD cipher to check the authentication tag
 repeatedly until the correct \tcpls Stream ID is found.
 %An optimized implementation would not involve
 It does not involve a complete decryption as all \tls 1.3 AEAD
@@ -81,18 +86,25 @@ explicit signaling when another stream is scheduled over the \tcp
 connection.\footnote{The worst case is when the sender schedules records of $N$
   streams over a \tcp connection. Then, \tcpls may announce within the last
   record of the current stream the Stream ID of the following record.%, thanks
-  to \tcp ordered delivery %of \tcpls data and control records.
+  %to \tcp ordered delivery %of \tcpls data and control records.
 }
 %\todo{citer rfc7366 ? ou les références de ce rfc ?}
 
+%\todo{sheperd comments}
 From a security standpoint, each failed decryption is considered as a forgery
-attempt. However, the limits on confidentiality and integrity for AEAD ciphers
-are large before a successful forgery may be considered with non-negligible
-probability~\cite{luykx2015limits, aeadlimits}. For example, in the case of
-ChaCha20 + Poly1305, an adversary making $2^{60}$ forgery attempts succeeds with
-probability $2^{-33}$. What this result means is that an unvalid payload would
-check correctly after an unachievable number of failed decryptions (and would
-decrypt to a pseudo-random payload anyway).
+attempt. However, the limits on confidentiality and integrity of AEAD ciphers
+force the attacker to commit to an important number of attempts before a 
+successful forgery may be considered with a non-negligible 
+probability~\cite{luykx2015limits, aeadlimits}. For instance, in the case of
+ChaCha20 + Poly1305, an adversary has to perform $2^{60}$ forgery attempts 
+before succeeding with probability $2^{-33}$. Also, note that succeeding the 
+decryption is very likely to result in a decrypted payload non-conforming to 
+the \tcpls protocol.
+
+%What this result means is that an 
+%unvalid payload would
+%check correctly after an unachievable number of failed decryptions (and would
+%decrypt to a pseudo-random payload anyway).
 
 %\todo{Should we mention that one stream cannot be used on two connections at
 %the same time?}
@@ -493,18 +505,18 @@ impacting the application goodput.
 
 \subsection{Security and Information Leakage}
 
-Compared to \mptcp, \tcpls achieves a secure Join mechanism in which
-cryptographically authenticated endpoints can join an existing session with
-further \tcp connections. It contrasts to \mptcp for which any observer of the
-initial handshake would own the required information to join the \mptcp
-connection. The new transport capabilities of \tcpls may also require stronger
+Compared to \mptcp, the join mechanism of \tcpls allows
+cryptographically authenticated endpoints to add new \tcp connections to an 
+existing \tcpls session. It contrasts to \mptcp for which any observer of the
+initial handshake owns the required information to join the \mptcp
+connection. The multipath capabilities of \tcpls may also require stronger
 situational attacker models. One example would be preventing different IP
-networks from colluding and linking other \tcp connections belonging to the same
-\tcpls session. The \tcpls initial handshake and the Join mechanism can be
-enhanced to support this goal, offering encrypted tokens in the initial
-handshake. One could then spend these tokens for each Join handshake,
-effectively acting as both a session identifier and a cookie. Further more
-tokens could be generated and shared upon successful Joins.
+networks from colluding and linking \tcp connections belonging to a
+\tcpls session. The \tcpls handshake and the join mechanism can be
+enhanced to support this goal by leveraging encrypted tokens. One could then 
+use a token for each connection join, effectively acting as both a session 
+identifier and a cookie. Additional tokens could be generated and shared upon 
+successful joins.
 
 %In this subsection, we also present how streams can be coupled to aggregate
 %the bandwidth of several \tcp connections.

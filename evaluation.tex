@@ -71,9 +71,9 @@ client. Our \tcpls prototype avoids these mistakes by design by offering to the
 application developers a transport API preventing them. Indeed, for example in
 \tcpls the question of \textit{how much} the caller wants to read does not map
 to how much \tcpls should read from \tcp due to the requirement of having a
-complete record to decrypt it. One may want to read more
-from \tcp than the amount of data instructed by the caller, otherwise it could
-lead to record fragmentation. % adversely affecting the %throughput.
+complete record to decrypt it. In this case, one may want to read more
+from \tcp to prevent record fragmentation. % adversely affecting the 
+%%%throughput.
 So with this modification in \texttt{picotls}, we can observe that \tcp/\tls reaches
 10.3~Gbps with a 1500-byte MTU and 12.6~Gbps with a 9000-byte MTU. Both
 leverage \tcp Segmentation Offload (TSO), which is a
@@ -467,7 +467,14 @@ records.
 %to flush its data while the second path is already used.
 %Once the last record
 %of the first path is sent,
-\tcpls reorders the records and delivers the data to the client. The goodput increase corresponds to the sum of bandwidth over the new path during the migration time window. Depending on each network path characteristic, this exposed capability can lead to migrate the application's connection without any friction felt by the user.
+\tcpls reorders the records and delivers the data to the client. The goodput 
+increase corresponds to the additional bandwidth of the \tcp connection over 
+the new path during the migration time window. 
+The application can thus trigger a connection migration and sustain its 
+bandwidth during the process.
+%Depending on each network path 
+%characteristic, this exposed capability can lead to migrate the application's 
+%connection without any friction felt by the user.
 
 \begin{figure}[!t]
   \begin{center}
