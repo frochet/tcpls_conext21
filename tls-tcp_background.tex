@@ -16,29 +16,29 @@ it~\cite{draft-ietf-tcpm-tcp-edo-10} has not yet been implemented by major
 Modern applications rarely use \tcp alone. They often combine \tcp with Transport Layer Security (\tls). \tls 1.3~\cite{rfc8446} brings several essential features compared to the previous versions. It includes a secure handshake that allows negotiating the security parameters and keys within one round-trip time. Thanks to \tcp Fast Open~\cite{radhakrishnan2011tcp}, it is also possible to perform the secure handshake during the \tcp handshake. Furthermore, it is also possible to exchange application data during the handshake. The \tls 1.3 record layer protects all application data with encryption and authentication. This record layer is extensible, and the \tls record types are also encrypted to prevent ossification.
 
 Despite the Internet layered architectural principle, network operators have
-deployed a variety of middleboxes (e.g., firewalls, NATs, transparent 
-proxies)~\cite{mCloud} that sometimes interfere with \tcp or its 
-extensions~\cite{medina2004measuring, honda2011still, edeline2019bottom}. 
-Several types of middlebox interference have been identified by researchers and 
-network engineers. The most relevant ones for \tcp are: $(i)$ Network Address 
-Translators (NAT) which change IP addresses, port numbers and also the TCP 
-checksum~\cite{wang2011untold}, $(ii)$ Application Level Gateways which 
-modify the TCP payload \cite{rfc3207}, $(iii)$ some firewalls which discard 
-packets containing TCP Options that were not known when the firewall was 
-designed \cite{edeline2020evaluating}, $(iv)$ some firewalls which replace 
-unknown TCP Options with the NOP TCP Option, $(v)$ transparent proxies which 
-terminate TCP connections 
-\cite{weaver2014here}, and $(vi)$ high-speed network adapters which fragment 
-large TCP packets in a series of smaller packets and reassemble them 
-\cite{honda2011still}. 
-All these in-path network functions make assumptions about the \tcp packets content, invalidating the initial \tcp end-to-end paradigm. Moreover, they do not always strictly follow the \tcp specifications~\cite{honda2011still, hesmans2013tcp}, which may negatively affect \tcp's evolution and performance~\cite{edeline2020evaluating}. Furthermore, deployed middleboxes remain inside the network for several years and sometimes up to a decade. Many of the older middleboxes are not regularly updated. 
-These middleboxes severely limit the \tcp extensibility. Multipath 
-\tcp~\cite{rfc8684,raiciu2012hard} (\mptcp) managed to cope with the 
-interferences listed above, but at the price of increased complexity with 
-notably the utilization of a second level of checksum to detect middlebox 
-interference~\cite{raiciu2012hard,hesmans2013tcp} and fallback mechanisms. 
-Choosing another transport is not a deployable approach as many middleboxes 
-block other transport protocols than \tcp and \udp \cite{barik2020usability}.
+deployed a variety of middleboxes (e.g., firewalls, NATs, transparent
+proxies)~\cite{mCloud} that sometimes interfere with \tcp or its
+extensions~\cite{medina2004measuring, honda2011still, edeline2019bottom}.
+Several types of middlebox interference have been identified by researchers and
+network engineers. The most relevant ones for \tcp are: $(i)$ Network Address
+Translators (NAT) that change IP addresses, port numbers and also the TCP
+checksum~\cite{wang2011untold}, $(ii)$ Application Level Gateways that
+modify the TCP payload \cite{rfc3207}, $(iii)$ some firewalls that discard
+packets containing TCP Options that were not known when the firewall was
+designed \cite{edeline2020evaluating}, $(iv)$ some firewalls that replace
+unknown TCP Options with the NOP TCP Option, $(v)$ transparent proxies that
+terminate TCP connections
+\cite{weaver2014here}, and $(vi)$ high-speed network adapters that fragment
+large TCP packets in a series of smaller packets and reassemble them
+\cite{honda2011still}.
+All these in-path network functions make assumptions about the \tcp packets content, invalidating the initial \tcp end-to-end paradigm. Moreover, they do not always strictly follow the \tcp specifications~\cite{honda2011still, hesmans2013tcp}, which may negatively affect \tcp's evolution and performance~\cite{edeline2020evaluating}. Furthermore, deployed middleboxes remain inside the network for several years and sometimes up to a decade. Many of the older middleboxes are not regularly updated.
+These middleboxes severely limit the \tcp extensibility. Multipath
+\tcp~\cite{rfc8684,raiciu2012hard} (\mptcp) managed to cope with the
+interferences listed above, but at the price of increased complexity, most
+notably the utilization of a second level of checksum to detect middlebox
+interference~\cite{raiciu2012hard,hesmans2013tcp} and fallback mechanisms.
+Choosing another transport is not a deployable approach as many middleboxes
+block transport protocols other than \tcp and \udp \cite{barik2020usability}.
 
 \begin{table}[!t]
  \setlength\tabcolsep{2.8pt}
