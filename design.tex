@@ -97,7 +97,9 @@ force the attacker to commit to an important number of attempts before a
 successful forgery may be considered with a non-negligible
 probability~\cite{luykx2015limits, aeadlimits}. For instance, in the case of
 ChaCha20 + Poly1305, an adversary has to perform $2^{60}$ forgery attempts
-before succeeding with probability $2^{-33}$. Also, note that in case the adversary succeeds in decrypting the packet, it is very likely it will lead to a plain payload non-conforming to the \tcpls protocol.
+before succeeding with probability $2^{-33}$. Also, note that in case the 
+adversary succeeds in decrypting the packet, it will very likely lead to a 
+plain payload non-conforming to the \tcpls protocol.
 %note that succeeding the
 %decryption is very likely to result in a decrypted payload non-conforming to
 %the \tcpls protocol.
