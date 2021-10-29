@@ -8,8 +8,7 @@ following benefits. ($i$, Sec.~\ref{sec:prot-multiplexing}) Applications can use
 %    handle multihoming, multipathing, and various transport layer mechanisms.
 %\todo{MP: mettre la ref du workshop et ne pas expliquer}
 ($ii$) \tcp options can be sent through the secure \tcpls records, improving
-the extensibility of \tcp. We presented this service in a workshop
-paper~\cite{rochet2020tcpls} by implementing the \tcp User Timeout option.
+the extensibility of \tcp (see~\cite{rochet2020tcpls}).
 %(as described in
    %Section~\ref{sec:background-design})
    %. We demonstrate this possibility by
@@ -36,7 +35,8 @@ we demonstrate that our design enables modern transport services.
 %enabled.
 %($v$) Different connection migration modes: Failover and Application-level
 %Connection Migration.
-Our prototype is a fork of the \texttt{picotls} \tls 1.3 implementation
+Our prototype is a fork of the \texttt{picotls} \tls 1.3 
+implementation~\cite{picotls}
 to which we added 9k lines of C code to implement \tcpls.
 
 \subsection{Multiplexing}
@@ -46,7 +46,7 @@ We leverage the \tcpls records and the \tcpls stream cryptographic contexts to
 build our prototype with a zero-copy receive path. When a record is received,
 \tcpls first finds the corresponding cryptographic context, i.e., the corresponding \tcpls stream for which the derived IV leads to a successful
 authentication of the tag. This search is limited to the streams attached to
-\tcp connection of the received record. Our prototype tries first the last
+the \tcp connection of the received record. Our prototype tries first the last
 successful \tcpls stream. The receiver only has to find the right cryptographic
 context occasionally depending on the application, i.e., when the sender
 schedules another stream over the \tcp connection.
@@ -171,7 +171,15 @@ after decryption. Our prototype only supports coupling all streams together.
 %Such a feature may be implemented through a negotiation of the aggregation
 %mode.
 The sending application implements the scheduling coupled streams over the
-different \tcpls connections. Our implementation currently includes a round-robin scheduler on the receiver side. We expect to support other schedulers in the future and allow the application to select its preferred scheduler through the API, or even send it as eBPF bytecode over the session. The more \tcpls receives records in order, the more it can deliver them in a zero-copy fashion to the application. When a record is received out-of-sequence, its content is pushed on an efficient reordering heap. %in
+different \tcpls connections. 
+%Our implementation currently includes a round-robin scheduler on the receiver 
+%side. 
+We expect to support other schedulers in the future and allow the application 
+to select its preferred scheduler through the API, or even send it as eBPF 
+bytecode over the session. The more \tcpls receives records in order, the more 
+it can deliver them in a zero-copy fashion to the application. When a record is 
+received out-of-sequence, its content is pushed on an efficient reordering 
+heap. %in
 %$O(log(n))$ for $n$ elements in the heap. Checking the minimum sequence number
 %in the heap is in $\Theta(1)$ and retrieving is in $O(log(n))$.
 The performance of our multipath bandwidth aggregation is evaluated in
@@ -241,7 +249,11 @@ the three-way handshake. This provides a low-latency and secure connection estab
 \subsection{\tcpls API}
 \label{sec-api}
 
-The API used by applications to interact with a protocol plays an important role in leveraging all the protocol features. The most popular API to interact with the transport layer is the BSD socket API. But researchers and the IETF have explored other ways to expose a transport API~\cite{draft-ietf-taps-arch,hruby2014sockets,rfc6458,schmidt2013socket}.
+The API used by applications to interact with a protocol plays an important 
+role in leveraging all the protocol features. The most popular API to interact 
+with the transport layer is the BSD socket API. Researchers and the IETF have 
+explored other ways to expose a transport 
+API~\cite{draft-ietf-taps-arch,hruby2014sockets,rfc6458,schmidt2013socket}.
 
 The \tcpls API builds upon good practices proposed by the outlined works.
 In this spirit, application-level developers are only required to configure a \tcpls context and register function callbacks. We design the \tcpls API such
@@ -358,7 +370,10 @@ option to tune \tcp.
 
 Fairness is an important property of transport protocols guaranteeing an equal share of resources between users of the Internet. Our \tcpls prototype does not alter the congestion control algorithm of \tcp. As  such, a single connection of a \tcpls session is fair to a single \tcp connection. However there are two situations in which this can be improved in future works.
 
-First, when two or more \tcp connections are used in \tcpls over network paths that share a common bottleneck, \tcpls can be unfair proportionally to the extent of this bottleneck. This problem is well known and solutions proposed for \mptcp such as coupled congestion control
+First, when two or more \tcp connections are used in a \tcpls session over 
+network paths that share a common bottleneck, \tcpls can be unfair 
+proportionally to the extent of this bottleneck. This problem is well known and 
+solutions proposed for \mptcp such as coupled congestion control
 schemes~\cite{wischik2011design,peng2014multipath,khalili2013mptcp} could be
 applied to \tcpls using eBPF.
 
@@ -366,7 +381,7 @@ Second, when an application using \tcpls multiplexes several streams over a
 single connection, it has to compete with applications not using \tcpls that
 spread these streams over several connections, such as HTTP/1.1. This problem
 is also well known~\cite{min2019experimental}. Recently, it led Google adapting
-\texttt{mulTCP}~\cite{crowcroft1998differentiated}, one of its solutions, when
+\texttt{mulTCP}~\cite{crowcroft1998differentiated} when
 implementing gQUIC~\cite{langley2017quic}. A similar approach could also be
 integrated in \tcpls with eBPF.
 

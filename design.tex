@@ -9,15 +9,19 @@
 By leveraging \tcpls records and extensions, we can design new modern transport
 services atop the combination of \tcp and \tls. In this subsection, we answer
 our second research question ({\small\textit{RQ2}}) by presenting three
-transport  services: stream multiplexing (Sec.~\ref{sec:datastreams}), connection  migration (Sec.~\ref{sec:multipath}), and bandwidth aggregation
-(Sec.~\ref{sec:multipath}). We leverage the \tcpls records to multiplex concurrent encrypted bytestreams. By extending the \tls handshake, \tcpls allows joining several \tcp connections to a single \tcpls session to support
+transport  services: stream multiplexing (Sec.~\ref{sec:datastreams}), 
+connection migration (Sec.~\ref{sec:conn-migration}), and bandwidth aggregation
+(Sec.~\ref{sec:multipath}). We leverage the \tcpls records to multiplex 
+concurrent 
+encrypted bytestreams. By extending the \tls handshake, \tcpls allows joining 
+several \tcp connections to a single \tcpls session to support
 connection migration, stream steering and %multipath capabilities, mitigating
 %Head-of-Line
 %blocking and enabling
 bandwidth aggregation.
 %aggregation and Head-of-Line blocking resilience.
 These features are built atop the \tcp bytestream, and as such they avoid
-middleboxes interferences that modifies the \tcp header.
+middleboxe interferences that modify the \tcp header.
 
 \subsubsection{Stream Multiplexing}\label{sec:datastreams}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -53,15 +57,15 @@ overcome this, we propose an Initial Vector (IV) derivation technique that
 enables independent encryption/decryption for each stream without this security
 degradation. We add two goals to the design of this technique. First, the
 \tls 1.3 wire format must be preserved to avoid possible middleboxes
-interference. Second, each record of the \tcpls session must has a unique
+interference. Second, each record of the \tcpls session must have a unique
 nonce in order to maintain the security properties of AEAD.
 
 Fig.~\ref{fig:aead-iv} illustrates how the AEAD IV is computed for a given
 \tcpls record of a \tcpls stream. First the left-most bits of the IV derived
 from the \tls handshake are summed with the 32-bit \tcpls Stream ID. Then the
-right-most bits are XORed with the stream 64-bit record sequence number. Each
+right-most bits are XORed with the  64-bit stream record sequence number. Each
 \tcpls stream has a separate record sequence number space.
-These two operations guarantee that every record of every \tcpls streams has a
+These two operations guarantee that every record of every \tcpls stream has a
 unique nonce.
 %This combination of
 %IV manipulation guarantees that the resulting IV is unique for each record of
@@ -73,7 +77,7 @@ from the handshake.
 %\todo{Il faut expliquer comment les stream id sont choisis pour garantir
 %l'unicité}
 
-To avoid possible middleboxes interference, in addition to the record sequence
+To avoid possible middleboxe interferences, in addition to the record sequence
 number, the \tcpls Stream ID is kept implicit as well. When an endpoint receives
 a \tcpls record, it leverages the AEAD cipher to check the authentication tag
 repeatedly until the correct \tcpls Stream ID is found.
@@ -83,11 +87,11 @@ ciphers use an Encrypt-then-MAC construct~\cite{rfc7366, rfc8446}, and the tag
 verification is computationally light, especially on
 AES-GCM~\cite{mcgrew2004galois}. Reducing this cost could be achieved by adding
 explicit signaling when another stream is scheduled over the \tcp
-connection.\footnote{The worst case is when the sender schedules records of $N$
+connection\footnote{The worst case is when the sender schedules records of $N$
   streams over a \tcp connection. Then, \tcpls may announce within the last
   record of the current stream the Stream ID of the following record.%, thanks
   %to \tcp ordered delivery %of \tcpls data and control records.
-}
+}.
 %\todo{citer rfc7366 ? ou les références de ce rfc ?}
 
 %\todo{sheperd comments}
@@ -181,7 +185,7 @@ plain payload non-conforming to the \tcpls protocol.
 %attempts succeeds with probability $2^{-33}$.
 
 
-\subsubsection{Connection Migration}\label{sec:multipath}
+\subsubsection{Connection Migration}\label{sec:conn-migration}
 
 \tcpls allows joining several \tcp connections to an existing \tcpls session.
 We leverage this mechanism to implement new transport services such as
@@ -228,7 +232,8 @@ client sends a \textsc{ClientHello} message containing the session identifier
 (SESSID($\alpha$) in Fig.~\ref{fig:join-example}) and one of the cookies
 provided by the server (COOKIE($\beta_1$) in Fig.~\ref{fig:join-example}). The
 server uses the session identifier $\alpha$ to find the corresponding \tcpls
-session and checks the validity of the cookie. If the \tcpls session and cookie
+session and checks the validity of the cookie. If the \tcpls session and this 
+cookie
 are valid, the \tcp connection is joined to the \tcpls session. The session
 identifier plays the same role as the \mptcp token, but is sent encrypted. The
 cookie provides stronger protection than \mptcp's HMAC with security keys
@@ -297,7 +302,13 @@ can only be used once by the client.
 \end{figure}
 
 \textbf{Failover}.
-When a \tcp connection fails, e.g., due to middleboxes or network outages, \tcpls leverages its joining mechanism to recover the session over another \tcp connection. This is particularly useful on multihomed devices that often move out of reach of a given access network, for instance a smartphone moving away from a Wi-Fi access point, but but it also helps devices that suffer from middleboxes disrupting \tcp connections, for instance a firewall introducing \tcp \rst on idle \tcp connections. Fig.~\ref{fig:design-failover} illustrates
+When a \tcp connection fails, e.g., due to middleboxes or network outages, 
+\tcpls leverages its joining mechanism to recover the session over another \tcp 
+connection. This is particularly useful on multihomed devices that often move 
+out of reach of a given access network, for instance a smartphone moving away 
+from a Wi-Fi access point, but it also helps devices that suffer from 
+middleboxes disrupting \tcp connections, for instance a firewall introducing 
+\tcp \rst on idle \tcp connections. Fig.~\ref{fig:design-failover} illustrates
 how \tcpls reacts to such events during a transfer with two \tcpls streams.
 To achieve such a \emph{break-before-make},
 \tcpls sends acknowledgments for the received records of each stream, allowing
@@ -416,7 +427,7 @@ acknowledgments, but it cannot survive from one of the underlying connections'
 failure. During such a migration, data may be sent over two connections, which
 brings us to explain how multipath is designed.
 
-\subsubsection{Multipath Capabilities}
+\subsubsection{Multipath Capabilities}\label{sec:multipath}
 
 Like \mptcp, \tcpls allows an application to control different \tcp connections
 that are used to exchange data. \mptcp was designed to be a drop-in replacement

@@ -20,14 +20,15 @@ is then used for this session.
 Thanks to \tcpls's design, our \tcpls implementation provides a
 flexible API that allows the applications to perform zero-copy data transfers,
 and easily manipulate the different features presented in this research work.
-Our performance evaluation shows that this prototype is more than twice as fast
+The performance evaluation shows that our prototype is more than twice as fast
 as currently available \quic implementations while supporting additional
 features such as bandwidth aggregation and stream steering.
 
 \tcpls is both simple and powerful. Simple because it can be implemented inside
-existing \tls libraries without any kernel change in contrast to \tcp. \tcpls is
+existing \tls libraries without any kernel change in contrast to \mptcp. \tcpls 
+is
 wire-compatible with the existing \tcp middleboxes and can thus be used in all
 environments where \tls 1.3 is used over \tcp. Given the performance benefits of
 \tcpls, the flexibility it offers and the features that it already provides, we
-believe it can be a powerful contender to \quic for modern services, including
-HTTP.
+believe that it can be a powerful contender to \quic for modern services, 
+including HTTP.

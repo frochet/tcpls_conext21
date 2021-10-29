@@ -106,7 +106,8 @@ configured to use the AES128-GCM-SHA256 cipher.
 %environment using \texttt{iperf} but without any encryption.
 We first compare \tcpls without the transport services presented in
 Sec.~\ref{sec:transport-services}. We can observe that \tcpls reaches similar
-throughput than \tls/\tcp over both MTU. The small advantage of \tcpls at an
+throughput than \tls/\tcp over both MTU sizes. The small advantage of \tcpls at 
+an
 MTU of 1500 bytes may be attributed by implementation differences in the two
 benchmarks tools. \tcpls has thus a similar throughput than \tcp/\tls when
 using the base protocol. %We now evaluate the cost of the transport services.
@@ -339,7 +340,14 @@ When faced with middleboxes that modify \tls 1.3~\cite{Bock_China,raman2020measu
 in Sec.~\ref{sec:transport-services}. Other messages conveyed in encrypted \tls records cannot be distinguished or tampered with. When a client opens a \tcpls session through a \tls terminating proxy not supporting \tcpls, it replies
 with a \textsc{ServerHello} message omitting the \hello extension. Then, the client can implicitly fall back to \tls and continue with the handshake.
 
-Some legacy \tls server implementations do not implement the \tls specification properly and might abort connections when receiving unknown \tls extensions. Similar behavior has been observed in overly restrictive stateful firewalls. To ensure connectivity in the presence of such policies, \tcpls implements an explicit fallback mechanism. If a client receives a \tcp \rst in response to the \tcpls \textsc{ClientHello} or no response, it tries negotiating a regular \tls connection after a timeout fired. In the same manner, a \join extension might be blocked on a path when joining connections. In this case, the subflow
+Some legacy \tls server implementations do not implement the \tls specification 
+properly and might abort connections when receiving unknown \tls extensions. 
+Similar behavior has been observed in overly restrictive stateful firewalls. To 
+ensure connectivity in the presence of such policies, \tcpls implements an 
+explicit fallback mechanism. If a client receives a \tcp \rst in response to 
+the \tcpls \textsc{ClientHello} or no response, it tries negotiating a regular 
+\tls connection after a timeout. In the same manner, a \join extension might be 
+blocked on a path when joining connections. In this case, the subflow
 attachment is canceled, and the application is notified to react appropriately, e.g., to cancel the migration.
 
 A more complete evaluation of middlebox interference would require measurements
@@ -389,7 +397,8 @@ experiment.
   \begin{center}
     \includegraphics[width=\columnwidth]{figures/tcpls_mptcp.png}
   \end{center}
-  \caption{\mptcp has difficulties to react to successive network outages during a 60MiB file download.
+  \caption{\mptcp has difficulties to react to successive network outages 
+  during a 60MB file download.
   \tcpls reacts quickly to such outages and completes the file transfer faster.}
   \label{fig:failover}
 \end{figure}
@@ -410,7 +419,12 @@ transfer in a 4-path network topology.
 %detect network failures and correctly switch the network path, thus we
 %preferred to ignore those results.
 \mptcp is a more mature multipath transport implementation that is maintained
-and used in production. Fig.~\ref{fig:failover} compares how \mptcp and \tcpls recovers when three paths out of four are blackholed every five seconds. We rotate the working path so that each implementation has first to find it before recovering the transfer. We observe that \mptcp's default path manager performs well on the first failure. For the next ones, it requires several seconds to recover the right path.
+and used in production. Fig.~\ref{fig:failover} compares how \mptcp and \tcpls 
+recover when three paths out of four are blackholed every five seconds. We 
+rotate the working path so that each implementation has first to find it before 
+recovering the transfer. We observe that \mptcp's default path manager performs 
+well on the first failure. For the next ones, it requires several seconds to 
+recover the right path.
 %Besides, \mptcp seems to remember that something wrong
 %happened, and enters a kind of congestion avoidance state until the end of the
 %transfer. We may question this design choice, since many \tcp connections on
@@ -427,7 +441,11 @@ When there are multiple network paths, connection migration can be used by
 applications to adapt to the changing network conditions based on application
 metrics.
 
-Applications can migrate their traffic from one network path to another using a few \tcpls API calls. Fig.~\ref{fig:conn_migration} shows the goodput obtained when performing such a migration during a file transfer with \tcpls. We do not compare \tcpls to \mptcp and \quic as none of their implementation offer this feature directly to applications. % using the
+Applications can migrate their traffic from one network path to another using a 
+few \tcpls API calls. Fig.~\ref{fig:conn_migration} shows the goodput obtained 
+when performing such a migration during a file transfer with \tcpls. We do not 
+compare \tcpls to \mptcp and \quic as none of their implementations offer this 
+feature directly to applications. % using the
 %API
 %(i.e., the application decides
 % when to migrate, and we expose a simplistic code flow to
@@ -456,7 +474,8 @@ and set a bandwidth of 30~Mbps on each path, a 40~ms round-trip-time for the IPv
 %side, to let the server react appropriately if other requirements need to be
 %fulfilled.
 
-Fig.~\ref{fig:conn_migration} reports the goodput obtained during the experiment. We can observe a peak during the migration windows marked with
+Fig.~\ref{fig:conn_migration} reports the goodput obtained during the 
+experiment. We can observe peaks during the migration windows marked with
 vertical black bars. % indicating the
 %attachment of the new stream and the closing of the initial stream), the
 %client.
@@ -506,7 +525,8 @@ and attach a new stream to it. The two streams are coupled together. Our results
 appear in Fig.~\ref{fig:multipath_aggregation}. Both protocols aggregate the
 two paths and reach a goodput of $\approx$ 50~Mbps.
 
-They have two differences. First, for \mptcp, there is a delay before it becomes fully utilized. This delay is the time required by the Linux kernel
+We identify two differences. First, for \mptcp, there is a delay before it 
+becomes fully utilized. This delay is the time required by the Linux kernel
 to configure the new network interface IP address, add the required routes, and
 finally inform \mptcp~\cite{paasch2012exploring}.
 %This explains the time that \mptcp needs to start to use the new path.
@@ -562,12 +582,14 @@ by two \tcpls sessions during a file upload on a Mininet network with a
 %We use Mininet over a single 100Mbps emulated link with a
 %60msec rtt. Fig.~\ref{fig:vegasCubic} shows a client that uses the \tcp
 The orange curve is the first \tcpls session that starts with the Vegas
-congestion controller~\cite{brakmo1994tcp}. It rapidly reaches the full capacity of the link. Then, a second \tcpls session, depicted in blue, is
-started with the CUBIC congestion controller~\cite{rfc8312}. This quickly
+congestion controller~\cite{brakmo1994tcp}. It rapidly reaches the full 
+capacity of the link. Then, a second \tcpls session, depicted in blue, starts 
+with the CUBIC congestion controller~\cite{rfc8312}. This quickly
 results in an unfair distribution of the bandwidth. The server then sends an
 eBPF bytecode implementing the CUBIC congestion controller to the first \tcpls
 session which attaches it for the current connection only. The bandwidth distribution becomes fair. We
-performed the same experiment for different delays, varying from 10~ms to 100~ms
+performed the same experiment using different delays, varying from 10~ms to 
+100~ms
 and obtained similar results.
 
 \begin{figure}[!t]

@@ -31,7 +31,13 @@ terminate TCP connections
 \cite{weaver2014here}, and $(vi)$ high-speed network adapters that fragment 
 large TCP packets in a series of smaller packets and reassemble them 
 \cite{honda2011still}. 
-All these in-path network functions make assumptions about the \tcp packets content, invalidating the initial \tcp end-to-end paradigm. Moreover, they do not always strictly follow the \tcp specifications~\cite{honda2011still, hesmans2013tcp}, which may negatively affect \tcp's evolution and performance~\cite{edeline2020evaluating}. Furthermore, deployed middleboxes remain inside the network for several years and sometimes up to a decade. Many of the older middleboxes are not regularly updated. 
+All these in-path network functions make assumptions about the \tcp packets 
+content, invalidating the \tcp end-to-end paradigm. Moreover, they do not 
+always strictly follow the \tcp specifications~\cite{honda2011still, 
+hesmans2013tcp}, which may negatively affect \tcp's evolution and 
+performance~\cite{edeline2020evaluating}. Furthermore, deployed middleboxes 
+remain inside the network for several years and sometimes up to a decade. Many 
+of the older middleboxes are not regularly updated. 
 These middleboxes severely limit the \tcp extensibility. Multipath 
 \tcp~\cite{rfc8684,raiciu2012hard} (\mptcp) managed to cope with the 
 interferences listed above, but at the price of increased complexity, most 
@@ -70,15 +76,18 @@ Google took a different approach at solving this problem by developing an entire
 production as shown by recent measurement studies~\cite{trevisan2020five}.
 
 Table~\ref{table:tcpquictcpls} summarizes the main features of \tcp, \mptcp,
-\tls over \tcp, and \quic. All protocols include reliability and congestion
+\tls over \tcp (\tls/\tcp), and \quic. All protocols include reliability and 
+congestion
 control. \tls and \quic provide the same security features. \mptcp efficiently
 supports failovers and \quic includes a connection migration capability. \quic
-supports stream and prevents Head-of-Line (HoL) blocking. \mptcp is the only
-standardized protocol that is able to aggregate different paths bandwidth.
+supports streams and prevents Head-of-Line (HoL) blocking. \mptcp is the only
+standardized transport protocol that is able to aggregate the bandwidth of 
+several paths.
 \mptcp implementations include several path management
 strategies~\cite{hesmans2015smapp,hesmans2016enhanced} to control the different
-paths utilization. \quic allows the client to migrate its connection, although
-it is rarely exposed to applications in current implementations.
+paths utilization. \quic allows the client to migrate its connection.
+%, although
+%it is rarely exposed to applications in current implementations.
 
 %Multipath QUIC
 %extensions enabling the use of concurrent paths in QUIC have recently been
