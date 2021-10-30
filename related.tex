@@ -14,7 +14,17 @@ abstraction, involving benefits leveraged from multiple connections.
 \tcpls uses \tls records to encode data and control information. Researchers
 have also explored the idea of encoding control information in the \tcp
 bytestream in different protocols. During the initial discussions for Multipath \tcp, Multi-Connection \tcp (\texttt{MCTCP})~\cite{draft-scharf-mptcp-mctcp-01}
-was proposed as an alternative that encodes control information in the bytestream. The \mptcp Working Group did not adopt this solution because it notably feared of possible problems with middleboxes. Multipath \tcp~\cite{raiciu2012hard,rfc8684} uses \tcp Options to encode control information and use different paths. \tcpls uses \tls records for this purpose and prevents middlebox tampering. Since \tls records are encrypted, their integrity protected, and protocol-level indistinguishable, middleboxes cannot interfere with the control information that \tcpls exchanges. In contrast, with \mptcp, a middlebox that modifies the payload, such as a transparent \tcp proxy or an application level gateway running on a NAT~\cite{rfc3027}, can disrupt the
+was proposed as an alternative that encodes control information in the 
+bytestream. The \mptcp Working Group did not adopt this solution because it 
+notably feared of possible problems with middleboxes. Multipath 
+\tcp~\cite{raiciu2012hard,rfc8684} uses \tcp Options to encode control 
+information and use different paths. \tcpls uses \tls records for this purpose 
+and prevents middlebox tampering. Since \tls records are encrypted, their 
+integrity is protected and content is obfuscated, so middleboxes 
+cannot interfere with the control information that \tcpls exchanges. In 
+contrast, with \mptcp, a middlebox that modifies the payload, such as a 
+transparent \tcp proxy or an application level gateway running on a 
+NAT~\cite{rfc3027}, can disrupt the
 protocol. Minion~\cite{nowlan2012fitting} also encodes control information in
 the \tcp payload but to support unreliable data.
 
